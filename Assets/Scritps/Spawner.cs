@@ -14,7 +14,7 @@ public class Spawner : MonoBehaviour {
 
 	void SpawnPin () {
 		GameObject pin = Instantiate(pinPrefab, transform.position, transform.rotation);
-		pin.name = "Pin " + GameManager.instance.score.ToString();
+		pin.name = "Pin " + (GameManager.instance.score + 1).ToString();
 		Debug.Log ("Instanciado " + pin.name);
 	}
 }

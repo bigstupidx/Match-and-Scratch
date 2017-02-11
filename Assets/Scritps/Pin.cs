@@ -29,14 +29,14 @@ public class Pin : MonoBehaviour {
 			if (!GameManager.instance.gameHasEnded)
 				GameManager.instance.score++;
 
-			isPinned = true;
 			GetComponent<CircleCollider2D>().isTrigger = false;
+			isPinned = true;
 		}
 
 		if (col.tag == "Pin") {
 			isPinned = true;
 			GameManager.instance.EndGame();
-			Debug.Log ("Colisión: " + name + " " +  col.gameObject.name);
+			Debug.Log ("<color=red>Colisión: " + name + " " +  col.gameObject.name + "</color>");
 		}
 
 	}

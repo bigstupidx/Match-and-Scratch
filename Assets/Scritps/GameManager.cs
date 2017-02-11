@@ -41,12 +41,12 @@ public class GameManager : MonoBehaviour {
 		rotator.enabled = false;
 		spawner.enabled = false;
 
-		animator.SetTrigger ("EndGame");
 		if (score > PlayerPrefs.GetInt("MaxScore")) {
 			PlayerPrefs.SetInt("MaxScore", score);
 		}
 
 		gameHasEnded = true;
+		animator.SetTrigger ("EndGame");
 	}
 
 	void Update() {
