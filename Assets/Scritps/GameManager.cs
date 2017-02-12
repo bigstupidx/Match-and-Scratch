@@ -13,14 +13,15 @@ public class GameManager : MonoBehaviour {
 
 	public Animator animator;
 
-	public int maxScore = 0;
+	//private int maxScore = 0;
 	public int score = 0;
+
+	public float distanceOfPins = 8f;
 
 	public Text scoreLabel;
 	public Text maxScoreLabel;
 
 	public bool gameHasEnded = false;
-
 
 	void Awake() {
 		if (instance == null) {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour {
 
-	public GameObject pinPrefab;
+	public GameObject needlePrefab;
 
 	void Update() {
 		if (Input.GetButtonDown("Fire1")) {
@@ -13,7 +13,7 @@ public class Spawner : MonoBehaviour {
 	}
 
 	void SpawnPin () {
-		GameObject pin = Instantiate(pinPrefab, transform.position, transform.rotation);
+		GameObject pin = Instantiate(needlePrefab, transform.position, transform.rotation);
 		pin.name = "Pin " + (GameManager.instance.score + 1).ToString();
 		Debug.Log ("Instanciado " + pin.name);
 	}
