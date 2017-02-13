@@ -38,9 +38,8 @@ public class Needle : MonoBehaviour {
 	void FixedUpdate() {
 		if (!isPinned) {
 			rb.MovePosition(rb.position + Vector2.up * speed * Time.fixedDeltaTime);
+			CheckDistanceToRotator();
 		}
-
-		CheckDistanceToRotator();
 	}
 
 	void OnTriggerEnter2D (Collider2D col) {
@@ -54,13 +53,20 @@ public class Needle : MonoBehaviour {
 	}
 
 	void CheckDistanceToRotator() {
-		float dist = (rotator.position - transform.position).sqrMagnitude;
+		float dist = (rotator.position - transform.position).magnitude;
+		Debug.Log("Distance to rotator: " + dist.ToString());
+
 		if (!isPinned) {
 			if ( dist <= GameManager.instance.distanceOfPins ) {
+
+				FixPosition();
+
 				transform.SetParent(rotator);
 
 				if (!GameManager.instance.gameHasEnded)
 					GameManager.instance.score++;
+
+
 
 				sr.color = Color.black;
 
@@ -68,6 +74,10 @@ public class Needle : MonoBehaviour {
 				isPinned = true;
 			}
 		}
+	}
+
+	void FixPosition() {
+		transform.position = rotator.position + (transform.position - rotator.position).normalized * GameManager.instance.distanceOfPins;
 	}
 
 	void DrawSpear() {
