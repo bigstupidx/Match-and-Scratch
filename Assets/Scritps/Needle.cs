@@ -28,10 +28,15 @@ public class Needle : MonoBehaviour {
 		lr.endColor = Color.black;
 		lr.startWidth = 0.05f;
 		lr.endWidth = 0.05f;
-		lr.useWorldSpace = false;
+		//lr.useWorldSpace = true;
 	}
 		
 	void Update() {
+
+	}
+
+	void LateUpdate() {
+		
 		DrawSpear();
 	}
 
@@ -66,8 +71,6 @@ public class Needle : MonoBehaviour {
 				if (!GameManager.instance.gameHasEnded)
 					GameManager.instance.score++;
 
-
-
 				sr.color = Color.black;
 
 				drawSpear = true;
@@ -81,10 +84,10 @@ public class Needle : MonoBehaviour {
 	}
 
 	void DrawSpear() {
-		if (drawSpear) {
+		if (drawSpear ) {
 			lr.numPositions = 2;
-			lr.SetPosition(0, Vector3.zero);
-			lr.SetPosition(1, transform.worldToLocalMatrix.MultiplyPoint(rotator.position));
+			lr.SetPosition(0, transform.position);//Vector3.zero);
+			lr.SetPosition(1, rotator.position);//transform.worldToLocalMatrix.MultiplyPoint(rotator.position));
 		}
 		else
 			lr.numPositions = 0;
