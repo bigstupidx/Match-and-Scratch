@@ -4,9 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+public enum GameType {
+	Free,
+	MatchThree
+}
+
 public class GameManager : MonoBehaviour {
 
 	public static GameManager instance = null;
+	public GameType gameType;
 
 	public Rotator rotator;
 	public Spawner spawner;
@@ -15,6 +21,8 @@ public class GameManager : MonoBehaviour {
 
 	//private int maxScore = 0;
 	public int score = 0;
+
+	public int currentLevel = 0;
 
 	public float distanceOfPins = 8f;
 
@@ -33,6 +41,7 @@ public class GameManager : MonoBehaviour {
 
 		int highscore = PlayerPrefs.GetInt("MaxScore");
 		maxScoreLabel.text =  highscore == 0 ? "" : "Max: " + highscore.ToString();
+		spawner.SetSpawnerType(gameType);
 	}
 
 	public void EndGame() {
@@ -58,6 +67,7 @@ public class GameManager : MonoBehaviour {
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex  );
 		score = 0;
 		gameHasEnded = false;
+		currentLevel = 0;
 	}
 
 

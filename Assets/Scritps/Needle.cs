@@ -22,13 +22,13 @@ public class Needle : MonoBehaviour {
 	}
 
 	void SetupLine() {
+		Color parentColor = GetComponent<SpriteRenderer>().color;
 		lr = gameObject.AddComponent<LineRenderer>();
 		lr.material = new Material(Shader.Find("Particles/Alpha Blended Premultiply"));
-		lr.startColor = Color.black;
-		lr.endColor = Color.black;
+		lr.startColor = parentColor;
+		lr.endColor = parentColor;
 		lr.startWidth = 0.05f;
 		lr.endWidth = 0.05f;
-		//lr.useWorldSpace = true;
 	}
 		
 	void Update() {
@@ -71,7 +71,8 @@ public class Needle : MonoBehaviour {
 				if (!GameManager.instance.gameHasEnded)
 					GameManager.instance.score++;
 
-				sr.color = Color.black;
+				if (GameManager.instance.gameType == GameType.Free)
+					sr.color = Color.black;
 
 				drawSpear = true;
 				isPinned = true;
