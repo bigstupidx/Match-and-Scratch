@@ -35,7 +35,15 @@ public class Pin : MonoBehaviour {
 
 		if (col.tag == "Pin") {
 			isPinned = true;
-			GameManager.instance.EndGame();
+			switch (GameManager.instance.gameType){
+				case GameType.Free:
+					GameManager.instance.EndGame();
+				break;
+				case GameType.MatchThree:
+
+				break;
+			}
+
 			Debug.Log ("<color=red>Colisión: " + name + " " +  col.gameObject.name + "</color>");
 		}
 

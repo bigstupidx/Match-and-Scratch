@@ -8,6 +8,7 @@ using Random = UnityEngine.Random;
 public class Spawner : MonoBehaviour {
 
 	public GameObject needlePrefab;
+	public GameObject colorNeedlePrefab;
 
 	/*** gameType = match-three ***/
 	public Color[] posibleColors;
@@ -39,17 +40,18 @@ public class Spawner : MonoBehaviour {
 	}
 
 	void SpawnNeedle () {
-		GameObject pin = Instantiate(needlePrefab, transform.position, transform.rotation);
+		GameObject pin;
 
 		switch(currentSpawnerType) {
 		case GameType.Free:
+			pin = Instantiate(needlePrefab, transform.position, transform.rotation);
 			pin.name = "Pin " + (GameManager.instance.score + 1).ToString();
 			break;
 		case GameType.MatchThree:
-			pin.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
 			currentColor = nextColor;
 			nextColor = Random.Range (0, Mathf.Min(GameManager.instance.currentLevel +3, posibleColors.Length));
 			nextNeedle.color = posibleColors[nextColor];
+			pin = Instantiate(colorNeedlePrefab, transform.position, transform.rotation);
 			pin.name = "Needle type" + currentColor.ToString();
 			pin.GetComponent<SpriteRenderer>().color = posibleColors[currentColor];
 			break;

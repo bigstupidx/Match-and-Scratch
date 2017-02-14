@@ -19,7 +19,6 @@ public class GameManager : MonoBehaviour {
 
 	public Animator animator;
 
-	//private int maxScore = 0;
 	public int score = 0;
 
 	public int currentLevel = 0;
@@ -30,6 +29,10 @@ public class GameManager : MonoBehaviour {
 	public Text maxScoreLabel;
 
 	public bool gameHasEnded = false;
+
+	/*** gameType = match-three ***/
+	//TODO: List<GameObject[]> colorGroups;
+	/*** 		*	*	* 		***/
 
 	void Awake() {
 		if (instance == null) {
@@ -42,6 +45,16 @@ public class GameManager : MonoBehaviour {
 		int highscore = PlayerPrefs.GetInt("MaxScore");
 		maxScoreLabel.text =  highscore == 0 ? "" : "Max: " + highscore.ToString();
 		spawner.SetSpawnerType(gameType);
+		switch (gameType) {
+			case GameType.MatchThree:
+/*
+				if (colorGroups == null)
+					colorGroups = new List<GameObject[]>();
+
+				colorGroups.Clear();
+*/
+			break;
+		}
 	}
 
 	public void EndGame() {

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Needle : MonoBehaviour {
+public class ColorNeedle : MonoBehaviour {
 	public float speed = 20f;
+
 	private Rigidbody2D rb;	
 	
 	private bool isPinned = false;
@@ -12,7 +13,6 @@ public class Needle : MonoBehaviour {
 	private Transform rotator;
 	private SpriteRenderer sr;
 	private LineRenderer lr;
-
 
 	void Awake() {
 		rb = GetComponent<Rigidbody2D>();
@@ -44,12 +44,16 @@ public class Needle : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D (Collider2D col) {
+
 		if (!isPinned) {
-			if (col.tag == "Pin") {
-				isPinned = true;
-				GameManager.instance.EndGame();
-			}
+			CircleCollider2D cc = GetComponent<CircleCollider2D>();
+			transform.SetParent(rotator);
+			FixPosition(col.gameObject.transform, col.transform.lossyScale.x * 2 * cc.radius);
+			GetComponent<CircleCollider2D>().isTrigger = false;
+			isPinned = true;
 		}
+
+		Debug.Log ("<color=red>Colisión: " + name + " " +  col.gameObject.name + "</color>");
 	}
 
 	void CheckDistanceToRotator() {
@@ -60,10 +64,8 @@ public class Needle : MonoBehaviour {
 			if ( dist <= GameManager.instance.distanceOfPins ) {
 
 				FixPosition(rotator, GameManager.instance.distanceOfPins);
-				transform.SetParent(rotator);
 
-				if (!GameManager.instance.gameHasEnded)
-					GameManager.instance.score++;
+				transform.SetParent(rotator);
 
 				if (GameManager.instance.gameType == GameType.Free)
 					sr.color = Color.black;
