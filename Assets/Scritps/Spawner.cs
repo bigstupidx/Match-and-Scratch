@@ -25,21 +25,20 @@ public class Spawner : MonoBehaviour {
 			case GameType.MatchThree:
 				nextColor = Random.Range (0, Mathf.Min(GameManager.instance.currentLevel +3, posibleColors.Length));
 				nextNeedle.color = posibleColors[nextColor];
+				SpawnNeedle();
 			break;
 		}
 	}
 
 	void Update() {
-		if (Input.GetButtonDown("Fire1")) {
-			SpawnNeedle();
-		}
+
 	}
 
 	public void SetSpawnerType(GameType value) {
 		currentSpawnerType = value;
 	}
 
-	void SpawnNeedle () {
+	public void SpawnNeedle () {
 		GameObject pin;
 
 		switch(currentSpawnerType) {

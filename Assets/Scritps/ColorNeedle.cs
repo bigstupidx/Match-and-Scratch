@@ -5,9 +5,11 @@ using UnityEngine;
 public class ColorNeedle : MonoBehaviour {
 	public float speed = 20f;
 
-	private Rigidbody2D rb;	
-	
-	private bool isPinned = false;
+	private Rigidbody2D rb;
+	private CircleCollider2D cc;
+
+	public bool isShooted = false;
+	public bool isPinned = false;
 	private bool drawSpear = false;
 
 	private Transform rotator;
@@ -16,6 +18,7 @@ public class ColorNeedle : MonoBehaviour {
 
 	void Awake() {
 		rb = GetComponent<Rigidbody2D>();
+		cc = GetComponent<CircleCollider2D>();
 		rotator = GameObject.FindGameObjectWithTag("Rotator").transform;
 		sr  = GetComponent<SpriteRenderer>();
 		SetupLine();
@@ -31,38 +34,54 @@ public class ColorNeedle : MonoBehaviour {
 		lr.endWidth = 0.05f;
 	}
 
-	void LateUpdate() {
-		
+	void Update () {
+		if (Input.GetButtonDown("Fire1")) {
+			isShooted = true;
+		}
+	}
+
+	void LateUpdate() {		
 		DrawSpear();
 	}
 
 	void FixedUpdate() {
-		if (!isPinned) {
-			rb.MovePosition(rb.position + Vector2.up * speed * Time.fixedDeltaTime);
-			CheckDistanceToRotator();
+		if (isShooted) {
+			if (!isPinned) {
+				rb.MovePosition(rb.position + Vector2.up * speed * Time.fixedDeltaTime);
+				CheckDistanceToRotator();
+			}
 		}
 	}
 
 	void OnTriggerEnter2D (Collider2D col) {
 
-		if (!isPinned) {
-			CircleCollider2D cc = GetComponent<CircleCollider2D>();
-			transform.SetParent(rotator);
-			FixPosition(col.gameObject.transform, col.transform.lossyScale.x * 2 * cc.radius);
-			GetComponent<CircleCollider2D>().isTrigger = false;
-			isPinned = true;
+		if (!isPinned && isShooted) {
+
+			if (CheckDistanceToRotator()){
+				FixPosition(col.gameObject.transform, GameManager.instance.distanceOfPins);
+				OnTriggerEnter2D(col);
+			}
+			else {
+				transform.SetParent(rotator);
+				CheckCollisionWithPinnedNeedles();
+				isPinned = true;
+				GetComponent<CircleCollider2D>().isTrigger = false;
+				GameManager.instance.spawner.SpawnNeedle();
+			}
 		}
 
 		Debug.Log ("<color=red>Colisión: " + name + " " +  col.gameObject.name + "</color>");
 	}
-
-	void CheckDistanceToRotator() {
+	
+	bool CheckDistanceToRotator() {
 		float dist = (rotator.position - transform.position).magnitude;
 		Debug.Log("Distance to rotator: " + dist.ToString());
 
 		if (!isPinned) {
 			if ( dist <= GameManager.instance.distanceOfPins ) {
 
+
+				CheckCollisionWithPinnedNeedles();
 				FixPosition(rotator, GameManager.instance.distanceOfPins);
 
 				transform.SetParent(rotator);
@@ -73,12 +92,28 @@ public class ColorNeedle : MonoBehaviour {
 				drawSpear = true;
 				isPinned = true;
 				GetComponent<CircleCollider2D>().isTrigger = false;
+				GameManager.instance.spawner.SpawnNeedle();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void CheckCollisionWithPinnedNeedles() {
+		foreach (GameObject cn in GameObject.FindGameObjectsWithTag("Pin")){
+			if ( cn.GetComponent<ColorNeedle>().isPinned ) {
+				// offset = (radio1 * escala_objeto1) + (radio2 * escala_objeto2)
+				float offset = (cn.transform.lossyScale.x * cn.GetComponent<CircleCollider2D>().radius) + (transform.lossyScale.x * cc.radius);
+
+				if ( (transform.position - cn.transform.position).sqrMagnitude < (offset * offset)) {
+					FixPosition(cn.transform, offset);
+				}
 			}
 		}
 	}
 
-	void FixPosition(Transform stickyObject, float distOffset = 0f) {
-		transform.position = stickyObject.position + (transform.position - stickyObject.position).normalized * distOffset;
+	void FixPosition(Transform pinnedNeedle, float distOffset = 0f) {
+		transform.position = pinnedNeedle.position + (transform.position - pinnedNeedle.position).normalized * distOffset;
 	}
 
 	void DrawSpear() {
