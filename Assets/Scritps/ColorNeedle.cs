@@ -62,6 +62,7 @@ public class ColorNeedle : MonoBehaviour {
 			if (CheckDistanceToRotator()) {
 				FixPosition(col.gameObject.transform, GameManager.instance.distanceOfPins);
 			}
+			GameManager.instance.PinNeedle(gameObject, col.gameObject);
 			isPinned = true;
 			GetComponent<CircleCollider2D>().isTrigger = false;
 			GameManager.instance.spawner.SpawnNeedle();
@@ -71,11 +72,10 @@ public class ColorNeedle : MonoBehaviour {
 	}
 	
 	bool CheckDistanceToRotator() {
-		float dist = (rotator.position - transform.position).sqrMagnitude;
-		//Debug.Log("Distance to rotator: " + dist.ToString());
+		float sqrDist = (rotator.position - transform.position).sqrMagnitude;
 
 		if (!isPinned) {
-			if ( dist <= (GameManager.instance.distanceOfPins * GameManager.instance.distanceOfPins) ) {
+			if ( sqrDist <= (GameManager.instance.distanceOfPins * GameManager.instance.distanceOfPins) ) {
 
 
 				CheckCollisionWithPinnedNeedles();
@@ -86,10 +86,11 @@ public class ColorNeedle : MonoBehaviour {
 				if (GameManager.instance.gameType == GameType.Free)
 					sr.color = Color.black;
 
-				drawSpear = true;
-				isPinned = true;
 				GetComponent<CircleCollider2D>().isTrigger = false;
 				GameManager.instance.spawner.SpawnNeedle();
+				drawSpear = true;
+				isPinned = true;
+				GameManager.instance.PinNeedle(gameObject);
 				return true;
 			}
 		}
@@ -100,10 +101,10 @@ public class ColorNeedle : MonoBehaviour {
 		foreach (GameObject cn in GameObject.FindGameObjectsWithTag("Pin")){
 			if ( cn.GetComponent<ColorNeedle>().isPinned ) {
 				// offset = (radio1 * escala_objeto1) + (radio2 * escala_objeto2)
-				float offset = (cn.transform.lossyScale.x * cn.GetComponent<CircleCollider2D>().radius) + (transform.lossyScale.x * cc.radius);
+				float dist = (cn.transform.lossyScale.x * cn.GetComponent<CircleCollider2D>().radius) + (transform.lossyScale.x * cc.radius);
 
-				if ( (transform.position - cn.transform.position).sqrMagnitude < (offset * offset)) {
-					FixPosition(cn.transform, offset);
+				if ( (transform.position - cn.transform.position).sqrMagnitude <= (dist * dist)) {
+					FixPosition(cn.transform, dist);
 				}
 			}
 		}

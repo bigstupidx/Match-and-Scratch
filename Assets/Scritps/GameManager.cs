@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour {
 	public bool gameHasEnded = false;
 
 	/*** gameType = match-three ***/
-	//TODO: List<GameObject[]> colorGroups;
+	List<GameObject[]> colorGroups;
 	/*** 		*	*	* 		***/
 
 	void Awake() {
@@ -47,12 +47,12 @@ public class GameManager : MonoBehaviour {
 		spawner.SetSpawnerType(gameType);
 		switch (gameType) {
 			case GameType.MatchThree:
-/*
+
 				if (colorGroups == null)
 					colorGroups = new List<GameObject[]>();
 
 				colorGroups.Clear();
-*/
+
 			break;
 		}
 	}
@@ -83,5 +83,43 @@ public class GameManager : MonoBehaviour {
 		currentLevel = 0;
 	}
 
+	public void PinNeedle(GameObject needleToPin, GameObject lastTouchedNeedle = null) {
+		if (lastTouchedNeedle == null) {
+			GameObject[] arr = new GameObject[]{needleToPin};
+			colorGroups.Add(arr);
+		}
+		else {
+			// Buscamos el grupo en el que ya esté el ultimo objeto qeu hemos tocado
+			int id = -1;
+			colorGroups.ForEach(g => {
+				for(int i = 0; i < g.Length - 1; i++) {
+					if (lastTouchedNeedle.name == g[i].name)
+						id = i;
+				}
+			});
+			// Si hemos localizado un grupo en el que ya existe el último tocado, metemos el nuevo es ese grupo.
+			if (id >= 0) {
+				colorGroups[id][colorGroups[id].Length] = needleToPin;
+			}
+			else{// Si no hemos encontrado el ultimo objeto colisionado en ningún grupo... creamos unos nuevo con el objeto a pinear
+				colorGroups.Add(new GameObject[]{needleToPin});
+			}
+		}
+
+		EvaluateColorGroups();
+	}
+
+	void EvaluateColorGroups() {
+		//TODO: si encontramos un grupo de mas de dos miembreo del mismo color, eliminamos el grupo y los objetos que contiene.
+		string l = "";
+		for(int i = 0; i < colorGroups.Count - 1; i++) {
+			for( int j = 0; j < colorGroups[i].Length; j++) {
+				l += (colorGroups[i][j].name);
+			}
+			l += "\n";
+		}
+		Debug.Log (l);
+
+	}
 
 }
