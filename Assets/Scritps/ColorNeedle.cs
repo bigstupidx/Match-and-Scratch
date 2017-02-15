@@ -56,29 +56,26 @@ public class ColorNeedle : MonoBehaviour {
 	void OnTriggerEnter2D (Collider2D col) {
 
 		if (!isPinned && isShooted) {
-
-			if (CheckDistanceToRotator()){
+			transform.SetParent(rotator);
+			CheckCollisionWithPinnedNeedles();
+			// Si despues de colocada, está a la suficiente distancia del rotator... la fijamos al rotator
+			if (CheckDistanceToRotator()) {
 				FixPosition(col.gameObject.transform, GameManager.instance.distanceOfPins);
-				OnTriggerEnter2D(col);
 			}
-			else {
-				transform.SetParent(rotator);
-				CheckCollisionWithPinnedNeedles();
-				isPinned = true;
-				GetComponent<CircleCollider2D>().isTrigger = false;
-				GameManager.instance.spawner.SpawnNeedle();
-			}
+			isPinned = true;
+			GetComponent<CircleCollider2D>().isTrigger = false;
+			GameManager.instance.spawner.SpawnNeedle();
 		}
 
 		Debug.Log ("<color=red>Colisión: " + name + " " +  col.gameObject.name + "</color>");
 	}
 	
 	bool CheckDistanceToRotator() {
-		float dist = (rotator.position - transform.position).magnitude;
-		Debug.Log("Distance to rotator: " + dist.ToString());
+		float dist = (rotator.position - transform.position).sqrMagnitude;
+		//Debug.Log("Distance to rotator: " + dist.ToString());
 
 		if (!isPinned) {
-			if ( dist <= GameManager.instance.distanceOfPins ) {
+			if ( dist <= (GameManager.instance.distanceOfPins * GameManager.instance.distanceOfPins) ) {
 
 
 				CheckCollisionWithPinnedNeedles();
