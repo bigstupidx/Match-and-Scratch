@@ -24,14 +24,13 @@ public class Spawner : MonoBehaviour {
 		switch(currentSpawnerType) {
 			case GameType.MatchThree:
 				nextColor = Random.Range (0, Mathf.Min(GameManager.instance.currentLevel +3, posibleColors.Length));
-				nextNeedle.color = posibleColors[nextColor];
-				SpawnNeedle();
+				nextNeedle.color = posibleColors[nextColor];				
 			break;
 		}
+		SpawnNeedle();
 	}
 
 	void Update() {
-
 	}
 
 	public void SetSpawnerType(GameType value) {
@@ -44,17 +43,16 @@ public class Spawner : MonoBehaviour {
 		switch(currentSpawnerType) {
 		case GameType.Free:
 			pin = Instantiate(needlePrefab, transform.position, transform.rotation);
-			pin.name = "Pin " + (GameManager.instance.score + 1).ToString();
+			pin.name = "Needle_" + (GameManager.instance.score + 1).ToString();
 			break;
 		case GameType.MatchThree:
 			currentColor = nextColor;
 			nextColor = Random.Range (0, Mathf.Min(GameManager.instance.currentLevel +3, posibleColors.Length));
 			nextNeedle.color = posibleColors[nextColor];
 			pin = Instantiate(colorNeedlePrefab, transform.position, transform.rotation);
-			pin.name = "Needle type" + currentColor.ToString();
+			pin.name = "ColorNeedle_Type_" + currentColor.ToString();
 			pin.GetComponent<SpriteRenderer>().color = posibleColors[currentColor];
 			break;
 		}
-
 	}
 }

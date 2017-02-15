@@ -5,7 +5,8 @@ using UnityEngine;
 public class Needle : MonoBehaviour {
 	public float speed = 20f;
 	private Rigidbody2D rb;	
-	
+
+	public bool isShooted = false;
 	private bool isPinned = false;
 	private bool drawSpear = false;
 
@@ -31,20 +32,27 @@ public class Needle : MonoBehaviour {
 		lr.endWidth = 0.05f;
 	}
 
-	void LateUpdate() {
-		
+	void Update() {
+		if (Input.GetButtonDown("Fire1")) {
+			isShooted = true;
+		}
+	}
+
+	void LateUpdate() {		
 		DrawSpear();
 	}
 
 	void FixedUpdate() {
-		if (!isPinned) {
-			rb.MovePosition(rb.position + Vector2.up * speed * Time.fixedDeltaTime);
-			CheckDistanceToRotator();
+		if (isShooted) {
+			if (!isPinned) {
+				rb.MovePosition(rb.position + Vector2.up * speed * Time.fixedDeltaTime);
+				CheckDistanceToRotator();
+			}
 		}
 	}
 
 	void OnTriggerEnter2D (Collider2D col) {
-		if (!isPinned) {
+		if (!isPinned && isShooted) {
 			if (col.tag == "Pin") {
 				isPinned = true;
 				GameManager.instance.EndGame();
@@ -71,6 +79,7 @@ public class Needle : MonoBehaviour {
 				drawSpear = true;
 				isPinned = true;
 				GetComponent<CircleCollider2D>().isTrigger = false;
+				GameManager.instance.spawner.SpawnNeedle();
 			}
 		}
 	}
