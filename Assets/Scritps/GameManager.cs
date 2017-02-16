@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour {
 
 	public Animator animator;
 
+	public GameObject GameOverScreen;
+
 	public int score = 0;
 
 	public int currentLevel = 0;
@@ -41,7 +43,7 @@ public class GameManager : MonoBehaviour {
 		else if (instance != this) {
 			Destroy(gameObject);
 		}
-
+		GameOverScreen.SetActive(false);
 		int highscore = PlayerPrefs.GetInt("MaxScore");
 		maxScoreLabel.text =  highscore == 0 ? "" : "Max: " + highscore.ToString();
 		spawner.SetSpawnerType(gameType);
@@ -71,15 +73,21 @@ public class GameManager : MonoBehaviour {
 		animator.SetTrigger ("EndGame");
 	}
 
-	void Update() {
-		scoreLabel.text = score.ToString();
+	public void ShowGameOverScreen(){
+		GameOverScreen.SetActive(true);
 	}
 
 	public void RestartLevel () {
+		//TODO: reiniciar el level sin recargar la escena
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex  );
+		
+		GameOverScreen.SetActive(false);
 		score = 0;
 		gameHasEnded = false;
 		currentLevel = 0;
+	}
+	void Update() {
+		scoreLabel.text = score.ToString();
 	}
 
 	public void EvaluatePinnedNeedle(GameObject needleToPin, GameObject needleDestiny = null) {

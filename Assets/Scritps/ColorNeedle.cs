@@ -57,7 +57,7 @@ public class ColorNeedle : MonoBehaviour {
 
 	void OnTriggerEnter2D (Collider2D col) {
 
-		if (col.gameObject.tag == "Pin") {
+		if (col.gameObject.tag == "Pin" && isShooted) {
 			if (col.gameObject.name.Split('-')[1] != name.Split('-')[1]){
 				isPinned = true;
 				GameManager.instance.EndGame();						
@@ -130,8 +130,8 @@ public class ColorNeedle : MonoBehaviour {
 	}
 
 	public void Autodestroy() {
-		cc.enabled = false;
 		drawSpear = false;
+		cc.enabled = false;
 		StartCoroutine(AnimToDead());
 	}
 
