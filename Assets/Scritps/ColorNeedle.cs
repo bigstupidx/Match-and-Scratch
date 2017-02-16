@@ -57,8 +57,16 @@ public class ColorNeedle : MonoBehaviour {
 
 	void OnTriggerEnter2D (Collider2D col) {
 
+		if (col.gameObject.tag == "Pin") {
+			if (col.gameObject.name.Split('-')[1] != name.Split('-')[1]){
+				isPinned = true;
+				GameManager.instance.EndGame();						
+			}
+		}
 		if (!isPinned && isShooted) {
 			//Debug.Log ("<color=green>Procession Collision {" + name + "-" +  col.gameObject.name + "}</color>");
+
+
 
 			//transform.SetParent(rotator);
 			CheckCollisionWithPinnedNeedles();
