@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ColorNeedle : MonoBehaviour {
+	public const float TIME_TO_DESTROY = 0.2f;
+
 	public float speed = 20f;
 
 	private Rigidbody2D rb;
@@ -13,14 +15,14 @@ public class ColorNeedle : MonoBehaviour {
 	private bool drawSpear = false;
 
 	private Transform rotator;
-	private SpriteRenderer sr;
 	private LineRenderer lr;
+	private SpriteRenderer sr;
 
 	void Awake() {
 		rb = GetComponent<Rigidbody2D>();
 		cc = GetComponent<CircleCollider2D>();
+		sr = GetComponent<SpriteRenderer>();
 		rotator = GameObject.FindGameObjectWithTag("Rotator").transform;
-		sr  = GetComponent<SpriteRenderer>();
 		SetupLine();
 	}
 
@@ -56,41 +58,28 @@ public class ColorNeedle : MonoBehaviour {
 	void OnTriggerEnter2D (Collider2D col) {
 
 		if (!isPinned && isShooted) {
-			transform.SetParent(rotator);
+			//Debug.Log ("<color=green>Procession Collision {" + name + "-" +  col.gameObject.name + "}</color>");
+
+			//transform.SetParent(rotator);
 			CheckCollisionWithPinnedNeedles();
 			// Si despues de colocada, está a la suficiente distancia del rotator... la fijamos al rotator
-			if (CheckDistanceToRotator()) {
-				FixPosition(col.gameObject.transform, GameManager.instance.distanceOfPins);
+			if (col.tag == "Rotator") {
+				CheckDistanceToRotator();
 			}
-			GameManager.instance.PinNeedle(gameObject, col.gameObject);
-			isPinned = true;
-			GetComponent<CircleCollider2D>().isTrigger = false;
-			GameManager.instance.spawner.SpawnNeedle();
+			else {
+				SetNeedleAsPinned(col.gameObject);
+			}
 		}
-
-		Debug.Log ("<color=red>Colisión: " + name + " " +  col.gameObject.name + "</color>");
 	}
 	
 	bool CheckDistanceToRotator() {
-		float sqrDist = (rotator.position - transform.position).sqrMagnitude;
-
 		if (!isPinned) {
+			float sqrDist = (rotator.position - transform.position).sqrMagnitude;
 			if ( sqrDist <= (GameManager.instance.distanceOfPins * GameManager.instance.distanceOfPins) ) {
-
-
 				CheckCollisionWithPinnedNeedles();
 				FixPosition(rotator, GameManager.instance.distanceOfPins);
-
-				transform.SetParent(rotator);
-
-				if (GameManager.instance.gameType == GameType.Free)
-					sr.color = Color.black;
-
-				GetComponent<CircleCollider2D>().isTrigger = false;
-				GameManager.instance.spawner.SpawnNeedle();
 				drawSpear = true;
-				isPinned = true;
-				GameManager.instance.PinNeedle(gameObject);
+				SetNeedleAsPinned();
 				return true;
 			}
 		}
@@ -100,9 +89,8 @@ public class ColorNeedle : MonoBehaviour {
 	void CheckCollisionWithPinnedNeedles() {
 		foreach (GameObject cn in GameObject.FindGameObjectsWithTag("Pin")){
 			if ( cn.GetComponent<ColorNeedle>().isPinned ) {
-				// offset = (radio1 * escala_objeto1) + (radio2 * escala_objeto2)
+				// dist es la suma de los radios => dist = (radio1 * escala_objeto1) + (radio2 * escala_objeto2)
 				float dist = (cn.transform.lossyScale.x * cn.GetComponent<CircleCollider2D>().radius) + (transform.lossyScale.x * cc.radius);
-
 				if ( (transform.position - cn.transform.position).sqrMagnitude <= (dist * dist)) {
 					FixPosition(cn.transform, dist);
 				}
@@ -110,6 +98,15 @@ public class ColorNeedle : MonoBehaviour {
 		}
 	}
 
+	void SetNeedleAsPinned(GameObject lastTouchedNeedle = null) {
+		isPinned = true;
+		GetComponent<CircleCollider2D>().isTrigger = false;
+		transform.SetParent(rotator);
+
+		GameManager.instance.EvaluatePinnedNeedle(gameObject, lastTouchedNeedle);
+		GameManager.instance.spawner.SpawnNeedle();
+	}
+	
 	void FixPosition(Transform pinnedNeedle, float distOffset = 0f) {
 		transform.position = pinnedNeedle.position + (transform.position - pinnedNeedle.position).normalized * distOffset;
 	}
@@ -117,10 +114,30 @@ public class ColorNeedle : MonoBehaviour {
 	void DrawSpear() {
 		if (drawSpear ) {
 			lr.numPositions = 2;
-			lr.SetPosition(0, transform.position);//Vector3.zero);
-			lr.SetPosition(1, rotator.position);//transform.worldToLocalMatrix.MultiplyPoint(rotator.position));
+			lr.SetPosition(0, transform.position);
+			lr.SetPosition(1, rotator.position);
 		}
 		else
 			lr.numPositions = 0;
+	}
+
+	public void Autodestroy() {
+		cc.enabled = false;
+		drawSpear = false;
+		StartCoroutine(AnimToDead());
+	}
+
+	public IEnumerator AnimToDead() {
+
+		float t = 1f;
+		while (t > 0f) {
+			t -= Time.deltaTime/TIME_TO_DESTROY;
+			transform.localScale *= 1.13f;
+			sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, t);
+			yield return null;
+		}
+		
+		Destroy(gameObject);
+
 	}
 }
