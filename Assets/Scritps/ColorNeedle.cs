@@ -29,7 +29,7 @@ public class ColorNeedle : MonoBehaviour {
 	void SetupLine() {
 		Color parentColor = GetComponent<SpriteRenderer>().color;
 		lr = gameObject.AddComponent<LineRenderer>();
-		lr.material = new Material(Shader.Find("Particles/Alpha Blended Premultiply"));
+		lr.material = new Material(Shader.Find("Sprites/Default"));
 		lr.startColor = parentColor;
 		lr.endColor = parentColor;
 		lr.startWidth = 0.05f;
@@ -62,6 +62,7 @@ public class ColorNeedle : MonoBehaviour {
 			//Debug.Log ("<color=green>Procession Collision {" + name + "-" +  col.gameObject.name + "}</color>");
 			if (col.gameObject.tag == "Pin") {
 				if (col.gameObject.name.Split('-')[1] != name.Split('-')[1]){
+					CheckCollisionWithPinnedNeedles();
 					GameManager.instance.EndGame();
 					isPinned = true;
 					return;

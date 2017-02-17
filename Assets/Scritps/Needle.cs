@@ -71,7 +71,7 @@ public class Needle : MonoBehaviour {
 				transform.SetParent(rotator);
 
 				if (!GameManager.instance.gameHasEnded)
-					GameManager.instance.score++;
+					GameManager.instance.Score++;
 
 				if (GameManager.instance.gameType == GameType.Free)
 					sr.color = Color.black;

@@ -27,7 +27,7 @@ public class Pin : MonoBehaviour {
 			transform.SetParent(col.transform);
 
 			if (!GameManager.instance.gameHasEnded)
-				GameManager.instance.score++;
+				GameManager.instance.Score++;
 
 			GetComponent<CircleCollider2D>().isTrigger = false;
 			isPinned = true;

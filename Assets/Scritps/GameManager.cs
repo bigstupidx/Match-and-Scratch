@@ -14,15 +14,18 @@ public class GameManager : MonoBehaviour {
 	public static GameManager instance = null;
 	public GameType gameType;
 
+	public Color[] posibleColors;
+
 	public Rotator rotator;
 	public Spawner spawner;
 
 	public Animator animator;
 
 	public GameObject GameOverScreen;
+	public Text levelUpText;
 
 	public int currentLevel = 0;
-	public int score = 0;
+	public int colorsCountRoof;
 
 	public float distanceOfPins = 2f;
 
@@ -30,6 +33,10 @@ public class GameManager : MonoBehaviour {
 	public Text maxScoreLabel;
 
 	public bool gameHasEnded = false;
+
+	private int score = 0;
+	public int Score {get; set;}
+	private int lastScore = 0;
 
 	/*** gameType = match-three ***/
 	List<List<GameObject>> colorGroups;
@@ -54,6 +61,7 @@ public class GameManager : MonoBehaviour {
 				colorGroups.Clear();
 			break;
 		}
+		colorsCountRoof = posibleColors.Length;
 		spawner.SpawnNeedle();
 	}
 
@@ -88,6 +96,7 @@ public class GameManager : MonoBehaviour {
 	}
 	void Update() {
 		scoreLabel.text = score.ToString();
+		colorsCountRoof = currentLevel + 3;
 	}
 
 	public void EvaluatePinnedNeedle(GameObject needleToPin, GameObject needleDestiny = null) {
@@ -107,7 +116,6 @@ public class GameManager : MonoBehaviour {
 					colorGroupId = i;
 				}
 			}
-
 			// Si hemos localizado un grupo en el que ya existe el último tocado, metemos el nuevo es ese grupo.
 			if (colorGroupId >= 0) {
 				colorGroups[colorGroupId].Add(needleToPin);
@@ -118,6 +126,23 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 		EvaluateColorGroups();
+		CheckDifficulty();
+	}
+
+	void CheckDifficulty() {
+		if (lastScore != score) {
+			if (score > 0 ) {
+				if (score % 5 == 0) {
+					LevelUp ();
+				}
+			}
+			lastScore = score;
+		}
+	}
+
+	void LevelUp() {
+		currentLevel++;
+		levelUpText.GetComponent<Animator>().SetTrigger("levelup");
 	}
 
 	void CreateColorGroup(GameObject go) {
@@ -141,7 +166,6 @@ public class GameManager : MonoBehaviour {
 			spawner.SpawnNeedle();
 		}
 		else {
-
 			foreach(int i in groupsToDestroy) {
 				// ...los objetos que contiene...
 				StartCoroutine(DestroyElementsFromGroup(colorGroups[i]));
