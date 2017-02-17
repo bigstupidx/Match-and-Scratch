@@ -21,11 +21,10 @@ public class GameManager : MonoBehaviour {
 
 	public GameObject GameOverScreen;
 
+	public int currentLevel = 0;
 	public int score = 0;
 
-	public int currentLevel = 0;
-
-	public float distanceOfPins = 8f;
+	public float distanceOfPins = 2f;
 
 	public Text scoreLabel;
 	public Text maxScoreLabel;
@@ -71,6 +70,7 @@ public class GameManager : MonoBehaviour {
 
 		gameHasEnded = true;
 		animator.SetTrigger ("EndGame");
+		spawner.enabled = false;
 	}
 
 	public void ShowGameOverScreen(){
@@ -79,12 +79,12 @@ public class GameManager : MonoBehaviour {
 
 	public void RestartLevel () {
 		//TODO: reiniciar el level sin recargar la escena
-		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex  );
-		
+		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex  );		
 		GameOverScreen.SetActive(false);
 		score = 0;
 		gameHasEnded = false;
 		currentLevel = 0;
+		spawner.enabled = true;
 	}
 	void Update() {
 		scoreLabel.text = score.ToString();
@@ -117,7 +117,6 @@ public class GameManager : MonoBehaviour {
 				Debug.Log ("<color=red>Error WTF(1): Esto no debería suceder</color>");
 			}
 		}
-
 		EvaluateColorGroups();
 	}
 
@@ -133,19 +132,24 @@ public class GameManager : MonoBehaviour {
 		// Si encontramos un grupo de mas de dos miembreo del mismo color...
 		for(int i = 0; i < colorGroups.Count; i++) {
 			if (colorGroups[i].Count > 2) {
-				// ...los objetos que contiene...
-				StartCoroutine(DestroyElementsFromGroup(colorGroups[i]));
 				// ...eliminamos el grupo.
 				groupsToDestroy.Add(i);
 			}			
 		}
 
-		foreach(int i in groupsToDestroy) {
-			colorGroups.RemoveAt(i);
-			score++;
+		if (groupsToDestroy.Count <= 0){
+			spawner.SpawnNeedle();
 		}
+		else {
 
-		//PrintColorGroupsLog();
+			foreach(int i in groupsToDestroy) {
+				// ...los objetos que contiene...
+				StartCoroutine(DestroyElementsFromGroup(colorGroups[i]));
+				colorGroups.RemoveAt(i);
+				score++;
+			}
+			StartCoroutine(SpawnNeedleWithDelay(groupsToDestroy.Count * ColorNeedle.TIME_TO_DESTROY));
+		}
 	}
 
 	IEnumerator DestroyElementsFromGroup(List<GameObject> listGo) {
@@ -155,6 +159,10 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	IEnumerator SpawnNeedleWithDelay(float delay) {
+		yield return new WaitForSeconds(delay);
+		spawner.SpawnNeedle();
+	}
 
 
 

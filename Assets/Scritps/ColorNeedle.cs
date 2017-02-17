@@ -57,26 +57,24 @@ public class ColorNeedle : MonoBehaviour {
 
 	void OnTriggerEnter2D (Collider2D col) {
 
-		if (col.gameObject.tag == "Pin" && isShooted) {
-			if (col.gameObject.name.Split('-')[1] != name.Split('-')[1]){
-				isPinned = true;
-				GameManager.instance.EndGame();						
-			}
-		}
+
 		if (!isPinned && isShooted) {
 			//Debug.Log ("<color=green>Procession Collision {" + name + "-" +  col.gameObject.name + "}</color>");
-
-
-
-			//transform.SetParent(rotator);
-			CheckCollisionWithPinnedNeedles();
+			if (col.gameObject.tag == "Pin") {
+				if (col.gameObject.name.Split('-')[1] != name.Split('-')[1]){
+					GameManager.instance.EndGame();
+					isPinned = true;
+					return;
+				}
+				else {
+					CheckCollisionWithPinnedNeedles();
+					SetNeedleAsPinned(col.gameObject);
+				}
+			}
 			// Si despues de colocada, está a la suficiente distancia del rotator... la fijamos al rotator
-			if (col.tag == "Rotator") {
+			/*else if (col.tag == "Rotator") {
 				CheckDistanceToRotator();
-			}
-			else {
-				SetNeedleAsPinned(col.gameObject);
-			}
+			}*/
 		}
 	}
 	
@@ -112,7 +110,7 @@ public class ColorNeedle : MonoBehaviour {
 		transform.SetParent(rotator);
 
 		GameManager.instance.EvaluatePinnedNeedle(gameObject, lastTouchedNeedle);
-		GameManager.instance.spawner.SpawnNeedle();
+		//GameManager.instance.spawner.SpawnNeedle();
 	}
 	
 	void FixPosition(Transform pinnedNeedle, float distOffset = 0f) {
