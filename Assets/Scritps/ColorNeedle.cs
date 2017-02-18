@@ -12,7 +12,7 @@ public class ColorNeedle : MonoBehaviour {
 
 	public bool isShooted = false;
 	public bool isPinned = false;
-	private bool drawSpear = false;
+	public bool drawSpear = false;
 
 	private Transform rotator;
 	private LineRenderer lr;
@@ -24,6 +24,11 @@ public class ColorNeedle : MonoBehaviour {
 		sr = GetComponent<SpriteRenderer>();
 		rotator = GameObject.FindGameObjectWithTag("Rotator").transform;
 		SetupLine();
+	}
+
+	void OnEnable() {
+		if (lr == null)
+			lr = GetComponent<LineRenderer>();
 	}
 
 	void SetupLine() {
