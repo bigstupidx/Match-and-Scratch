@@ -99,34 +99,35 @@ public class GameManager : MonoBehaviour {
 		colorsCountRoof = currentLevel + 3;
 	}
 
-	public void EvaluatePinnedNeedle(GameObject needleToPin, GameObject needleDestiny = null) {
-		if (needleDestiny == null) {
+	public void EvaluatePinnedNeedle(GameObject needleToPin, List<GameObject> touchedPins) {
+		/*
+		if (needleDestiny == null) { // Si la colisión es con el rotator
 			CreateColorGroup(needleToPin);
-			//Debug.Log ("<color=yellow> no hay needleDestiny</color>");
 		}
-		else if ( needleToPin.name.Split('-')[1] != needleDestiny.name.Split('-')[1] ){
+		else if ( needleToPin.name.Split('-')[1] != needleDestiny.name.Split('-')[1] ){// Si la colisión es con una burbuja de distinto color
 			CreateColorGroup(needleToPin);
-			//Debug.Log ("<color=yellow>needleDestiny != color</color>");
 		}
 		else {
-			// Buscamos el grupo en el que ya esté el ultimo objeto que hemos tocado
+			// Buscamos el grupo en el que ya esté el ultimo objeto que hemos tocado...
 			int colorGroupId = -1;
 			for (int i = 0; i < colorGroups.Count && colorGroupId == -1; i++){
 				if (colorGroups[i].Find(c => c.name == needleDestiny.name) ) {
 					colorGroupId = i;
 				}
 			}
-			// Si hemos localizado un grupo en el que ya existe el último tocado, metemos el nuevo es ese grupo.
-			if (colorGroupId >= 0) {
+
+			if (colorGroupId >= 0) {// ... Si hemos localizado un grupo en el que ya existe el último tocado, metemos el nuevo es ese grupo.
 				colorGroups[colorGroupId].Add(needleToPin);
 			}
-			else{// Si no hemos encontrado el ultimo objeto colisionado en ningún grupo... creamos unos nuevo con el objeto a pinear
+			else{// ... Si no hemos encontrado el ultimo objeto colisionado en ningún grupo... creamos unos nuevo con el objeto a pinear
 				CreateColorGroup(needleToPin);
 				Debug.Log ("<color=red>Error WTF(1): Esto no debería suceder</color>");
 			}
 		}
+		*/
 		EvaluateColorGroups();
 		CheckDifficulty();
+
 	}
 
 	void CheckDifficulty() {
@@ -148,6 +149,11 @@ public class GameManager : MonoBehaviour {
 	void CreateColorGroup(GameObject go) {
 		List<GameObject> goList = new List<GameObject>();
 		goList.Add(go);
+		colorGroups.Add(goList);
+	}
+
+	void CreateColorGroup(List<GameObject> gos) {
+		List<GameObject> goList = new List<GameObject>(gos);
 		colorGroups.Add(goList);
 	}
 
