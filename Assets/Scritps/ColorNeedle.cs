@@ -45,6 +45,7 @@ public class ColorNeedle : MonoBehaviour {
 		if (Input.GetButtonDown("Fire1")) {
 			isShooted = true;
 		}
+
 	}
 
 	void LateUpdate() {		
