@@ -60,7 +60,6 @@ public class ColorNeedle : MonoBehaviour {
 	void Update () {
 		if (Input.GetButtonDown("Fire1")) {
 			isShooted = true;
-			//canEvaluateCollision = true;
 		}
 	}
 
@@ -69,107 +68,69 @@ public class ColorNeedle : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		if (isShooted) {
-			if (!isPinned) {
-				rb.MovePosition(rb.position + Vector2.up * speed * Time.fixedDeltaTime);
-				CheckDistanceToRotator();
-			}
-			if (canEvaluateCollision) {
-				Debug.Log ("<color=yellow> " + gameObject.name + "colisiona con: " + collisions.Count.ToString() + "[" + collisions.ListaAsString() + "]</color>");
+		if (isShooted && !isPinned)
+			rb.MovePosition(rb.position + Vector2.up * speed * Time.fixedDeltaTime);
 
-				PositionCorrection();
-				SetNeedleAsPinned();
+		if (canEvaluateCollision) {
+			if (collisions.Count <= 0) {
 				canEvaluateCollision = false;
-
-				//TODO: uncomment this
-				//GameManager.instance.EvaluatePinnedNeedle(gameObject, collisions);
-
-				//TODO: comment or delete this
+				SetNeedleAsPinned();
 				GameManager.instance.spawner.SpawnNeedle();
 			}
+			PositionCorrection();
+			Debug.Log ("<color=yellow> " + gameObject.name + "colisiona con: " + collisions.Count.ToString() + "[" + collisions.ListaAsString() + "]</color>");
+
+			//TODO: uncomment this
+			//GameManager.instance.EvaluatePinnedNeedle(gameObject, collisions);
+			
+			//TODO: comment or delete this
+
 		}
 	}
 
 	void OnTriggerEnter2D (Collider2D col) {
-		if (!isPinned && isShooted) {
-			if (!collisions.Contains (col.gameObject)) {
-				collisions.Add(col.gameObject);
-				canEvaluateCollision = true;
+		if ( isShooted && !isPinned) {
+			if (col.gameObject.tag == "Rotator") {
+				AddToMyCollisions(col.gameObject);
 			}
-		}
-/*
-		if (!isPinned && isShooted) {
-			//Debug.Log ("<color=green>Procession Collision {" + name + "-" +  col.gameObject.name + "}</color>");
-			if (col.gameObject.tag == "Pin") {
-				if (col.gameObject.name.Split('-')[1] != name.Split('-')[1]){
-					CheckCollisionWithPinnedNeedles();
-					GameManager.instance.EndGame();
-					isPinned = true;
-					return;
-				}
-				else {
-					CheckCollisionWithPinnedNeedles();
-					SetNeedleAsPinned(col.gameObject);
-				}
-			}
-			// Si despues de colocada, está a la suficiente distancia del rotator... la fijamos al rotator
-			/ * else if (col.tag == "Rotator") {
-				CheckDistanceToRotator();
-			} * /
-		}
-*/
-	}
-	
-	void CheckDistanceToRotator() {
-		if (!isPinned) {
-			float sqrDist = (rotator.position - transform.position).sqrMagnitude;
-			if ( sqrDist <= (GameManager.instance.distanceOfPins * GameManager.instance.distanceOfPins) ) {
-				if (collisions.Count == 0) {
-					if (!collisions.Contains (rotator.gameObject)) {
-						collisions.Add(rotator.gameObject);
-						FixPosition(rotator, GameManager.instance.distanceOfPins);
-						drawSpear = true;
-						SetNeedleAsPinned();
-						canEvaluateCollision = true;
-					}
+			else if (col.gameObject.tag == "Pin") {
+				if (col.gameObject.GetComponent<ColorNeedle>().isShooted && col.gameObject.GetComponent<ColorNeedle>().isPinned) {
+					AddToMyCollisions(col.gameObject);
 				}
 			}
 		}
 	}
-/*
-	void CheckCollisionWithPinnedNeedles() {
-		foreach (GameObject cn in GameObject.FindGameObjectsWithTag("Pin")){
-			if ( cn.GetComponent<ColorNeedle>().isPinned ) {
-				// dist es la suma de los radios => dist = (radio1 * escala_objeto1) + (radio2 * escala_objeto2)
-				float dist = (cn.transform.lossyScale.x * cn.GetComponent<CircleCollider2D>().radius) + (transform.lossyScale.x * cc.radius);
-				if ( (transform.position - cn.transform.position).sqrMagnitude <= (dist * dist)) {
-					FixPosition(cn.transform, dist);
-				}
-			}
+
+	void AddToMyCollisions(GameObject go) {
+		if (!collisions.Contains(go)) {
+			collisions.Add(go);
+			canEvaluateCollision = true;
 		}
 	}
-*/
+
 	void SetNeedleAsPinned(GameObject lastTouchedNeedle = null) {
 		isPinned = true;
 		GetComponent<CircleCollider2D>().isTrigger = false;
 		transform.SetParent(rotator);
-
 		//GameManager.instance.EvaluatePinnedNeedle(gameObject, lastTouchedNeedle);
 	}
 	
 	void PositionCorrection() {
 		switch (collisions.Count) {
 			case 1:
-				FixPosition( collisions[0].transform, GetDistanceBetween(collisions[0], gameObject));
+				FixPosition( collisions[0].transform, SumRadius(collisions[0], gameObject));
+				if ( collisions[0].tag == "Rotator" ) {
+					drawSpear = true;
+				}
+				collisions.RemoveAt(0);
 			break;
-			case 2:
-					
+			case 2:					
 				Vector2 A = collisions[0].transform.position;
 				Vector2 B = collisions[1].transform.position;
 
-				float La = GetDistanceBetween(collisions[0], collisions[1]); // calcular la distancia entre los dos puntos (no sumando los radios).
-				float Lb = GetDistanceBetween(collisions[1], gameObject);    // calcular la distancia entre los dos puntos (no sumando los radios).
-				float Lc = GetDistanceBetween(gameObject, collisions[0]);    // calcular la distancia entre los dos puntos (no sumando los radios).
+				float La = Vector3.Distance(collisions[0].transform.position, collisions[1].transform.position); // calcular la distancia entre los dos puntos (no sumando los radios).
+				float Lb = SumRadius(collisions[1], gameObject); //SumRadius(collisions[1], gameObject);    // calcular la distancia entre los dos puntos (no sumando los radios).
+				float Lc = SumRadius(gameObject, collisions[0]); //SumRadius(gameObject, collisions[0]);    // calcular la distancia entre los dos puntos (no sumando los radios).
 
 				float arCos_AB_AC = (Lb*Lb + Lc*Lc - La*La) / 2*Lb*Lc;
 				float a = Mathf.Cos(arCos_AB_AC);
@@ -177,7 +138,9 @@ public class ColorNeedle : MonoBehaviour {
 				float arSin_AV_x = (A.y - B.y) / La;
 				float b = Mathf.Sin(arSin_AV_x);
 
-				transform.position = new Vector3 ( A.x + (Lc * Mathf.Cos(a + b)), A.y + (Lc * Mathf.Sin(a + b)), 0 );
+				transform.position = new Vector3 ( A.x + (Lc * Mathf.Cos(a - b)), A.y + (Lc * Mathf.Sin(a - b)), 0 );
+				collisions.RemoveAt(1);
+				collisions.RemoveAt(0);
 			break;
 			default:
 				Debug.Log("<color=red> Exceso de colisiones: " + collisions.Count + " [" + collisions.ListaAsString() + "]</color>");
@@ -185,14 +148,12 @@ public class ColorNeedle : MonoBehaviour {
 		}
 	}
 
-	float GetDistanceBetween(GameObject A, GameObject B) {
-
-		float distanceBetween =  (A.transform.lossyScale.x * A.GetComponent<CircleCollider2D>().radius) + (B.transform.lossyScale.x * B.GetComponent<CircleCollider2D>().radius);		
-		return A.tag == "Rotator" ? GameManager.instance.distanceOfPins : distanceBetween;
+	float SumRadius(GameObject A, GameObject B) {
+		return  (A.transform.lossyScale.x * A.GetComponent<CircleCollider2D>().radius) + (B.transform.lossyScale.x * B.GetComponent<CircleCollider2D>().radius);		
 	}
 
 	void FixPosition(Transform pinnedNeedle, float distOffset = 0f) {
-		transform.position = pinnedNeedle.position + (transform.position - pinnedNeedle.position).normalized * distOffset;
+		transform.position = pinnedNeedle.position + (transform.position - pinnedNeedle.position).normalized * (distOffset);
 	}
 
 	void DrawSpear() {

@@ -65,9 +65,9 @@ public class Needle : MonoBehaviour {
 		Debug.Log("Distance to rotator: " + dist.ToString());
 
 		if (!isPinned) {
-			if ( dist <= GameManager.instance.distanceOfPins ) {
+			if ( dist <= rotator.GetComponent<CircleCollider2D>().radius * rotator.transform.lossyScale.x ) {
 
-				FixPosition(rotator, GameManager.instance.distanceOfPins);
+				FixPosition(rotator, rotator.GetComponent<CircleCollider2D>().radius * rotator.transform.lossyScale.x);
 				transform.SetParent(rotator);
 
 				if (!GameManager.instance.gameHasEnded)

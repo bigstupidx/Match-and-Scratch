@@ -27,8 +27,6 @@ public class GameManager : MonoBehaviour {
 	public int currentLevel = 0;
 	public int colorsCountRoof;
 
-	public float distanceOfPins = 2f;
-
 	public Text scoreLabel;
 	public Text maxScoreLabel;
 
