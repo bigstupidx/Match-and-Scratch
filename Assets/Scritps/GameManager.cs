@@ -4,15 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public enum GameType {
-	Free,
-	MatchThree
-}
-
 public class GameManager : MonoBehaviour {
 
 	public static GameManager instance = null;
-	public GameType gameType;
 
 	public Color[] posibleColors;
 
@@ -50,15 +44,12 @@ public class GameManager : MonoBehaviour {
 		GameOverScreen.SetActive(false);
 		int highscore = PlayerPrefs.GetInt("MaxScore");
 		maxScoreLabel.text =  highscore == 0 ? "" : "Max: " + highscore.ToString();
-		spawner.SetSpawnerType(gameType);
-		switch (gameType) {
-			case GameType.MatchThree:
-				if (colorGroups == null) {
-					colorGroups = new List<List<GameObject>>();
-				}
-				colorGroups.Clear();
-			break;
+
+		if (colorGroups == null) {
+			colorGroups = new List<List<GameObject>>();
 		}
+		colorGroups.Clear();
+
 		colorsCountRoof = posibleColors.Length;
 		spawner.SpawnNeedle();
 	}

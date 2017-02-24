@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Rotator : MonoBehaviour {
+public class Rotator : Circumference {
 
 	public float speed = 100f;
 
-	void Update() {
+	void FixedUpdate() {
 		transform.Rotate(0f, 0f, speed * Time.deltaTime);
 	}
 }

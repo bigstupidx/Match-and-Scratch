@@ -2,25 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-public static class ExtensionMethods {
-	
+public static class ExtensionMethods {	
 	public static string ListaAsString(this List<GameObject> list) {
 		string ret = "";
 		for (int i = 0; i < list.Count; i++) {
 			ret += list[i].name;
-			if (i < list.Count -1)
-				ret += ", ";
+			if (i < list.Count -1) ret += ", ";
 		}
 		return ret;
 	}
 }
 
-public class ColorNeedle : MonoBehaviour {
+public class ColorNeedle : Circumference {
 	public const float TIME_TO_DESTROY = 0.2f;
-
-	private Rigidbody2D rb;
-	private CircleCollider2D cc;
 
 	public float speed = 20f;
 	public bool isShooted = false;
@@ -28,23 +22,38 @@ public class ColorNeedle : MonoBehaviour {
 	public bool drawSpear = false;
 
 	private bool canEvaluateCollision = false;
-	private List<GameObject> collisions = new List<GameObject>();
-	
+	private List<GameObject> collisions = new List<GameObject>();	
 	private Transform rotator;
+	private Rigidbody2D rb;
 	private LineRenderer lr;
 	private SpriteRenderer sr;
 
-	void Awake() {
+	private List<GizmoToDraw> gizmosToDraw = new List<GizmoToDraw>();
+
+	void OnDrawGizmos() {
+		foreach (GizmoToDraw gtd in gizmosToDraw) {
+			switch (gtd.gizmoType) {
+			case GizmoType.line:
+				Gizmos.color = gtd.color;
+				Gizmos.DrawLine(gtd.from, gtd.to);
+				break;
+			case GizmoType.sphere:
+				Gizmos.color = gtd.color;
+				Gizmos.DrawWireSphere(gtd.from, gtd.size);
+				break;
+			}
+		}
+	}
+
+	public override void Initialize() {
 		rb = GetComponent<Rigidbody2D>();
-		cc = GetComponent<CircleCollider2D>();
 		sr = GetComponent<SpriteRenderer>();
 		rotator = GameObject.FindGameObjectWithTag("Rotator").transform;
 		SetupLine();
 	}
 
 	void OnEnable() {
-		if (lr == null)
-			lr = GetComponent<LineRenderer>();
+		if (lr == null)	lr = GetComponent<LineRenderer>();
 	}
 
 	void SetupLine() {
@@ -57,35 +66,28 @@ public class ColorNeedle : MonoBehaviour {
 		lr.endWidth = 0.05f;
 	}
 
-	void Update () {
-		if (Input.GetButtonDown("Fire1")) {
-			isShooted = true;
-		}
-	}
-
-	void LateUpdate() {		
-		DrawSpear();
-	}
-
 	void FixedUpdate() {
+		if (!isShooted) 
+			if (Input.GetButtonDown("Fire1")) isShooted = true;
+
 		if (isShooted && !isPinned)
 			rb.MovePosition(rb.position + Vector2.up * speed * Time.fixedDeltaTime);
 
 		if (canEvaluateCollision) {
-			if (collisions.Count <= 0) {
-				canEvaluateCollision = false;
+			if (collisions.Count > 0) {
+				Debug.Log ("<color=yellow> " + gameObject.name + "colisiona con: " + collisions.Count.ToString() + "[" + collisions.ListaAsString() + "]</color>");
+				PositionCorrection();
+			}
+			else {				
 				SetNeedleAsPinned();
+				canEvaluateCollision = false;
 				GameManager.instance.spawner.SpawnNeedle();
 			}
-			PositionCorrection();
-			Debug.Log ("<color=yellow> " + gameObject.name + "colisiona con: " + collisions.Count.ToString() + "[" + collisions.ListaAsString() + "]</color>");
-
 			//TODO: uncomment this
 			//GameManager.instance.EvaluatePinnedNeedle(gameObject, collisions);
-			
-			//TODO: comment or delete this
-
 		}
+
+		DrawSpear();
 	}
 
 	void OnTriggerEnter2D (Collider2D col) {
@@ -94,7 +96,7 @@ public class ColorNeedle : MonoBehaviour {
 				AddToMyCollisions(col.gameObject);
 			}
 			else if (col.gameObject.tag == "Pin") {
-				if (col.gameObject.GetComponent<ColorNeedle>().isShooted && col.gameObject.GetComponent<ColorNeedle>().isPinned) {
+				if (/*col.gameObject.GetComponent<ColorNeedle>().isShooted && */col.gameObject.GetComponent<ColorNeedle>().isPinned) {
 					AddToMyCollisions(col.gameObject);
 				}
 			}
@@ -112,23 +114,34 @@ public class ColorNeedle : MonoBehaviour {
 		isPinned = true;
 		GetComponent<CircleCollider2D>().isTrigger = false;
 		transform.SetParent(rotator);
-		//GameManager.instance.EvaluatePinnedNeedle(gameObject, lastTouchedNeedle);
+	}
+
+	void DrawTheGizmo(GizmoToDraw g) {
+		if (!gizmosToDraw.Contains(g))
+			gizmosToDraw.Add(g);
 	}
 	
 	void PositionCorrection() {
 		switch (collisions.Count) {
 			case 1:
+				transform.SetParent(rotator);
 				FixPosition( collisions[0].transform, SumRadius(collisions[0], gameObject));
 				if ( collisions[0].tag == "Rotator" ) {
 					drawSpear = true;
 				}
 				collisions.RemoveAt(0);
+				transform.SetParent(null);
 			break;
-			case 2:					
-				Vector2 A = collisions[0].transform.position;
-				Vector2 B = collisions[1].transform.position;
+			case 2:
 
-				float La = Vector3.Distance(collisions[0].transform.position, collisions[1].transform.position); // calcular la distancia entre los dos puntos (no sumando los radios).
+				Vector3 A = collisions[0].transform.position;
+				Vector3 B = collisions[1].transform.position;
+
+				DrawTheGizmo (new GizmoToDraw(GizmoType.sphere, collisions[0].transform.position, collisions[0].GetComponent<Circumference>().radius * collisions[0].transform.lossyScale.x, Color.blue));
+				DrawTheGizmo (new GizmoToDraw(GizmoType.sphere, collisions[1].transform.position, collisions[1].GetComponent<Circumference>().radius * collisions[1].transform.lossyScale.x, Color.blue));
+
+
+				float La = Vector3.Distance(A, B); // calcular la distancia entre los dos puntos (no sumando los radios).
 				float Lb = SumRadius(collisions[1], gameObject); //SumRadius(collisions[1], gameObject);    // calcular la distancia entre los dos puntos (no sumando los radios).
 				float Lc = SumRadius(gameObject, collisions[0]); //SumRadius(gameObject, collisions[0]);    // calcular la distancia entre los dos puntos (no sumando los radios).
 
@@ -139,21 +152,52 @@ public class ColorNeedle : MonoBehaviour {
 				float b = Mathf.Sin(arSin_AV_x);
 
 				transform.position = new Vector3 ( A.x + (Lc * Mathf.Cos(a - b)), A.y + (Lc * Mathf.Sin(a - b)), 0 );
+
+				DrawTheGizmo (new GizmoToDraw(GizmoType.sphere, transform.position, radius * transform.lossyScale.x, Color.blue));
+/*
+				// 1
+				float AB = Vector3.Distance (collisions[1].transform.position, collisions[0].transform.position);
+				// 2
+				Debug.Assert(AB <= 4 * radius * transform.lossyScale.x);
+				// 3	
+				Vector2 H = new Vector2( collisions[0].transform.position.x + ((collisions[1].transform.position.x - collisions[0].transform.position.x)/2),
+			    	                     collisions[0].transform.position.y + ((collisions[1].transform.position.y - collisions[0].transform.position.y)/2)
+			                           );
+				// 4
+				Vector2 HC_perp_norm = new Vector2( -(collisions[1].transform.position.y - collisions[0].transform.position.y) / AB, 
+			    	                               (collisions[1].transform.position.x - collisions[0].transform.position.x) / AB );
+				// 5		                           
+				float HC = 0.5f * Mathf.Sqrt( (16*(radius * radius)) - (AB*AB) );
+
+                transform.position = new Vector3 (H.x + (HC * HC_perp_norm.x), H.y + (HC * HC_perp_norm.y), 0);
+*/	
 				collisions.RemoveAt(1);
 				collisions.RemoveAt(0);
 			break;
-			default:
+			default:				
 				Debug.Log("<color=red> Exceso de colisiones: " + collisions.Count + " [" + collisions.ListaAsString() + "]</color>");
 			break;
 		}
 	}
 
 	float SumRadius(GameObject A, GameObject B) {
-		return  (A.transform.lossyScale.x * A.GetComponent<CircleCollider2D>().radius) + (B.transform.lossyScale.x * B.GetComponent<CircleCollider2D>().radius);		
+		float radA = A.transform.lossyScale.x * GetRadius(A);
+		float radB = B.transform.lossyScale.x * GetRadius(B);
+		return  (radA + radB);		
+	}
+
+	float GetRadius(GameObject g) {
+		float rad = 0f;
+		rad = g.GetComponent<Circumference>().radius;
+		return rad;
 	}
 
 	void FixPosition(Transform pinnedNeedle, float distOffset = 0f) {
-		transform.position = pinnedNeedle.position + (transform.position - pinnedNeedle.position).normalized * (distOffset);
+		DrawTheGizmo(new GizmoToDraw(GizmoType.sphere, pinnedNeedle.position, pinnedNeedle.gameObject.GetComponent<Circumference>().radius * transform.lossyScale.x, Color.gray));
+		DrawTheGizmo(new GizmoToDraw(GizmoType.sphere, transform.position, radius * transform.lossyScale.x, Color.yellow));
+		transform.position = pinnedNeedle.position + ((transform.position - pinnedNeedle.position).normalized * distOffset);
+		DrawTheGizmo(new GizmoToDraw(GizmoType.sphere, transform.position, radius * transform.lossyScale.x, Color.red));
+		DrawTheGizmo(new GizmoToDraw(GizmoType.sphere, pinnedNeedle.position, pinnedNeedle.gameObject.GetComponent<Circumference>().radius * transform.lossyScale.x, Color.gray));
 	}
 
 	void DrawSpear() {
@@ -180,9 +224,7 @@ public class ColorNeedle : MonoBehaviour {
 			transform.localScale *= 1.13f;
 			sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, t);
 			yield return null;
-		}
-		
+		}		
 		Destroy(gameObject);
-
 	}
 }
