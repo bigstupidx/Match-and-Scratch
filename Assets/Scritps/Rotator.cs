@@ -19,32 +19,29 @@ public class Rotator : Circumference {
 		transform.Rotate(0f, 0f, speed * Time.deltaTime);
 	}
 
-	public void AddPin(GameObject pin) {
-		Reposition(pin);
-		pins.Add(pin);
+	public void AddPin(GameObject newPin) {
+		ColorNeedle cn =newPin.GetComponent<ColorNeedle>();
 
-		ColorNeedle cn =pin.GetComponent<ColorNeedle>();
+		Reposition(newPin);
+		pins.Add(newPin);
 		cn.GetComponent<CircleCollider2D>().isTrigger = false;
 		cn.isPinned = true;
-		pin.transform.SetParent(transform);
+		newPin.transform.SetParent(transform);
 
-		//TODO: uncomment this
-		//GameManager.instance.EvaluatePinnedNeedle(gameObject, collisions);
-		
+		/// ******** ///
+		EvaluateColorNeedles(newPin);
+		/// ******** ///
+
 		GameManager.instance.spawner.SpawnNeedle();
 	}
 
 	void Reposition(GameObject newPin) {
 		//float newPinRad = newPin.GetComponent<ColorNeedle>().radius;
 		Circumference newCircumference = newPin.GetComponent<Circumference>();
-
 		pinsCollided.Clear();
-
 		// Comprobamos ladistanciacon el resto debolas
 		foreach (GameObject pin in pins) {
-
 			float collidedPinRad = pin.GetComponent<Circumference>().GetRadius();
-
 			if ( GetDistanceBetween(pin.transform.position, newCircumference.GetPosition()) < ((newCircumference.GetRadius() + collidedPinRad) * (newCircumference.GetRadius() + collidedPinRad))) {
 				pinsCollided.Add (pin);
 			}
@@ -53,14 +50,12 @@ public class Rotator : Circumference {
 		if ( GetDistanceBetween(transform.position, newPin.transform.position) < ((newCircumference.GetRadius() + GetRadius()) * (newCircumference.GetRadius() + GetRadius()))) {
 			pinsCollided.Add (gameObject);
 		}
-		/////   ***********   /////
 		// Si hay 3 o mas, nos quedamos sólo con los dos mas cercanos
 		if (pinsCollided.Count > 2)  {
 			//pinsCollided = GetOnlyNearest(newPin, 2);
 			pinsCollided.Sort((X,Y) => X.GetComponent<Circumference>().GetRadius().CompareTo(Y.GetComponent<Circumference>().GetRadius()));
 			pinsCollided = pinsCollided.GetRange(0,2);
 		}
-		/////   ***********   /////
 
 		switch (pinsCollided.Count) {
 		case 1:
@@ -70,32 +65,29 @@ public class Rotator : Circumference {
 			//debug posicion new pin en el momento de la collision
 			//DrawTheGizmo( new GizmoToDraw( GizmoType.sphere, newCircumference.GetPosition(), newCircumference.GetRadius(), Color.yellow ) );
 			//  -- recolocacion --
-			newPin.transform.position = pinnedCirc.GetPosition() + (
-																	( newCircumference.GetPosition() - pinnedCirc.GetPosition() ).normalized * 
-			                                                       	( newCircumference.GetRadius()   + pinnedCirc.GetRadius() ) 
-			                                                       );
+			newPin.transform.position = pinnedCirc.GetPosition() + ( (newCircumference.GetPosition() - pinnedCirc.GetPosition()).normalized *  (newCircumference.GetRadius() + pinnedCirc.GetRadius()) );
 			//debug posicion new pin en despues de la colocación
 			//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, newCircumference.GetPosition(), newCircumference.GetRadius(), Color.green ) );
-
 			if ( pinsCollided[0].tag == "Rotator" ) {
 				newPin.GetComponent<ColorNeedle>().DrawSpear();
 			}
 			break;
 		case 2:
-
 			Circumference A = pinsCollided[0].GetComponent<Circumference>();
 			Circumference B = pinsCollided[1].GetComponent<Circumference>();
-
-			//http://stackoverflow.com/questions/18558487/tangent-circles-for-two-other-circles
+			//Solución para el ajuste de posición. http://stackoverflow.com/questions/18558487/tangent-circles-for-two-other-circles
 			// 1 Calculate distance from A to B -> |AB|:
 			float AB = Vector3.Distance(A.GetPosition(), B.GetPosition());
 			// 2 Checks whether a solution exist, it exist only if:
 			Debug.Assert(AB <= 4 * newPin.GetComponent<Circumference>().GetRadius());
 			// 3 If it exist, calculate half-point between points A and B:
-			Vector2 H = new Vector2( A.GetPosition().x + ( (B.GetPosition().x - A.GetPosition().x) / 2 ), A.GetPosition().y + ( (B.GetPosition().y - A.GetPosition().y) / 2 ) );
+			Vector2 H = new Vector2( A.GetPosition().x + ( (B.GetPosition().x - A.GetPosition().x) / 2 ), 
+			                         A.GetPosition().y + ( (B.GetPosition().y - A.GetPosition().y) / 2 ) 
+			                       );
 			// 4 Create normalized perpendicular vector to line segment AB:
 			Vector2 HC_perp_norm = new Vector2( (B.GetPosition().y - A.GetPosition().y) / AB, 
-			                                   -(B.GetPosition().x - A.GetPosition().x) / AB );
+			                                   -(B.GetPosition().x - A.GetPosition().x) / AB 
+			                                  );
 			// 5 Calculate distance from this H point to C point -> |HC|:		                           
 			float HCpos = Mathf.Abs( 0.5f * Mathf.Sqrt( 16 * ( newCircumference.GetRadius() * newCircumference.GetRadius() ) - (AB*AB) ) );
 			float HCneg = -( 0.5f * Mathf.Sqrt( 16 * ( newCircumference.GetRadius() * newCircumference.GetRadius() ) - (AB*AB) ) );
@@ -106,59 +98,29 @@ public class Rotator : Circumference {
 			Vector3 sol = GetDistanceBetween(Solution1, GameManager.instance.spawner.transform.position) < 
 						  GetDistanceBetween(Solution2, GameManager.instance.spawner.transform.position) ? Solution1 : Solution2;
 
+			// Posición final
+			newPin.transform.position = sol;
+
+			/// DEBUG ///
 			//debug posicion new pin en el momento de la collision
-			DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, newCircumference.GetPosition(), newCircumference.GetRadius(), Color.white ) );
+			//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, newCircumference.GetPosition(), newCircumference.GetRadius(), Color.white ) );
 			//debug posicion pins colisionados
 			//A
-			DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, A.GetPosition(), A.GetRadius(), Color.red ) );
+			//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, A.GetPosition(), A.GetRadius(), Color.red ) );
 			//B
-			DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, B.GetPosition(), B.GetRadius(), Color.green ) );
+			//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, B.GetPosition(), B.GetRadius(), Color.green ) );
 			//C
-			DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, Solution1, newCircumference.GetRadius(), Color.cyan ) );
+			//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, Solution1, newCircumference.GetRadius(), Color.cyan ) );
 			//D
-			DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, Solution2, newCircumference.GetRadius(), Color.blue ) );
-			/// -- Fix position --- ///
-			newPin.transform.position = sol;
+			//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, Solution2, newCircumference.GetRadius(), Color.blue ) );;
 			//Posicion fianl decidida...
-			DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, newPin.transform.position, newCircumference.GetRadius(), Color.black ) );
+			//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, newPin.transform.position, newCircumference.GetRadius(), Color.black ) );
 			break;
 		default:				
-			Debug.Log("<color=red> Exceso de colisiones: " + pinsCollided.Count + " [" + pinsCollided.ListaAsString() + "]</color>");
-			Debug.Log("<color=orange>  Purgando...  </color>");
-			/*GetOnlyNearest(newPin, 2);
-			pinsCollided.Sort((X,Y) => X.GetComponent<Circumference>().GetRadius().CompareTo(Y.GetComponent<Circumference>().GetRadius()));
-			pinsCollided = pinsCollided.GetRange(0,1);*/
+			Debug.Log("<color=red> ERROR WTF 111 </color>");
 			break;
 		}
 	}
-
-	/*
-	List<GameObject> GetOnlyNearest(GameObject newPin, int count) {
-		GameObject[] tmp = new GameObject[count];
-
-		for (int i = 0; i < pinsCollided.Count; i++) {
-			int k = 0;
-			for (int j = 0; j < tmp.Length; j++) {
-				if (tmp[j] != null) {
-					if ( 
-					    GetDistanceBetween(newPin.transform.position, tmp[j].transform.position) > 
-					    GetDistanceBetween(newPin.transform.position, pinsCollided[i].transform.position) 
-					    ) {
-						k = j;
-					}
-				}
-				else {
-					k = j;
-					break;
-				}
-			}
-			tmp[k] = pinsCollided[i];
-		}
-		Debug.Log(pinsCollided.ListaAsString("Lista de objetos colisionados:"));
-		Debug.Log(tmp.ListaAsString("Los mas cercanos son:"));
-		return tmp.ToList();
-	}
-	*/
 
 	float GetDistanceBetween(Vector3 A, Vector3 B) {
 		return (B-A).sqrMagnitude;
