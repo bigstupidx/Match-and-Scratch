@@ -27,7 +27,10 @@ public struct GizmoToDraw {
 [RequireComponent (typeof (CircleCollider2D))]
 public class Circumference : MonoBehaviour {
 	public CircleCollider2D cc;
-	public float radius;
+	private float radius;
+	public Vector3 GetPosition() { return transform.position; }
+	//public float GetScale() { return transform.lossyScale.x; }
+	public float GetRadius() { return radius * transform.lossyScale.x; }
 
 	public void Awake () {
 		cc = GetComponent<CircleCollider2D>();
