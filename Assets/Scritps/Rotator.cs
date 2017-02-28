@@ -29,7 +29,7 @@ public class Rotator : Circumference {
 		newPin.transform.SetParent(transform);
 
 		/// ******** ///
-		EvaluateColorNeedles(newPin);
+//		EvaluateColorNeedles(newPin);
 		/// ******** ///
 
 		GameManager.instance.spawner.SpawnNeedle();
@@ -75,6 +75,25 @@ public class Rotator : Circumference {
 		case 2:
 			Circumference A = pinsCollided[0].GetComponent<Circumference>();
 			Circumference B = pinsCollided[1].GetComponent<Circumference>();
+
+
+			float Lc = A.GetRadius() + B.GetRadius();
+			float La = B.GetRadius() + newCircumference.GetRadius();
+			float Lb = newCircumference.GetRadius() + A.GetRadius();
+
+			float a = Mathf.Rad2Deg * Mathf.Acos(( Lb*Lb + Lc*Lc - La*La ) / (2 * Lb * Lc));
+
+
+			Vector3 ab = (B.GetPosition()-A.GetPosition ()).normalized;
+
+			Quaternion rot = Quaternion.AngleAxis(a, Vector3.forward);
+			Vector3 Solution1 = A.GetPosition() + rot * ab * Lb;
+
+			rot = Quaternion.AngleAxis(a, -Vector3.forward);
+			Vector3 Solution2 = A.GetPosition() + rot * ab * Lb;
+
+
+			/*/
 			//Solución para el ajuste de posición. http://stackoverflow.com/questions/18558487/tangent-circles-for-two-other-circles
 			// 1 Calculate distance from A to B -> |AB|:
 			float AB = Vector3.Distance(A.GetPosition(), B.GetPosition());
@@ -94,6 +113,7 @@ public class Rotator : Circumference {
 			// Posibles soluciones
 			Vector3 Solution1 = new Vector3 (H.x + (HCpos * HC_perp_norm.x), H.y + (HCpos * HC_perp_norm.y), 0);
 			Vector3 Solution2 = new Vector3 (H.x + (HCneg * HC_perp_norm.x), H.y + (HCneg * HC_perp_norm.y), 0);
+*/
 			// nos quedamos con la mas cercana al spawner
 			Vector3 sol = GetDistanceBetween(Solution1, GameManager.instance.spawner.transform.position) < 
 						  GetDistanceBetween(Solution2, GameManager.instance.spawner.transform.position) ? Solution1 : Solution2;
@@ -103,16 +123,29 @@ public class Rotator : Circumference {
 
 			/// DEBUG ///
 			//debug posicion new pin en el momento de la collision
-			//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, newCircumference.GetPosition(), newCircumference.GetRadius(), Color.white ) );
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, newCircumference.GetPosition(), newCircumference.GetRadius(), Color.white ) );
 			//debug posicion pins colisionados
 			//A
-			//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, A.GetPosition(), A.GetRadius(), Color.red ) );
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, A.GetPosition(), A.GetRadius(), Color.green ) );
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.line, A.GetPosition(), A.GetPosition() + (B.GetPosition () - A.GetPosition()).normalized * A.GetRadius(), Color.green ) ); // Ra to Rb
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.line, A.GetPosition(), A.GetPosition() + (Solution1 - A.GetPosition()).normalized * A.GetRadius(), Color.green ) );// Linea A-Solution1
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.line, A.GetPosition(), A.GetPosition() + (Solution2 - A.GetPosition()).normalized * A.GetRadius(), Color.green ) );//Linea  B-Solution2
+
 			//B
-			//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, B.GetPosition(), B.GetRadius(), Color.green ) );
-			//C
-			//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, Solution1, newCircumference.GetRadius(), Color.cyan ) );
-			//D
-			//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, Solution2, newCircumference.GetRadius(), Color.blue ) );;
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, B.GetPosition(), B.GetRadius(), Color.green ) );
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.line, B.GetPosition(), B.GetPosition() + (A.GetPosition () - B.GetPosition()).normalized * B.GetRadius(), Color.green ) ); // Rb to Ra
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.line, B.GetPosition(), B.GetPosition() + (Solution1 - B.GetPosition()).normalized * B.GetRadius(), Color.green ) ); // Linea A-Solution1
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.line, B.GetPosition(), B.GetPosition() + (Solution2 - B.GetPosition()).normalized * B.GetRadius(), Color.green ) ); // Linea B-Solution2
+
+			//Solution 1
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, Solution1, newCircumference.GetRadius(), Color.yellow ) );
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.line, Solution1, Solution1 + (A.GetPosition () - Solution1).normalized * newCircumference.GetRadius(), Color.yellow ) ); // Linea Solution1-A
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.line, Solution1, Solution1 + (B.GetPosition () - Solution1).normalized * newCircumference.GetRadius(), Color.yellow ) ); // Linea Solution1-B
+
+			//Solution 2
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, Solution2, newCircumference.GetRadius(), Color.yellow ) );			
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.line, Solution2, Solution2 + (A.GetPosition () - Solution2).normalized * newCircumference.GetRadius(), Color.yellow ) ); // Linea Solution2-A
+			DrawTheGizmo ( new GizmoToDraw( GizmoType.line, Solution2, Solution2 + (B.GetPosition () - Solution2).normalized * newCircumference.GetRadius(), Color.yellow ) ); // Linea Solution2-B
 			//Posicion fianl decidida...
 			//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, newPin.transform.position, newCircumference.GetRadius(), Color.black ) );
 			break;
