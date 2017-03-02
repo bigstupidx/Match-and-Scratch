@@ -31,7 +31,7 @@ public static class ExtensionMethods {
 	}
 }
 
-public class ColorNeedle : Circumference {
+public class Pin : Circumference {
 	public const float TIME_TO_DESTROY = 0.2f;
 
 	public float speed = 20f;
@@ -39,6 +39,7 @@ public class ColorNeedle : Circumference {
 	public bool isPinned = false;
 	public bool drawSpear = false;
 
+	Circumference me;
 	private Transform rotator;
 	private Rigidbody2D rb;
 	private LineRenderer lr;
@@ -48,6 +49,7 @@ public class ColorNeedle : Circumference {
 		rb = GetComponent<Rigidbody2D>();
 		sr = GetComponent<SpriteRenderer>();
 		rotator = GameObject.FindGameObjectWithTag("Rotator").transform;
+		me = GetComponent<Circumference>();
 		SetupLine();
 	}
 
@@ -94,7 +96,7 @@ public class ColorNeedle : Circumference {
 	void OnTriggerEnter2D (Collider2D col) {
 		if ( isShooted && !isPinned) {
 			if (col.gameObject.tag == "Rotator" || col.gameObject.tag == "Pin" ) {
-				GameManager.instance.rotator.AddPin(gameObject);
+				GameManager.instance.rotator.AddPin(me, col);
 			}
 		}
 	}
@@ -107,9 +109,9 @@ public class ColorNeedle : Circumference {
 
 	public IEnumerator AnimToDead() {
 
-		float t = 1f;
+		float t = TIME_TO_DESTROY;
 		while (t > 0f) {
-			t -= Time.deltaTime/TIME_TO_DESTROY;
+			t -= Time.deltaTime;
 			transform.localScale *= 1.13f;
 			sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, t);
 			yield return null;

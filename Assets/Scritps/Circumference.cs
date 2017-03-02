@@ -36,7 +36,7 @@ public struct GizmoToDraw {
 public class Circumference : MonoBehaviour {
 	public CircleCollider2D cc;
 	private float radius;
-	public Vector3 GetPosition() { return transform.position; }
+ 	public Vector3 GetPosition() { return transform.position; }
 	public float GetRadius() { return radius * transform.lossyScale.x; }
 
 	public void Awake () {
