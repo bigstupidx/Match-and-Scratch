@@ -6,42 +6,33 @@ public class Rotator : Circumference {
 
 	public float speed = 100f;
 	public float minSpawnTime = 0.2f;
-
 	private float spawnTimeDelay;
-
-	Circumference me;
-
-	private List<Circumference> childPins = new List<Circumference>();
+	private Circumference me;
 	private List<Circumference> circumferencesCollided = new List<Circumference>();
-	private List<List<Circumference>> colorGroups = new List<List<Circumference>>();
-
-	//private List<GizmoToDraw> gizmosToDraw = new List<GizmoToDraw>();
+	private Dictionary<int, PinsGroups> pinsGroups = new Dictionary<int, PinsGroups>();
 
 	public override void Initialize() {
-		childPins.Clear();
-		colorGroups.Clear();
+		pinsGroups.Clear();
 		me = GetComponent<Circumference>();
 	}
 
-	void Update() {
+	void FixedUpdate() {
 		transform.Rotate(0f, 0f, speed * Time.deltaTime);
 	}
 
 	public void AddPin(Circumference newPin, Collider2D col) {
-		
-		SearchNearestPins(newPin);
+		newPin.cc.isTrigger = false;
 		Pin cn =newPin.GetComponent<Pin>();
-		cn.cc.isTrigger = false;
 		cn.isPinned = true;
 		newPin.transform.SetParent(transform);
-		
-		if(!GameManager.instance.gameHasEnded) {
-			Reposition(newPin);
-			EvaluatePin(newPin);		
-		
-			if (!childPins.Contains(newPin)) childPins.Add(newPin);
 
-			spawnTimeDelay = EvaluateColorGroups();
+		SearchNearestPins(newPin);
+		Reposition(newPin);
+		//SearchNearestPins(newPin);
+		ProcessPin(newPin);
+
+		if(!GameManager.instance.gameHasEnded) {
+			spawnTimeDelay = ProcessPinsGroups();
 			GameManager.instance.CheckDifficulty();
 			GameManager.instance.spawner.SpawnPin(spawnTimeDelay);
 		}
@@ -50,16 +41,20 @@ public class Rotator : Circumference {
 	void SearchNearestPins(Circumference newCircumference) {
 		circumferencesCollided.Clear();
 		// Comprobamos la distancia con el resto de bolas
-		foreach (Circumference son in childPins) {
-			if (son.transform.parent.tag == "Rotator")
-				if ( IsColliding(newCircumference, son, 0.02f) ) {
-					if (son.name.Split('-')[1] !=  newCircumference.name.Split('-')[1]) {
-						GameManager.instance.EndGame();
-						break;
+		foreach (KeyValuePair<int,PinsGroups> pg in pinsGroups) {
+			if (pg.Value.currentState == PinsGroups.GroupState.Active) {
+				foreach (Circumference c in pg.Value.members) {
+					if ( IsColliding(newCircumference, c, 0.02f) ) {
+						if (c.colorType !=  newCircumference.colorType) {
+							GameManager.instance.EndGame();
+							break;
+						}
+						circumferencesCollided.Add (c);
 					}
-					circumferencesCollided.Add (son);
 				}
+			}
 		}
+
 		// Y tambien la distanciacon el rotor
 		if ( IsColliding(newCircumference, me, 0.02f) )
 			circumferencesCollided.Add (me);
@@ -90,7 +85,7 @@ public class Rotator : Circumference {
 				Circumference A = circumferencesCollided[0];
 				Circumference B = circumferencesCollided[1];
 				//Solución de Fernando Rojas basada en: https://es.wikipedia.org/wiki/Teorema_del_coseno
-				float Lc = A.GetRadius() + B.GetRadius();
+				float Lc = (B.GetPosition() - A.GetPosition()).magnitude; //A.GetRadius() + B.GetRadius();
 				float La = B.GetRadius() + newPin.GetRadius();
 				float Lb = newPin.GetRadius() + A.GetRadius();
 
@@ -161,105 +156,70 @@ public class Rotator : Circumference {
 		}
 	}
 
-	public void EvaluatePin(Circumference newCircumference) {
+	public void ProcessPin(Circumference newCircumference) {
 		List<int> groupsCollided = new List<int>();
 		for (int i = 0; i < circumferencesCollided.Count && !GameManager.instance.gameHasEnded; i++) {
 			if (circumferencesCollided[i].tag == "Rotator") { // Si la colisión es con el rotator
-				CreateColorList(newCircumference);
+				pinsGroups.Add(pinsGroups.Count, new PinsGroups(pinsGroups.Count, newCircumference));
+				Debug.Log(string.Format("Se detectó colisión con Rotor. Creando nuevo grupo {0} </color>", pinsGroups.Count));
 			}
-			/*else if ( newCircumference.name.Split('-')[1] != circumferencesCollided[i].name.Split('-')[1] ){// Si la colisión es con una burbuja de distinto color
-				GameManager.instance.EndGame();
-				continue;
-				//CreateColorGroup(newCircumference);
-			}*/
 			else {
 				// Buscamos el grupo en el que ya esté el ultimo objeto que hemos tocado...
-				int colorGroupId = -1;
-				try {
-					for (int j = 0; j < colorGroups.Count && colorGroupId == -1; j++){
-						if ( colorGroups[j].Contains(circumferencesCollided[i]) ) {
-							colorGroupId = j;
+				int pinsGroupId = -1;
+				for (int j = 0; j < pinsGroups.Count && pinsGroupId == -1; j++){
+					if (pinsGroups[j].currentState == PinsGroups.GroupState.Active) {
+						if ( pinsGroups[j].Contains(circumferencesCollided[i]) ) {
+							pinsGroupId = j;
+							Debug.Log(string.Format("Se detectó colisión con grupo: {0} </color>", j));
 						}
 					}
-				} catch (MissingReferenceException mre) {
-					Debug.Log("<color=red> EXCEPTION: " + mre.Data + "</color>");
 				}
-
-				if (colorGroupId == -1) {// ... Si la circumferencia que evaluamos no pertenece a ningún grupo algo raro ha pasado y necesitamos un "salvoconducto"
-					groupsCollided.Add(CreateColorList(newCircumference)); // "salvoconducto" - Creamos un nuevo grupo para no detener el juego... pero es un error
+				if (pinsGroupId != -1) {// ... Si hemos localizado un grupo en el que ya existe la circumferencia que evaluamos, metemos la nueva en ese grupo.
+					Debug.Log(string.Format("<color=blue>Metemos newCircumference [{0}] en el grupo: {1} </color>",newCircumference, pinsGroupId));
+					pinsGroups[pinsGroupId].AddMember(newCircumference);
+					
+					if (!groupsCollided.Contains(pinsGroupId)) {
+						Debug.Log(string.Format("<color=yellow>Añadido Grupo Colisionado: </color>", pinsGroupId));
+						groupsCollided.Add(pinsGroupId);
+					}
+				}
+				else {// ... Si la circumferencia que evaluamos no pertenece a ningún grupo algo raro ha pasado y necesitamos un "salvoconducto"
 					string log = "";
 					foreach (var item in circumferencesCollided)
 					{
 						log += "\n - " + item.name;
 					}
-					Debug.Log ("<color=red>Error WTF(1): Esto no debería suceder</color> \n - Pin Evaluado: " + newCircumference.name + "\n - Pins Colisionados:" + log);
+					Debug.Log ("<color=red>Error WTF(1): Los pins colisionados no están en ningún grupo. Esto no debería suceder</color> \n - Pin Evaluado: " + newCircumference.name + "\n - Pins Colisionados:" + log);
 
-				}
-				else{// ... Si hemos localizado un grupo en el que ya existe la circumferencia que evaluamos, metemos la nueva en ese grupo.
-					colorGroups[colorGroupId].Add(newCircumference);
-					if (!groupsCollided.Contains(colorGroupId)) groupsCollided.Add(colorGroupId);
 				}
 			}
 		}
-
-		/*
-		// unificamos grupos si hemos colisionado con mas de uno
+		
+		// Unificamos grupos si hemos colisionado con mas de uno
 		if (groupsCollided.Count > 1) {
+			int destiny = groupsCollided[0];
 			for (int i = 1; i < groupsCollided.Count; i++) {
-				int id = groupsCollided[i];
-				foreach (Circumference c in colorGroups[id]) {
-					if (!colorGroups[groupsCollided[0]].Contains(c))
-						colorGroups[groupsCollided[0]].Add(c);
-				}
-				colorGroups.RemoveAt(i);
+				int origin = groupsCollided[i];
+				pinsGroups[origin].AddMembers(pinsGroups[destiny].members);
+				pinsGroups[destiny].CombineWith(origin);
+				Debug.Log(string.Format("<color=yellow>Combinados Grupos {0} y {1} </color>", destiny, origin));
 			}
-		}
-		*/
+		}		
 	}
 
-	float EvaluateColorGroups() {
-		List<int> groupsToDestroy = new List<int>();		
+	float ProcessPinsGroups() {	
+		int totalPinsToDestroy = 0;	
 		// Si encontramos un grupo de mas de dos miembros del mismo color...
-		for(int i = 0; i < colorGroups.Count; i++) {
-			if (colorGroups[i].Count > 2) {
-				// ...eliminamos el grupo.
-				groupsToDestroy.Add(i);
+		for(int i = 0; i < pinsGroups.Count; i++) {
+			if (pinsGroups[i].currentState == PinsGroups.GroupState.Active){
+				if (pinsGroups[i].Count > 2) {
+					totalPinsToDestroy += pinsGroups[i].Count;
+					// ...eliminamos el grupo.
+					pinsGroups[i].Erase();
+				}
 			}
 		}
-		// Una vez detectados los grupos a destruir les damos orden de destruir
-		if (groupsToDestroy.Count > 0){
-			int totalPinsToDestroy = 0;
-			foreach(int i in groupsToDestroy) {
-				// ...los objetos que contiene...
-				totalPinsToDestroy += colorGroups[i].Count;
-				StartCoroutine(DestroyElementsFromGroup(colorGroups[i]));				
-				colorGroups.RemoveAt(i);
-				GameManager.instance.Score++;
-			}
-			// Aumento un poco el tiempo de respawn tras las eliminaciones
-			return totalPinsToDestroy * Pin.TIME_TO_DESTROY;
-		}
-		return minSpawnTime;
-	}
-	
-	int CreateColorList(Circumference newCircumference) {
-		List<Circumference> cList = new List<Circumference>();
-		cList.Add(newCircumference);
-		return CreateListGroup(cList);
-	}
-	
-	int CreateListGroup(List<Circumference> gos) {
-		List<Circumference> goList = new List<Circumference>(gos);
-		colorGroups.Add(goList);
-		return colorGroups.Count;
-	}
-	
-	IEnumerator DestroyElementsFromGroup(List<Circumference> circumferences) {
-		for( int i = 0; i < circumferences.Count; i++) {
-			childPins.Remove(circumferences[i]);
-			circumferences[i].gameObject.GetComponent<Pin>().Autodestroy();
-			yield return new WaitForSeconds(Pin.TIME_TO_DESTROY/circumferences.Count);
-		}
+		return minSpawnTime + (totalPinsToDestroy * Pin.TIME_TO_DESTROY);
 	}
 
 	float DistanceBetween(Vector3 A, Vector3 B) {
@@ -268,10 +228,11 @@ public class Rotator : Circumference {
 
 	bool IsColliding(Circumference A, Circumference B, float margin = 0f) {
 		return DistanceBetween( A.GetPosition(),B.GetPosition() ) < ( (A.GetRadius() + B.GetRadius() + margin) * (A.GetRadius() + B.GetRadius() + margin) );
-
 	}
 
-	/*
+
+	/*   
+	/// DEBUG 
 	void PrintColorGroupsLog(string enunciado = "") {
 		string log = enunciado.Length <= 0 ? "" : enunciado + ": \n";
 		for(int i = 0; i < colorGroups.Count; i++) {

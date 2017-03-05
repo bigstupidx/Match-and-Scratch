@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour {
 
 	public Text scoreLabel;
 	public Text maxScoreLabel;
-
+	public Text GameOverPoints;
 	public bool gameHasEnded = false;
 
 	private int score = 0;
@@ -66,11 +66,12 @@ public class GameManager : MonoBehaviour {
 
 	public void ShowGameOverScreen(){
 		GameOverScreen.SetActive(true);
+		GameOverPoints.text = score.ToString();
 	}
 
 	public void RestartLevel () {
 		//TODO: reiniciar el level sin recargar la escena
-		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex  );		
+		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);		
 		GameOverScreen.SetActive(false);
 		score = 0;
 		gameHasEnded = false;

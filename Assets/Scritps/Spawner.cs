@@ -35,6 +35,7 @@ public class Spawner : MonoBehaviour {
 		nextColor = Random.Range (0, Mathf.Min(GameManager.instance.currentLevel +2, GameManager.instance.posibleColors.Length));
 		nextPin.color = GameManager.instance.posibleColors[nextColor];
 		pin = Instantiate(PinPrefab, transform.position, transform.rotation);
+		pin.GetComponent<Circumference>().colorType   = currentColor;
 		pin.name = pinsCount + "-Type_" + currentColor.ToString();
 		pin.GetComponent<SpriteRenderer>().color = GameManager.instance.posibleColors[currentColor];
 

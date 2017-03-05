@@ -101,7 +101,7 @@ public class Pin : Circumference {
 		}
 	}
 
-	public void Autodestroy() {
+	public override void Disable() {
 		drawSpear = false;
 		cc.enabled = false;
 		StartCoroutine(AnimToDead());
