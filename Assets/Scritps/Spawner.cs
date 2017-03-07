@@ -6,24 +6,25 @@ using Random = UnityEngine.Random;
 
 
 public class Spawner : MonoBehaviour {
+	public const float MINIMUM_SPAWN_TIME = 0.2f;
+	
 	public GameObject PinPrefab;
-
-	/*** gameType = match-three ***/
-
 	public int nextColor;
 	public int currentColor;
 	public Image nextPin;
-	public int pinsCount = 0;
+	public int pinsCount;
 
-	/*** gameType = match-three ***/
-
-	void Start() {
-		nextColor = Random.Range (0, Mathf.Min(GameManager.instance.currentLevel +1, GameManager.instance.posibleColors.Length));
-		nextPin.color = GameManager.instance.posibleColors[nextColor];		
-	}
+	void Start() {}
 
 	public void SpawnPin(float secondsDelay = 0) {
 		StartCoroutine(Spawn(secondsDelay));
+	}
+
+	public void Reset() {
+		pinsCount = 0;
+		nextColor = Random.Range (0, Mathf.Min(GameManager.instance.currentLevel +1, GameManager.instance.posibleColors.Length));
+		nextPin.color = GameManager.instance.posibleColors[nextColor];
+		//enabled = true;
 	}
 
 	private IEnumerator Spawn (float secondsDelay = 0f) {

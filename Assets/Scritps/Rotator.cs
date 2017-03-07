@@ -5,15 +5,14 @@ using UnityEngine;
 public class Rotator : Circumference {
 
 	public float speed = 100f;
-	public float minSpawnTime = 0.2f;
 	private float spawnTimeDelay;
 	private Circumference me;
 	private List<Circumference> circumferencesCollided = new List<Circumference>();
 	private Dictionary<int, PinsGroups> pinsGroups = new Dictionary<int, PinsGroups>();
 
 	public override void Initialize() {
-		pinsGroups.Clear();
 		me = GetComponent<Circumference>();
+		//Reset();
 	}
 
 	void FixedUpdate() {
@@ -27,11 +26,10 @@ public class Rotator : Circumference {
 		newPin.transform.SetParent(transform);
 
 		SearchNearestPins(newPin);
-		Reposition(newPin);
-		//SearchNearestPins(newPin);
-		ProcessPin(newPin);
 
 		if(!GameManager.instance.gameHasEnded) {
+			Reposition(newPin);
+			ProcessPin(newPin);
 			spawnTimeDelay = ProcessPinsGroups();
 			GameManager.instance.CheckDifficulty();
 			GameManager.instance.spawner.SpawnPin(spawnTimeDelay);
@@ -161,7 +159,7 @@ public class Rotator : Circumference {
 		for (int i = 0; i < circumferencesCollided.Count && !GameManager.instance.gameHasEnded; i++) {
 			if (circumferencesCollided[i].tag == "Rotator") { // Si la colisión es con el rotator
 				pinsGroups.Add(pinsGroups.Count, new PinsGroups(pinsGroups.Count, newCircumference));
-				Debug.Log(string.Format("Se detectó colisión con Rotor. Creando nuevo grupo {0} </color>", pinsGroups.Count));
+				//Debug.Log(string.Format("Se detectó colisión con Rotor. Creando nuevo grupo {0} </color>", pinsGroups.Count));
 			}
 			else {
 				// Buscamos el grupo en el que ya esté el ultimo objeto que hemos tocado...
@@ -170,16 +168,16 @@ public class Rotator : Circumference {
 					if (pinsGroups[j].currentState == PinsGroups.GroupState.Active) {
 						if ( pinsGroups[j].Contains(circumferencesCollided[i]) ) {
 							pinsGroupId = j;
-							Debug.Log(string.Format("Se detectó colisión con grupo: {0} </color>", j));
+							//Debug.Log(string.Format("Se detectó colisión con grupo: {0} </color>", j));
 						}
 					}
 				}
 				if (pinsGroupId != -1) {// ... Si hemos localizado un grupo en el que ya existe la circumferencia que evaluamos, metemos la nueva en ese grupo.
-					Debug.Log(string.Format("<color=blue>Metemos newCircumference [{0}] en el grupo: {1} </color>",newCircumference, pinsGroupId));
+					//Debug.Log(string.Format("<color=blue>Metemos newCircumference [{0}] en el grupo: {1} </color>",newCircumference, pinsGroupId));
 					pinsGroups[pinsGroupId].AddMember(newCircumference);
 					
 					if (!groupsCollided.Contains(pinsGroupId)) {
-						Debug.Log(string.Format("<color=yellow>Añadido Grupo Colisionado: </color>", pinsGroupId));
+						//Debug.Log(string.Format("<color=yellow>Añadido Grupo Colisionado: </color>", pinsGroupId));
 						groupsCollided.Add(pinsGroupId);
 					}
 				}
@@ -189,7 +187,7 @@ public class Rotator : Circumference {
 					{
 						log += "\n - " + item.name;
 					}
-					Debug.Log ("<color=red>Error WTF(1): Los pins colisionados no están en ningún grupo. Esto no debería suceder</color> \n - Pin Evaluado: " + newCircumference.name + "\n - Pins Colisionados:" + log);
+					//Debug.Log ("<color=red>Error WTF(1): Los pins colisionados no están en ningún grupo. Esto no debería suceder</color> \n - Pin Evaluado: " + newCircumference.name + "\n - Pins Colisionados:" + log);
 
 				}
 			}
@@ -202,7 +200,7 @@ public class Rotator : Circumference {
 				int origin = groupsCollided[i];
 				pinsGroups[origin].AddMembers(pinsGroups[destiny].members);
 				pinsGroups[destiny].CombineWith(origin);
-				Debug.Log(string.Format("<color=yellow>Combinados Grupos {0} y {1} </color>", destiny, origin));
+				//Debug.Log(string.Format("<color=yellow>Combinados Grupos {0} y {1} </color>", destiny, origin));
 			}
 		}		
 	}
@@ -219,7 +217,7 @@ public class Rotator : Circumference {
 				}
 			}
 		}
-		return minSpawnTime + (totalPinsToDestroy * Pin.TIME_TO_DESTROY);
+		return Spawner.MINIMUM_SPAWN_TIME + (totalPinsToDestroy * Pin.TIME_TO_DESTROY);
 	}
 
 	float DistanceBetween(Vector3 A, Vector3 B) {
@@ -230,6 +228,16 @@ public class Rotator : Circumference {
 		return DistanceBetween( A.GetPosition(),B.GetPosition() ) < ( (A.GetRadius() + B.GetRadius() + margin) * (A.GetRadius() + B.GetRadius() + margin) );
 	}
 
+	public void Reset() {
+		circumferencesCollided.Clear();
+		GameObject[] pins = GameObject.FindGameObjectsWithTag("Pin");
+		Debug.Log(string.Format("Encontrados {0} Pins", pins.Length));
+		for (int i = 0; i < pins.Length; i++) {
+			Destroy(pins[i]);
+		}
+		pinsGroups.Clear();
+		//enabled = true;
+	}
 
 	/*   
 	/// DEBUG 

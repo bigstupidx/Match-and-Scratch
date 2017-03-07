@@ -4,23 +4,25 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+public enum GameState {
+	None,
+	MainMenu,
+	Game,
+	GameOver
+}
+
 public class GameManager : MonoBehaviour {
-
 	public static GameManager instance = null;
-
+	public GameState currentState = GameState.None;
 	public Color[] posibleColors;
-
 	public Rotator rotator;
 	public Spawner spawner;
-
 	public Animator animator;
-
+	public GameObject MainMenuScreen;
+	public GameObject GameScreen;
 	public GameObject GameOverScreen;
 	public Text levelUpText;
-
 	public int currentLevel = 0;
-	//public int colorsCountRoof;
-
 	public Text scoreLabel;
 	public Text maxScoreLabel;
 	public Text GameOverPoints;
@@ -44,44 +46,78 @@ public class GameManager : MonoBehaviour {
 		int highscore = PlayerPrefs.GetInt("MaxScore");
 		maxScoreLabel.text =  highscore == 0 ? "" : "Max: " + highscore.ToString();
 
-		//colorsCountRoof = posibleColors.Length;
-		spawner.SpawnPin(1f);
+		SetGameState(GameState.MainMenu);
+	}
+
+	void SetGameState(GameState newState) {
+		if (currentState != newState) {
+			HideAllScreens();
+			switch(newState) {
+				case GameState.MainMenu:
+					MainMenuScreen.SetActive(true);
+					animator.SetTrigger("MainMenu");
+				break;
+				case GameState.Game:
+					ResetGame();
+					GameScreen.SetActive(true);
+					if (currentState == GameState.MainMenu)
+						animator.SetTrigger("StartGame");
+					else if (currentState == GameState.GameOver)
+						animator.SetTrigger("StartGame");
+
+					spawner.SpawnPin(1f);
+				break;
+				case GameState.GameOver:
+					GameOverScreen.SetActive(true);
+					animator.SetTrigger ("EndGame");					
+					GameOverPoints.text = score.ToString();
+				break;
+			}
+			currentState = newState;
+		}	
+	}
+
+	void HideAllScreens() {
+		GameOverScreen.SetActive(false);
+		MainMenuScreen.SetActive(false);
+		GameScreen.SetActive(false);
+	}
+
+	public void StartGame() {		
+		SetGameState(GameState.Game);
 	}
 
 	public void EndGame() {
 		if (gameHasEnded)
 			return;
 
-		rotator.enabled = false;
-		spawner.enabled = false;
-
 		if (score > PlayerPrefs.GetInt("MaxScore")) {
 			PlayerPrefs.SetInt("MaxScore", score);
 		}
-
-		gameHasEnded = true;
-		animator.SetTrigger ("EndGame");
+		
+		rotator.enabled = false;
 		spawner.enabled = false;
+		gameHasEnded = true;
+		
+		SetGameState(GameState.GameOver);
 	}
 
-	public void ShowGameOverScreen(){
-		GameOverScreen.SetActive(true);
-		GameOverPoints.text = score.ToString();
+	public void BackToMainMenu() {
+		SetGameState(GameState.MainMenu);
 	}
 
-	public void RestartLevel () {
-		//TODO: reiniciar el level sin recargar la escena
-		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);		
-		GameOverScreen.SetActive(false);
-		score = 0;
-		gameHasEnded = false;
+	void ResetGame() {
+		spawner.Reset();
+		rotator.Reset();
 		currentLevel = 0;
+		score = 0;
+		gameHasEnded = false;		
 		spawner.enabled = true;
+		rotator.enabled = true;
 	}
 
 	void Update() {
 		scoreLabel.text = score.ToString();
-		//colorsCountRoof = currentLevel + 3;
 	}
 
 	public void CheckDifficulty() {
