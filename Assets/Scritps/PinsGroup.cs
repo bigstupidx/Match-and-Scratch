@@ -15,6 +15,7 @@ public class PinsGroups {
     public List<Circumference> members = new List<Circumference>();
     public int index;
     public bool isActive;
+	public bool isAnalizing;
     int combinedID = -1;
 
     public void CombineWith(int value) {
@@ -56,23 +57,28 @@ public class PinsGroups {
         get {return members.Count;}
     }
 
-    public void Erase() {
+	public void Erase() {
         SetState(GroupState.Remove);
-        GameManager.instance.StartCoroutine(DestroyMembers());
+		foreach (Circumference c in members) {
+			c.colisionador.enabled = false;
+		}
+		GameManager.instance.StartCoroutine(DestroyMembers());
     }
 
     public void SetState(GroupState newState) {
         if (currentState != newState) {
             currentState = newState;
+			isActive = currentState == GroupState.Active;
         }
     }
 
-    IEnumerator DestroyMembers() {
+	public IEnumerator DestroyMembers(bool sumPoints = true) {
         for( int i = 0; i < members.Count; i++) {
 			//childPins.Remove(circumferences[i]);
-            members[i].gameObject.GetComponent<Pin>().Autodestroy();
+			if (members[i] != null)
+				members[i].gameObject.GetComponent<Pin>().Autodestroy();
 			yield return new WaitForSeconds(Pin.TIME_TO_DESTROY/members.Count);
 		}
-        GameManager.instance.Score += members.Count - 2; 
+		if (sumPoints) GameManager.instance.Score += members.Count - 2; 
     }
 }

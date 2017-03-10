@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ReveloLibrary;
 
 public class Rotator : Circumference {
 
@@ -20,7 +21,7 @@ public class Rotator : Circumference {
 	}
 
 	public void AddPin(Circumference newPin, Collider2D col) {
-		newPin.cc.isTrigger = false;
+		newPin.colisionador.isTrigger = false;
 		Pin cn =newPin.GetComponent<Pin>();
 		cn.isPinned = true;
 		newPin.transform.SetParent(transform);
@@ -28,6 +29,20 @@ public class Rotator : Circumference {
 		SearchNearestPins(newPin);
 
 		if(!GameManager.instance.gameHasEnded) {
+			switch (newPin.colorType) {
+				case 0:
+					AudioMaster.instance.Play (SoundDefinitions.SCRATCH_1);
+				break;
+				case 1:
+					AudioMaster.instance.Play (SoundDefinitions.SCRATCH_2);
+				break;
+				case 2:
+					AudioMaster.instance.Play (SoundDefinitions.SCRATCH_3);
+				break;
+				default:
+					AudioMaster.instance.Play (SoundDefinitions.SCRATCH_1);
+				break;
+			}
 			Reposition(newPin);
 			ProcessPin(newPin);
 			spawnTimeDelay = ProcessPinsGroups();
@@ -40,11 +55,13 @@ public class Rotator : Circumference {
 		circumferencesCollided.Clear();
 		// Comprobamos la distancia con el resto de bolas
 		foreach (KeyValuePair<int,PinsGroups> pg in pinsGroups) {
-			if (pg.Value.currentState == PinsGroups.GroupState.Active) {
+			if (pg.Value.isActive) {
 				foreach (Circumference c in pg.Value.members) {
 					if ( IsColliding(newCircumference, c, 0.02f) ) {
 						if (c.colorType !=  newCircumference.colorType) {
 							GameManager.instance.EndGame();
+							// Esto es solamente para que cuando salgamos del juego, este pin tb se borre.
+							pinsGroups[pinsGroups.Count-1].AddMember(newCircumference);
 							break;
 						}
 						circumferencesCollided.Add (c);
@@ -165,7 +182,7 @@ public class Rotator : Circumference {
 				// Buscamos el grupo en el que ya esté el ultimo objeto que hemos tocado...
 				int pinsGroupId = -1;
 				for (int j = 0; j < pinsGroups.Count && pinsGroupId == -1; j++){
-					if (pinsGroups[j].currentState == PinsGroups.GroupState.Active) {
+					if (pinsGroups[j].isActive) {
 						if ( pinsGroups[j].Contains(circumferencesCollided[i]) ) {
 							pinsGroupId = j;
 							//Debug.Log(string.Format("Se detectó colisión con grupo: {0} </color>", j));
@@ -218,6 +235,12 @@ public class Rotator : Circumference {
 			}
 		}
 		return Spawner.MINIMUM_SPAWN_TIME + (totalPinsToDestroy * Pin.TIME_TO_DESTROY);
+	}
+
+	public void EraseAllPins() {
+		for (int i = 0; i < pinsGroups.Count; i++) {
+			StartCoroutine(pinsGroups[i].DestroyMembers(false));
+		}
 	}
 
 	float DistanceBetween(Vector3 A, Vector3 B) {

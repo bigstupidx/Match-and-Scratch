@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using ReveloLibrary;
 
 public enum GameState {
-	None,
 	MainMenu,
-	Game,
+	GoToPlay,
+	Playing,
 	GameOver
 }
 
 public class GameManager : MonoBehaviour {
 	public static GameManager instance = null;
-	public GameState currentState = GameState.None;
+	public GameState currentState;
 	public Color[] posibleColors;
 	public Rotator rotator;
 	public Spawner spawner;
@@ -42,39 +43,58 @@ public class GameManager : MonoBehaviour {
 		else if (instance != this) {
 			Destroy(gameObject);
 		}
-		GameOverScreen.SetActive(false);
+		//GameOverScreen.SetActive(false);
 		int highscore = PlayerPrefs.GetInt("MaxScore");
 		maxScoreLabel.text =  highscore == 0 ? "" : "Max: " + highscore.ToString();
+	}
 
+	public void Start() {
+		HideAllScreens ();
+		ShowScreen (MainMenuScreen);
+		AudioMaster.instance.PlayLoop (SoundDefinitions.THEME_MAINMENU);
 		SetGameState(GameState.MainMenu);
 	}
 
-	void SetGameState(GameState newState) {
+	public void SetGameState(GameState newState) {
 		if (currentState != newState) {
-			HideAllScreens();
 			switch(newState) {
 				case GameState.MainMenu:
-					MainMenuScreen.SetActive(true);
-					animator.SetTrigger("MainMenu");
+					ShowScreen (MainMenuScreen);
+					AudioMaster.instance.StopAll (false);
+					AudioMaster.instance.PlayLoop (SoundDefinitions.THEME_MAINMENU);
+					rotator.EraseAllPins ();
+					animator.SetTrigger ("menu");
 				break;
-				case GameState.Game:
+				case GameState.GoToPlay:
+					ShowScreen(GameScreen);
+					animator.SetTrigger ("start");
+					SetGameState (GameState.Playing);
+				break;
+				case GameState.Playing:
 					ResetGame();
-					GameScreen.SetActive(true);
-					if (currentState == GameState.MainMenu)
-						animator.SetTrigger("StartGame");
-					else if (currentState == GameState.GameOver)
-						animator.SetTrigger("StartGame");
-
-					spawner.SpawnPin(1f);
 				break;
-				case GameState.GameOver:
-					GameOverScreen.SetActive(true);
-					animator.SetTrigger ("EndGame");					
-					GameOverPoints.text = score.ToString();
+			case GameState.GameOver:
+				AudioMaster.instance.Play (SoundDefinitions.END_FX);
+				animator.SetTrigger ("exit");
+				GameOverPoints.text = score.ToString ();
+
 				break;
 			}
 			currentState = newState;
-		}	
+		}
+	}
+
+	public void EnableSpawner() {
+		spawner.SpawnPin(0.2f);
+	}
+
+	public void ShowGameOverScreen() {
+		ShowScreen (GameOverScreen);
+	}
+
+	public void ShowScreen(GameObject screen) {
+		HideAllScreens();
+		screen.SetActive(true);
 	}
 
 	void HideAllScreens() {
@@ -84,7 +104,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void StartGame() {		
-		SetGameState(GameState.Game);
+		SetGameState(GameState.GoToPlay);
 	}
 
 	public void EndGame() {
@@ -114,6 +134,9 @@ public class GameManager : MonoBehaviour {
 		gameHasEnded = false;		
 		spawner.enabled = true;
 		rotator.enabled = true;
+		AudioMaster.instance.StopAll(true);
+		AudioMaster.instance.PlayLoop(SoundDefinitions.LOOP_1);
+		GameScreen.SetActive (true);
 	}
 
 	void Update() {

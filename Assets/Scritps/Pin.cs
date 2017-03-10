@@ -103,7 +103,7 @@ public class Pin : Circumference {
 
 	public override void Disable() {
 		drawSpear = false;
-		cc.enabled = false;
+		colisionador.enabled = false;
 		StartCoroutine(AnimToDead());
 	}
 
