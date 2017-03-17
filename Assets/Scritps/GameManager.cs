@@ -23,11 +23,16 @@ public class GameManager : MonoBehaviour {
 	public GameObject GameScreen;
 	public GameObject GameOverScreen;
 	public Text levelUpText;
-	public int currentLevel = 0;
 	public Text scoreLabel;
 	public Text maxScoreLabel;
 	public Text GameOverPoints;
+
+	public int initialLevel;
+	[HideInInspector]
+	public int currentLevel;
 	public bool gameHasEnded = false;
+
+
 
 	private int score = 0;
 	public int Score {
@@ -129,7 +134,8 @@ public class GameManager : MonoBehaviour {
 	void ResetGame() {
 		spawner.Reset();
 		rotator.Reset();
-		currentLevel = 0;
+		if (currentLevel > initialLevel)
+			currentLevel = initialLevel;
 		score = 0;
 		gameHasEnded = false;		
 		spawner.enabled = true;

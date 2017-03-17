@@ -23,7 +23,7 @@ public class Spawner : MonoBehaviour {
 
 	public void Reset() {
 		pinsCount = 0;
-		nextColor = Random.Range (0, Mathf.Min(GameManager.instance.currentLevel +1, GameManager.instance.posibleColors.Length));
+		nextColor = GetNextColor ();
 		nextPin.color = GameManager.instance.posibleColors[nextColor];
 		//enabled = true;
 	}
@@ -34,7 +34,7 @@ public class Spawner : MonoBehaviour {
 		yield return new WaitForSeconds(secondsDelay);
 
 		currentColor = nextColor;
-		nextColor = Random.Range (0, Mathf.Min(GameManager.instance.currentLevel +2, GameManager.instance.posibleColors.Length));
+		nextColor = GetNextColor ();
 		nextPin.color = GameManager.instance.posibleColors[nextColor];
 		pin = Instantiate(PinPrefab, transform.position, transform.rotation);
 		pin.GetComponent<Circumference>().colorType   = currentColor;
@@ -42,5 +42,9 @@ public class Spawner : MonoBehaviour {
 		pin.GetComponent<SpriteRenderer>().color = GameManager.instance.posibleColors[currentColor];
 
 		pinsCount++;
+	}
+
+	int GetNextColor() {
+		return Random.Range (0, Mathf.Min(Mathf.Max(0, GameManager.instance.currentLevel +1), GameManager.instance.posibleColors.Length));
 	}
 }

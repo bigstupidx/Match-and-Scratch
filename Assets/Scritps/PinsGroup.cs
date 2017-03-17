@@ -35,6 +35,7 @@ public class PinsGroups {
     public void AddMember(Circumference c) {
         if (c.tag == "Rotator")
             Debug.Log("<color=red>Error WTF 102: Rotator metido en un grupo O_o </color>");
+		
         if (!members.Contains(c)) {
             members.Add(c);
             if (c.colorGroupText != null)
@@ -58,6 +59,8 @@ public class PinsGroups {
     }
 
 	public void Erase() {
+		if (currentState == GroupState.Remove)
+			Debug.Log(string.Format("<color=yellow> Orden de destruir el PinsGroup [{0}]</color>", index));		
         SetState(GroupState.Remove);
 		foreach (Circumference c in members) {
 			c.colisionador.enabled = false;
@@ -66,13 +69,20 @@ public class PinsGroups {
     }
 
     public void SetState(GroupState newState) {
-        if (currentState != newState) {
-            currentState = newState;
-			isActive = currentState == GroupState.Active;
-        }
+		if (currentState != newState) {
+			currentState = newState;
+		}
+		else {
+			Debug.Log(string.Format("<color=yellow> PinsGroup[{0}] : Se ha vuelto a establecer el mismo estado ( {1} ) que ya tenía que sigue activo </color>", index, newState.ToString()));
+		}
+		isActive = currentState == GroupState.Active;
+        
     }
 
 	public IEnumerator DestroyMembers(bool sumPoints = true) {
+		if (isActive)
+			Debug.Log(string.Format("<color=red> Destruyendo grupo {0} que sigue activo </color>", index));
+		
         for( int i = 0; i < members.Count; i++) {
 			//childPins.Remove(circumferences[i]);
 			if (members[i] != null)

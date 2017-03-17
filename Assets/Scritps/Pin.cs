@@ -29,52 +29,62 @@ public static class ExtensionMethods {
 		}
 		return ret;
 	}
+
+	public static string ListaAsString(this List<Circumference> list, string enunciado = "") {
+		string ret = enunciado + " ";
+		for (int i = 0; i < list.Count; i++) {
+			ret += list[i].gameObject.name;
+			if (i < list.Count -1) ret += ", ";
+		}
+		return ret;
+	}
 }
 
 public class Pin : Circumference {
 	public const float TIME_TO_DESTROY = 0.2f;
 
 	public float speed = 20f;
+
 	public bool isShooted = false;
 	public bool isPinned = false;
 	public bool drawSpear = false;
 
-	Circumference me;
-	private Transform rotator;
+	private Circumference me;
 	private Rigidbody2D rb;
-	private LineRenderer lr;
+	private LineRenderer line;
 	private SpriteRenderer sr;
+	Rotator rot;
 
 	public override void Initialize() {
 		rb = GetComponent<Rigidbody2D>();
 		sr = GetComponent<SpriteRenderer>();
-		rotator = GameObject.FindGameObjectWithTag("Rotator").transform;
-		me = GetComponent<Circumference>();
+		me = this;//GetComponent<Circumference>();
+		rot = GameManager.instance.rotator;
 		SetupLine();
 	}
 
 	void OnEnable() {
-		if (lr == null)	lr = GetComponent<LineRenderer>();
+		if (line == null)	line = GetComponent<LineRenderer>();
 	}
 
 	void SetupLine() {
 		Color parentColor = GetComponent<SpriteRenderer>().color;
-		lr = gameObject.AddComponent<LineRenderer>();
-		lr.material = new Material(Shader.Find("Sprites/Default"));
-		lr.startColor = parentColor;
-		lr.endColor = parentColor;
-		lr.startWidth = 0.05f;
-		lr.endWidth = 0.05f;
+		line = gameObject.AddComponent<LineRenderer>();
+		line.material = new Material(Shader.Find("Sprites/Default"));
+		line.startColor = parentColor;
+		line.endColor = parentColor;
+		line.startWidth = 0.05f;
+		line.endWidth = 0.05f;
 	}
 
 	void DrawTheSpear() {
 		if (drawSpear ) {
-			lr.numPositions = 2;
-			lr.SetPosition(0, transform.position);
-			lr.SetPosition(1, rotator.position);
+			line.numPositions = 2;
+			line.SetPosition(0, transform.position);
+			line.SetPosition(1, rot.transform.position);
 		}
 		else
-			lr.numPositions = 0;
+			line.numPositions = 0;
 	}
 	
 	public void DrawSpear() {
@@ -95,8 +105,11 @@ public class Pin : Circumference {
 
 	void OnTriggerEnter2D (Collider2D col) {
 		if ( isShooted && !isPinned) {
-			if (col.gameObject.tag == "Rotator" || col.gameObject.tag == "Pin" ) {
-				GameManager.instance.rotator.AddPin(me, col);
+			try {
+				rot.AddPin(me, col);
+			}
+			catch (MissingReferenceException e) {
+				Debug.Log (e.Message);
 			}
 		}
 	}
