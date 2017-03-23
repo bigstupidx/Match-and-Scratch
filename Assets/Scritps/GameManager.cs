@@ -28,7 +28,6 @@ public class GameManager : MonoBehaviour {
 	public Text GameOverPoints;
 
 	public int initialLevel;
-	[HideInInspector]
 	public int currentLevel;
 	public bool gameHasEnded = false;
 
@@ -134,8 +133,8 @@ public class GameManager : MonoBehaviour {
 	void ResetGame() {
 		spawner.Reset();
 		rotator.Reset();
-		if (currentLevel > initialLevel)
-			currentLevel = initialLevel;
+		//if (currentLevel > initialLevel)
+		currentLevel = initialLevel;
 		score = 0;
 		gameHasEnded = false;		
 		spawner.enabled = true;
