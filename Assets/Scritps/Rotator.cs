@@ -25,12 +25,14 @@ public class Rotator : Circumference {
 		Pin cn =newPin.GetComponent<Pin>();
 		cn.isPinned = true;
 		newPin.transform.SetParent(transform);
+		circumferencesCollided.Clear();
 
 		SearchNearestPins(newPin);
-
 		if(!GameManager.instance.gameHasEnded) {
 			PlaySound (newPin.colorType);
 			Reposition(newPin);
+			// Volvemos a buscar por si al recolocar se generan nuevas colisiones
+			SearchNearestPins(newPin);
 			ProcessPin(newPin);
 			spawnTimeDelay = ProcessPinsGroups();
 			GameManager.instance.CheckDifficulty();
@@ -39,9 +41,8 @@ public class Rotator : Circumference {
 	}
 
 	void SearchNearestPins(Circumference newCircumference) {
-		circumferencesCollided.Clear();
+		
 		// Comprobamos la distancia con el resto de bolas
-		//foreach (KeyValuePair<int,PinsGroups> pg in pinsGroups) {
 		for (int i = 0; i < pinsGroups.Count; i++) {
 			if (pinsGroups[i].isActive) {
 				foreach (Circumference c in pinsGroups[i].members) {
@@ -52,27 +53,26 @@ public class Rotator : Circumference {
 							pinsGroups[pinsGroups.Count-1].AddMember(newCircumference);
 							break;
 						}
-						if (!circumferencesCollided.Contains(c))
+						else if (!circumferencesCollided.Contains(c))
 							circumferencesCollided.Add (c);
 					}
 				}
 			}
 		}
-
-		// Y tambien la distanciacon el rotor
-		if ( IsColliding(newCircumference, me, 0.2f) )
-			circumferencesCollided.Add (me);
-		
-		// Si hay 3 o mas, nos quedamos sólo con los dos mas cercanos
-		if (circumferencesCollided.Count > 2)  {
-			circumferencesCollided.Sort( (A,B) => DistanceBetween(newCircumference.GetPosition(), A.GetPosition()).CompareTo(DistanceBetween(newCircumference.GetPosition(), B.GetPosition())) );
-			circumferencesCollided = circumferencesCollided.GetRange(0,2);
-		}
-
 		Debug.LogFormat("Colisionando con {0} circumferencias: {1}", circumferencesCollided.Count, circumferencesCollided.ListaAsString());
 	}
 
 	void Reposition(Circumference newPin) {
+		// Y tambien la distancia con el rotor
+		if ( IsColliding(newPin, me, 0.2f) )
+			circumferencesCollided.Add (me);
+
+		// Si hay 3 o mas, nos quedamos sólo con los dos mas cercanos
+		if (circumferencesCollided.Count > 2)  {
+			circumferencesCollided.Sort( (A,B) => DistanceBetween(newPin.GetPosition(), A.GetPosition()).CompareTo(DistanceBetween(newPin.GetPosition(), B.GetPosition())) );
+			circumferencesCollided = circumferencesCollided.GetRange(0,2);
+		}
+
 		switch (circumferencesCollided.Count) {
 			case 1:
 				/*
@@ -132,7 +132,7 @@ public class Rotator : Circumference {
 			               DistanceBetween (Solution2, GameManager.instance.spawner.transform.position) ? Solution1 : Solution2;
 				
 				if ( float.IsNaN(sol.x) ) {
-					Debug.Log ("Naaaaaaan");
+					Debug.Log ("<color=red>Error WTF 2: Naaaaaaan</color>");
 				}
 				// Posición final
 				newPin.transform.position = sol;

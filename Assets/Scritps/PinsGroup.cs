@@ -38,8 +38,7 @@ public class PinsGroups {
 		
         if (!members.Contains(c)) {
             members.Add(c);
-            if (c.colorGroupText != null)
-                c.colorGroupText.text = index.ToString();
+			c.colorGroup = index.ToString();
         }
     }
 

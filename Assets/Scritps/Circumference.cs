@@ -42,6 +42,17 @@ public class Circumference : MonoBehaviour {
 
 	public TextMesh colorGroupText;
 
+	public string colorGroup {
+		get { return colorGroupText.text;}
+		set { 			
+			if (colorGroupText != null) {
+				#if DEBUG_VERSION
+					colorGroupText.text = value;
+				#endif
+			}
+		}
+	}
+
 	public void Awake () {
 		if (colorGroupText == null) colorGroupText = transform.GetChild(0).GetComponent<TextMesh>();
 		if (colisionador == null) colisionador = GetComponent<CircleCollider2D>();
@@ -49,14 +60,10 @@ public class Circumference : MonoBehaviour {
 		Initialize();
 	}
 
-	/*void Start() {
-		if(gameObject.tag == "Pin")
-			
-	}*/
-
 	public virtual void Initialize(){}
 
 	public virtual void Disable(){}
+
 	public void Autodestroy() {
 		Disable();
 	}
