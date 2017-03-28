@@ -16,10 +16,10 @@ public class PinsGroups {
     public int index;
     public bool isActive;
 	public bool isAnalizing;
-    int combinedID = -1;
+    //private int combinedID;
 
     public void CombineWith(int value) {
-        combinedID = value;
+        //combinedID = value;
         SetState(GroupState.Combined);
     }
     
@@ -28,6 +28,7 @@ public class PinsGroups {
     public PinsGroups(int id, Circumference member = null) {
         SetState(GroupState.Active);
         index = id;
+		//combinedID = -1;
         if (member != null)
             AddMember(member);
     }

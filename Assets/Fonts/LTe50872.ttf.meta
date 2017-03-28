@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: c0a80ca2a18d34189b9a994f22c5464b
+timeCreated: 1490710030
+licenseType: Pro
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: HelveticaNeue LT 57 Cn
+  fontNames:
+  - HelveticaNeue LT 57 Cn
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

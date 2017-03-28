@@ -169,12 +169,6 @@ public class Rotator : Circumference {
 		}
 	}
 
-
-	// TODO: REPASAR ESTO, que no funciona como se esperaba
-
-	// pista: en la primera interacción comprueba que choca con Rotator y crea grupo, 
-	// en la segunda comprueba que toca con otro pin y lo mete en el grupo del pin sin 
-	// squitarlo del nuevo.
 	public void ProcessPin(Circumference newCircumference) {
 		// Comprobamos si sólo hay 
 		if (circumferencesCollided.Count == 1) {
