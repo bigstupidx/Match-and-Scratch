@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace ReveloLibrary {
-	public class CanvasManager : MonoBehaviour {
+	public class ScreenManager : MonoBehaviour {
+
+		public static ScreenManager Instance { get; private set;}
 
 		public List<UIScreen> screens;
 		public UIScreen currentGUIScreen;
@@ -13,9 +15,22 @@ namespace ReveloLibrary {
 
 		public UIScreen lastGUIScreen { get; set; }
 
+
 		void Awake() {
+			
+			if(Instance != null && Instance != this) {
+				Destroy(gameObject);
+			}
+
+			Instance = this;
+
+			DontDestroyOnLoad(gameObject);
+
 			screens = new List<UIScreen> ();
 			FindScreens ();
+		}
+
+		void Start() {			
 		}
 
 		void FindScreens() {
@@ -40,7 +55,6 @@ namespace ReveloLibrary {
 
 			if (currentGUIScreen != null && uiScreen != currentGUIScreen) {
 	            currentGUIScreen.CloseWindow();
-				currentGUIScreen.IsOpen = false;
 			}
 
 	        lastGUIScreen = currentGUIScreen;
@@ -48,7 +62,6 @@ namespace ReveloLibrary {
 			
 			if (currentGUIScreen != null) {
 				currentGUIScreen.OpenWindow();
-				currentGUIScreen.IsOpen = true;
 			}
 			else {
 				Debug.LogError("[CanvasManager in " + name +"]: La guiScreen es null. Quizás no has establecido la primera desde el inspector.");

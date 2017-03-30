@@ -14,7 +14,7 @@ namespace ReveloLibrary {
 		public virtual void Awake()
 		{
 			_animator = GetComponent<Animator>();
-			_canvasGroup = GetComponent<CanvasGroup>();
+			_canvasGroup = gameObject.GetComponentInChildren<CanvasGroup> ();
 			
 			RectTransform rect = GetComponent<RectTransform>();
 			rect.offsetMax = rect.offsetMin = new Vector2(0, 0);
@@ -23,26 +23,21 @@ namespace ReveloLibrary {
 		public virtual void Start()	{
 		}
 
-		public virtual void UpdateTitle(){
-		}
-
-		public virtual void AnimEvent_PrepareModal(){
-		}
-
 		public virtual void Update()
 		{
 			// Aseguramos que si una pantalla no está activada, no es interactuable.
-	        if (Animator != null) {
-
+			if (Animator != null) {
 				_canvasGroup.blocksRaycasts = Animator.GetCurrentAnimatorStateInfo (0).IsName ("Open");
 				_canvasGroup.interactable = Animator.GetCurrentAnimatorStateInfo (0).IsName ("Open");
 			}
 		}
-
+			
 		public virtual void OpenWindow() {
+			IsOpen = true;
 		}
 
 		public virtual void CloseWindow() {
+			IsOpen = false;
 		}
 
 		public bool IsOpen

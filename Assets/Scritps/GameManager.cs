@@ -19,9 +19,14 @@ public class GameManager : MonoBehaviour {
 	public Rotator rotator;
 	public Spawner spawner;
 	public Animator animator;
+
+	//public ScreenDefinitions startScreen;
+
+	/*
 	public GameObject MainMenuScreen;
 	public GameObject GameScreen;
 	public GameObject GameOverScreen;
+	*/
 	public Text levelUpText;
 	public Text scoreLabel;
 	public Text maxScoreLabel;
@@ -31,14 +36,14 @@ public class GameManager : MonoBehaviour {
 	public int currentLevel;
 	public bool gameHasEnded = false;
 
-
-
+	private int lastScore = 0;
 	private int score = 0;
 	public int Score {
 		get{return score;}
 		set {score = value;}
 	}
-	private int lastScore = 0;
+
+
 
 	void Awake() {
 		if (instance == null) {
@@ -53,8 +58,8 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void Start() {
-		HideAllScreens ();
-		ShowScreen (MainMenuScreen);
+		//HideAllScreens ();
+		ShowScreen (ScreenDefinitions.MAIN_MENU);
 		AudioMaster.instance.PlayLoop (SoundDefinitions.THEME_MAINMENU);
 		SetGameState(GameState.MainMenu);
 	}
@@ -63,14 +68,14 @@ public class GameManager : MonoBehaviour {
 		if (currentState != newState) {
 			switch(newState) {
 				case GameState.MainMenu:
-					ShowScreen (MainMenuScreen);
+				ShowScreen (ScreenDefinitions.MAIN_MENU);
 					AudioMaster.instance.StopAll (false);
 					AudioMaster.instance.PlayLoop (SoundDefinitions.THEME_MAINMENU);
 					rotator.EraseAllPins ();
 					animator.SetTrigger ("menu");
 				break;
 				case GameState.GoToPlay:
-					ShowScreen(GameScreen);
+				ShowScreen (ScreenDefinitions.GAME);
 					animator.SetTrigger ("start");
 					SetGameState (GameState.Playing);
 				break;
@@ -93,20 +98,20 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void ShowGameOverScreen() {
-		ShowScreen (GameOverScreen);
+		ShowScreen (ScreenDefinitions.GAME_OVER);
 	}
 
-	public void ShowScreen(GameObject screen) {
-		HideAllScreens();
-		screen.SetActive(true);
+	public void ShowScreen(ScreenDefinitions screenDef) {
+		//HideAllScreens();
+		ScreenManager.Instance.ShowScreen(screenDef);
 	}
-
+	/*
 	void HideAllScreens() {
 		GameOverScreen.SetActive(false);
 		MainMenuScreen.SetActive(false);
 		GameScreen.SetActive(false);
 	}
-
+	*/
 	public void StartGame() {		
 		SetGameState(GameState.GoToPlay);
 	}
@@ -141,7 +146,8 @@ public class GameManager : MonoBehaviour {
 		rotator.enabled = true;
 		AudioMaster.instance.StopAll(true);
 		AudioMaster.instance.PlayLoop(SoundDefinitions.LOOP_1);
-		GameScreen.SetActive (true);
+		ShowScreen (ScreenDefinitions.GAME);
+		//GameScreen.SetActive (true);
 	}
 
 	void Update() {

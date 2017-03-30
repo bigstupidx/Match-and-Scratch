@@ -11,6 +11,7 @@
 		// Screens
 		MAIN_MENU,
 		GAME,
-		GAME_OVER
+		GAME_OVER,
+		HIGHSCORES
 	}
 }
