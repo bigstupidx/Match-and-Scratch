@@ -4,19 +4,18 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ScoreElement : MonoBehaviour {
-
-
-	Text name;
+	
+	Text username;
 	Text score;
 
 	// Use this for initialization
 	void Awake () {
-		name = transform.Find ("Name").GetComponent<Text> ();
+		username = transform.Find ("Name").GetComponent<Text> ();
 		score = transform.Find ("Score").GetComponent<Text> ();
 	}
 
-	void SetScore(string theName, string theScore) {
-		name.text = theName;
+	public void SetScore(string theName, string theScore) {
+		username.text = theName;
 		score.text = theScore;
 	}
 }

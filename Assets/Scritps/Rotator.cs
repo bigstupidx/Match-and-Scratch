@@ -59,7 +59,7 @@ public class Rotator : Circumference {
 				}
 			}
 		}
-		Debug.LogFormat("Colisionando con {0} circumferencias: {1}", circumferencesCollided.Count, circumferencesCollided.ListaAsString());
+		//Debug.LogFormat("Colisionando con {0} circumferencias: {1}", circumferencesCollided.Count, circumferencesCollided.ListaAsString());
 	}
 
 	void Reposition(Circumference newPin) {

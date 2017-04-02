@@ -1,5 +1,21 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+
+
+public struct Highscore 
+{
+	public string username;
+	public int score;
+	public DateTime date;
+
+	public Highscore(string _username, int _score, DateTime _date) {
+		username = _username;
+		score = _score;
+		date = _date;
+	}
+}
 
 public class HighScores : MonoBehaviour
 {
@@ -8,14 +24,26 @@ public class HighScores : MonoBehaviour
 	const string publicCode	= "58da1c3c12e7f00688faab7b";
 	const string webURL		= "http://dreamlo.com/lb/";
 
-	public Highscore[] HighscoreList;
+	public List<Highscore> highscoreList = new List<Highscore> ();
+
+	public static HighScores instance;
+
+	public delegate void OnHighscoresUpdateEventHandler(List<Highscore> HighscoreList);
+
+	public static event OnHighscoresUpdateEventHandler OnHighscoresUpdate;
 
 	void Awake() {
+		if (instance == null) {
+			instance = this;
+		}
+		else if (instance != this) {
+			Destroy(gameObject);
+		}
+		/*
 		AddNewHighscore ("user1", 50);
 		AddNewHighscore ("user2", 100);
 		AddNewHighscore ("user3", 5);
-
-		DownloadHighscores ();
+		*/
 	}
 
 	public void AddNewHighscore(string username, int score) {
@@ -33,7 +61,7 @@ public class HighScores : MonoBehaviour
 	}
 
 	public void DownloadHighscores() {
-		StartCoroutine ("GetHighscores");
+		StartCoroutine (GetHighscores());
 	}
 
 	IEnumerator GetHighscores() {
@@ -50,15 +78,18 @@ public class HighScores : MonoBehaviour
 	void FormatHighscores(string textSteam) {
 		string[] entries = textSteam.Split (new char[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
 
-		HighscoreList = new Highscore[entries.Length];
+		highscoreList.Clear();
 
 		for (int i = 0; i < entries.Length ; i++) {
 			string[] entryInfo = entries [i].Split (new char[] { '|' });
 			string username = entryInfo [0];
 			int score = int.Parse(entryInfo [1]);
-			HighscoreList [i] = new Highscore(username, score);
-			Debug.Log (HighscoreList [i].username + ": " + HighscoreList [i].score);
+			DateTime date = DateTime.Parse(entryInfo [4]);
+			highscoreList.Add(new Highscore(username, score, date));
+			//Debug.Log (highscoreList [i].username + ": " + highscoreList [i].score + highscoreList [i].date);
 		}
+		if (OnHighscoresUpdate != null)
+			OnHighscoresUpdate (highscoreList);
 	}
 
 	void Start() {
@@ -67,16 +98,5 @@ public class HighScores : MonoBehaviour
 
 	void Update() {
 		
-	}
-}
-
-public struct Highscore 
-{
-	public string username;
-	public int score;
-
-	public Highscore(string _username, int _score) {
-		username = _username;
-		score = _score;
 	}
 }

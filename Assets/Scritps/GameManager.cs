@@ -9,24 +9,19 @@ public enum GameState {
 	MainMenu,
 	GoToPlay,
 	Playing,
-	GameOver
+	GameOver,
+	Highscores
 }
 
 public class GameManager : MonoBehaviour {
 	public static GameManager instance = null;
+
 	public GameState currentState;
 	public Color[] posibleColors;
 	public Rotator rotator;
 	public Spawner spawner;
 	public Animator animator;
 
-	//public ScreenDefinitions startScreen;
-
-	/*
-	public GameObject MainMenuScreen;
-	public GameObject GameScreen;
-	public GameObject GameOverScreen;
-	*/
 	public Text levelUpText;
 	public Text scoreLabel;
 	public Text maxScoreLabel;
@@ -43,7 +38,7 @@ public class GameManager : MonoBehaviour {
 		set {score = value;}
 	}
 
-
+	public HighScores highscores;
 
 	void Awake() {
 		if (instance == null) {
@@ -52,15 +47,14 @@ public class GameManager : MonoBehaviour {
 		else if (instance != this) {
 			Destroy(gameObject);
 		}
-		//GameOverScreen.SetActive(false);
 		int highscore = PlayerPrefs.GetInt("MaxScore");
 		maxScoreLabel.text =  highscore == 0 ? "" : "Max: " + highscore.ToString();
 	}
 
 	public void Start() {
-		//HideAllScreens ();
 		ShowScreen (ScreenDefinitions.MAIN_MENU);
-		AudioMaster.instance.PlayLoop (SoundDefinitions.THEME_MAINMENU);
+		//AudioMaster.instance.PlayLoop (SoundDefinitions.THEME_MAINMENU);
+		StartCoroutine(RefreshHighscores());
 		SetGameState(GameState.MainMenu);
 	}
 
@@ -68,25 +62,30 @@ public class GameManager : MonoBehaviour {
 		if (currentState != newState) {
 			switch(newState) {
 				case GameState.MainMenu:
-				ShowScreen (ScreenDefinitions.MAIN_MENU);
+					ShowScreen (ScreenDefinitions.MAIN_MENU);
 					AudioMaster.instance.StopAll (false);
 					AudioMaster.instance.PlayLoop (SoundDefinitions.THEME_MAINMENU);
 					rotator.EraseAllPins ();
 					animator.SetTrigger ("menu");
 				break;
 				case GameState.GoToPlay:
-				ShowScreen (ScreenDefinitions.GAME);
+					ShowScreen (ScreenDefinitions.GAME);
 					animator.SetTrigger ("start");
 					SetGameState (GameState.Playing);
 				break;
 				case GameState.Playing:
 					ResetGame();
 				break;
-			case GameState.GameOver:
-				AudioMaster.instance.Play (SoundDefinitions.END_FX);
-				animator.SetTrigger ("exit");
-				GameOverPoints.text = score.ToString ();
+				case GameState.GameOver:
+					AudioMaster.instance.Play (SoundDefinitions.END_FX);
+					animator.SetTrigger ("exit");
+					GameOverPoints.text = score.ToString ();
+					if (score > 0)
+						InputNameScreen.Instance.OpenWindow ();
 
+				break;
+			case GameState.Highscores:
+				ShowScreen (ScreenDefinitions.HIGHSCORES);
 				break;
 			}
 			currentState = newState;
@@ -102,16 +101,9 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void ShowScreen(ScreenDefinitions screenDef) {
-		//HideAllScreens();
 		ScreenManager.Instance.ShowScreen(screenDef);
 	}
-	/*
-	void HideAllScreens() {
-		GameOverScreen.SetActive(false);
-		MainMenuScreen.SetActive(false);
-		GameScreen.SetActive(false);
-	}
-	*/
+
 	public void StartGame() {		
 		SetGameState(GameState.GoToPlay);
 	}
@@ -138,7 +130,6 @@ public class GameManager : MonoBehaviour {
 	void ResetGame() {
 		spawner.Reset();
 		rotator.Reset();
-		//if (currentLevel > initialLevel)
 		currentLevel = initialLevel;
 		score = 0;
 		gameHasEnded = false;		
@@ -147,7 +138,17 @@ public class GameManager : MonoBehaviour {
 		AudioMaster.instance.StopAll(true);
 		AudioMaster.instance.PlayLoop(SoundDefinitions.LOOP_1);
 		ShowScreen (ScreenDefinitions.GAME);
-		//GameScreen.SetActive (true);
+	}
+
+	public void ShowHighscores() {		
+		SetGameState(GameState.Highscores);
+	}
+
+	IEnumerator RefreshHighscores() {
+		while (true) {
+			HighScores.instance.DownloadHighscores ();
+			yield return new WaitForSeconds (30);
+		}
 	}
 
 	void Update() {
