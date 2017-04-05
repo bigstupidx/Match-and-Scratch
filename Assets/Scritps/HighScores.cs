@@ -39,11 +39,6 @@ public class HighScores : MonoBehaviour
 		else if (instance != this) {
 			Destroy(gameObject);
 		}
-		/*
-		AddNewHighscore ("user1", 50);
-		AddNewHighscore ("user2", 100);
-		AddNewHighscore ("user3", 5);
-		*/
 	}
 
 	public void AddNewHighscore(string username, int score) {
@@ -51,11 +46,14 @@ public class HighScores : MonoBehaviour
 	}
 
 	IEnumerator UploadNewHighscore(string username, int score) {
-		WWW www = new WWW (webURL + privateCode + "/add/" + WWW.EscapeURL (username) + "/" + score);
+		string utcDay = DateTime.UtcNow.ToString ().Replace (":", "").Replace ("/", "").Replace (" ", "");
+		WWW www = new WWW (webURL + privateCode + "/add/" + WWW.EscapeURL (username + "-" + utcDay) + "/" + score);
 		yield return www;
 
-		if (string.IsNullOrEmpty (www.error))
-			Debug.Log("La puntuación se envió correctamente");
+		if (string.IsNullOrEmpty (www.error)) {
+			Debug.Log ("La puntuación se envió correctamente");
+			DownloadHighscores ();
+		}
 		else
 			Debug.Log("Hubo un error durante la subida de puntuación: " + www.error);
 	}

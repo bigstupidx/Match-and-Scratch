@@ -66,7 +66,8 @@ public class GameManager : MonoBehaviour {
 					AudioMaster.instance.StopAll (false);
 					AudioMaster.instance.PlayLoop (SoundDefinitions.THEME_MAINMENU);
 					rotator.EraseAllPins ();
-					animator.SetTrigger ("menu");
+					if(currentState != GameState.Highscores)
+						animator.SetTrigger ("menu");
 				break;
 				case GameState.GoToPlay:
 					ShowScreen (ScreenDefinitions.GAME);
@@ -84,8 +85,8 @@ public class GameManager : MonoBehaviour {
 						InputNameScreen.Instance.OpenWindow ();
 
 				break;
-			case GameState.Highscores:
-				ShowScreen (ScreenDefinitions.HIGHSCORES);
+				case GameState.Highscores:
+					ShowScreen (ScreenDefinitions.HIGHSCORES);
 				break;
 			}
 			currentState = newState;

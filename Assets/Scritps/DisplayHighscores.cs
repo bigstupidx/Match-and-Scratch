@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,12 +29,23 @@ public class DisplayHighscores : MonoBehaviour {
 
 	void UpdateHighscores(List<Highscore> list) {
 
+		// Alltimes
 		CleanHighscoreElementsList (allTimesScoreElementsList);
 		UpdateHighscoreList (list, allTimesScoreElementsList, allTimesHighscoresContent);
 
-		List<Highscore> todayList = list.FindAll (s => s.date.Day == DateTime.Now.Day);
+		// Daily
+		DateTime utcDate = DateTime.UtcNow;
+		List<Highscore> todayList = list.FindAll (s => s.date.Day == utcDate.Day);
 		CleanHighscoreElementsList (dailyScoreElementsList);
 		UpdateHighscoreList (todayList, dailyScoreElementsList, dailyHighscoresContent);
+
+		// Weekly
+		int utcYear = DateTime.UtcNow.Year;
+		DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
+		Calendar cal = dfi.Calendar;
+		List<Highscore> weekList = list.FindAll (s => 	s.date.Year == utcDate.Year && cal.GetWeekOfYear(s.date, dfi.CalendarWeekRule, dfi.FirstDayOfWeek) ==  cal.GetWeekOfYear(utcDate, dfi.CalendarWeekRule, dfi.FirstDayOfWeek));
+		CleanHighscoreElementsList (weeklyScoreElementsList);
+		UpdateHighscoreList (weekList, weeklyScoreElementsList, weeklyHighscoresContent);
 
 	}
 
@@ -47,7 +59,7 @@ public class DisplayHighscores : MonoBehaviour {
 	void UpdateHighscoreList(List<Highscore> elements, List<GameObject> goList, Transform parent) {
 		for (int i = 0; i < elements.GetRange( 0, Mathf.Min( elements.Count, 10 ) ).Count; i++) {
 			GameObject g = Instantiate (scoreElement, parent, false);
-			g.GetComponent<ScoreElement> ().SetScore (elements [i].username, elements [i].score.ToString());
+			g.GetComponent<ScoreElement> ().SetScore (elements [i].username.Split(new char[] {'-'})[0], elements [i].score.ToString());
 			goList.Add (g);
 		}
 	}
