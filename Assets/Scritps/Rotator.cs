@@ -37,6 +37,9 @@ public class Rotator : Circumference {
 			spawnTimeDelay = ProcessPinsGroups();
 			GameManager.instance.CheckDifficulty();
 			GameManager.instance.spawner.SpawnPin(spawnTimeDelay);
+			if (GameManager.instance.canInverseDir) {
+				speed *= -1;
+			}
 		}
 	}
 

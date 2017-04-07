@@ -11,7 +11,7 @@ public class InputNameScreen : UIScreen {
 	string lastName;
 	public Button sendButton;
 
-	void Awake() {
+	public override void Awake() {
 		if(Instance != null && Instance != this) {
 			Destroy(gameObject);
 		}
@@ -45,12 +45,12 @@ public class InputNameScreen : UIScreen {
 	}
 
 	// Use this for initialization
-	void Start () {
+	public override void Start () {
 		
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	public override void Update () {
 		base.Update ();
 	}
 }

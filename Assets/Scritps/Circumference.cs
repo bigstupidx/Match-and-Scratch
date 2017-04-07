@@ -46,7 +46,7 @@ public class Circumference : MonoBehaviour {
 		get { return colorGroupText.text;}
 		set { 			
 			if (colorGroupText != null) {
-				#if DEBUG_VERSION
+				#if VISUAL_DEBUG
 					colorGroupText.text = value;
 				#endif
 			}

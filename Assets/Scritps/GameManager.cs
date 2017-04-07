@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour {
 
 	public int initialLevel;
 	public int currentLevel;
+	public bool canInverseDir;
 	public bool gameHasEnded = false;
 
 	private int lastScore = 0;
@@ -38,7 +39,7 @@ public class GameManager : MonoBehaviour {
 		set {score = value;}
 	}
 
-	public HighScores highscores;
+	private List<int> pointsRequiredToLevelUp = new List<int>(){ 2, 5, 7, 10, 12, 15, 17, 20, 22, 25 };
 
 	void Awake() {
 		if (instance == null) {
@@ -159,7 +160,7 @@ public class GameManager : MonoBehaviour {
 	public void CheckDifficulty() {
 		if (lastScore != score) {
 			if (score > 0 ) {
-				if (score % 5 == 0) {
+				if (canLevelUp(score)) {
 					LevelUp ();
 				}
 			}
@@ -167,8 +168,37 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	bool canLevelUp(int score) {
+
+		if (pointsRequiredToLevelUp.Contains (score)) {
+			return true;
+		} 
+		else if (score % 5 == 0) {
+			return true;
+		}
+		
+		return false;
+	}
+		
 	void LevelUp() {
 		currentLevel++;
+
+		switch (currentLevel) {
+			case 2:
+			case 4:
+			case 5:
+			case 7:
+			case 13:
+				spawner.maxColor++;
+				break;		
+			case 3:
+			case 6:
+			case 9:
+			case 11:
+				canInverseDir = !canInverseDir;
+				break;
+		}
+
 		levelUpText.GetComponent<Animator>().SetTrigger("levelup");
 	}
 }

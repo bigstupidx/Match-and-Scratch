@@ -12,6 +12,7 @@ public class Spawner : MonoBehaviour {
 	public GameObject PinPrefab;
 	public int nextColor;
 	public int currentColor;
+	public int maxColor;
 	public Image nextPin;
 	public int pinsCount;
 
@@ -23,6 +24,7 @@ public class Spawner : MonoBehaviour {
 
 	public void Reset() {
 		pinsCount = 0;
+		maxColor = 0;
 		nextColor = GetNextColor ();
 		nextPin.color = GameManager.instance.posibleColors[nextColor];
 		//enabled = true;
@@ -45,6 +47,6 @@ public class Spawner : MonoBehaviour {
 	}
 
 	int GetNextColor() {
-		return Random.Range (0, Mathf.Min(Mathf.Max(0, GameManager.instance.currentLevel +1), GameManager.instance.posibleColors.Length));
+		return Random.Range (0, Mathf.Min(Mathf.Max(0, maxColor +1), GameManager.instance.posibleColors.Length));
 	}
 }
