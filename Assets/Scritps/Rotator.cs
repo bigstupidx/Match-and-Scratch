@@ -12,8 +12,7 @@ public class Rotator : Circumference {
 	private Dictionary<int, PinsGroups> pinsGroups = new Dictionary<int, PinsGroups>();
 
 	public override void Initialize() {
-		me = this;// GetComponent<Circumference>();
-		//Reset();
+		me = this;
 	}
 
 	void FixedUpdate() {
@@ -22,7 +21,7 @@ public class Rotator : Circumference {
 
 	public void AddPin(Circumference newPin, Collider2D col) {
 		newPin.colisionador.isTrigger = false;
-		Pin cn =newPin.GetComponent<Pin>();
+		Pin cn = newPin.GetComponent<Pin>();
 		cn.isPinned = true;
 		newPin.transform.SetParent(transform);
 		circumferencesCollided.Clear();
@@ -43,8 +42,7 @@ public class Rotator : Circumference {
 		}
 	}
 
-	void SearchNearestPins(Circumference newCircumference) {
-		
+	void SearchNearestPins(Circumference newCircumference) {		
 		// Comprobamos la distancia con el resto de bolas
 		for (int i = 0; i < pinsGroups.Count; i++) {
 			if (pinsGroups[i].isActive) {

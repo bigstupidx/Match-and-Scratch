@@ -14,6 +14,13 @@ public enum GameState {
 }
 
 public class GameManager : MonoBehaviour {
+	enum DifficultType {
+		NONE,
+		ADD_COLOR,
+		INVERSE_ENABLED,
+		INCREASE_SPEED
+	}
+
 	public static GameManager instance = null;
 
 	public GameState currentState;
@@ -39,7 +46,31 @@ public class GameManager : MonoBehaviour {
 		set {score = value;}
 	}
 
-	private List<int> pointsRequiredToLevelUp = new List<int>(){ 2, 5, 7, 10, 12, 15, 17, 20, 22, 25 };
+	private List<int> pointsRequiredToLevelUp = new List<int>() { 2, 5, 7, 10, 12, 15, 17, 20, 22, 25 };
+	private List<DifficultType> difficulty = new List<DifficultType>() { 
+		DifficultType.NONE,
+		DifficultType.ADD_COLOR,
+		DifficultType.NONE,
+		DifficultType.ADD_COLOR,
+		DifficultType.INCREASE_SPEED,
+		DifficultType.ADD_COLOR, 	//5
+		DifficultType.INVERSE_ENABLED,
+		DifficultType.ADD_COLOR,
+		DifficultType.NONE,
+		DifficultType.ADD_COLOR,
+		DifficultType.INCREASE_SPEED,			//10
+		DifficultType.ADD_COLOR,
+		DifficultType.INVERSE_ENABLED,
+		DifficultType.INCREASE_SPEED,
+		DifficultType.ADD_COLOR,
+		DifficultType.NONE,			//15
+		DifficultType.INVERSE_ENABLED,
+		DifficultType.ADD_COLOR,	
+		DifficultType.INCREASE_SPEED,
+		DifficultType.INVERSE_ENABLED,
+		DifficultType.ADD_COLOR,	//20
+		DifficultType.INVERSE_ENABLED
+	};
 
 	void Awake() {
 		if (instance == null) {
@@ -183,20 +214,28 @@ public class GameManager : MonoBehaviour {
 	void LevelUp() {
 		currentLevel++;
 
-		switch (currentLevel) {
-			case 2:
-			case 4:
-			case 5:
-			case 7:
-			case 13:
-				spawner.maxColor++;
-				break;		
-			case 3:
-			case 6:
-			case 9:
-			case 11:
+		DifficultType difficult;
+
+		if (currentLevel <= difficulty.Count)
+			difficult = difficulty [currentLevel];
+		else if (currentLevel % 2 == 0)
+			difficult = DifficultType.INCREASE_SPEED;
+		else if (currentLevel % 4 == 0)
+			difficult = DifficultType.INVERSE_ENABLED;
+		else
+			difficult = DifficultType.NONE;
+			
+
+		switch (difficult) {
+			case DifficultType.ADD_COLOR:
+				spawner.colorsInGame++;
+			break;
+			case DifficultType.INCREASE_SPEED:
+				rotator.speed += 30;
+			break;
+			case DifficultType.INVERSE_ENABLED:
 				canInverseDir = !canInverseDir;
-				break;
+			break;
 		}
 
 		levelUpText.GetComponent<Animator>().SetTrigger("levelup");

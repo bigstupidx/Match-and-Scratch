@@ -79,12 +79,12 @@ public class Pin : Circumference {
 
 	void DrawTheSpear() {
 		if (drawSpear ) {
-			line.numPositions = 2;
+			line.positionCount = 2;
 			line.SetPosition(0, transform.position);
 			line.SetPosition(1, rot.transform.position);
 		}
 		else
-			line.numPositions = 0;
+			line.positionCount = 0;
 	}
 	
 	public void DrawSpear() {
