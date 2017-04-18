@@ -6,6 +6,8 @@ using ReveloLibrary;
 public class Rotator : Circumference {
 
 	public float speed = 100f;
+	public float marginBetweenPins = 0.12f;
+
 	private float spawnTimeDelay;
 	private Circumference me;
 	private List<Circumference> circumferencesCollided = new List<Circumference>();
@@ -47,7 +49,7 @@ public class Rotator : Circumference {
 		for (int i = 0; i < pinsGroups.Count; i++) {
 			if (pinsGroups[i].isActive) {
 				foreach (Circumference c in pinsGroups[i].members) {
-					if ( IsColliding(newCircumference, c, newCircumference.GetRadius() *  0.2f) ) {
+					if ( IsColliding(newCircumference, c, newCircumference.GetRadius() *  marginBetweenPins) ) {
 						if (c.colorType !=  newCircumference.colorType) {
 							GameManager.instance.EndGame();
 							// Esto es solamente para que cuando salgamos del juego, este pin tb se borre.
@@ -65,13 +67,13 @@ public class Rotator : Circumference {
 
 	void Reposition(Circumference newPin) {
 		// Y tambien la distancia con el rotor
-		if ( IsColliding(newPin, me, 0.2f) )
+		if ( IsColliding(newPin, me, marginBetweenPins) )
 			circumferencesCollided.Add (me);
 
 		// Si hay 3 o mas, nos quedamos sólo con los dos mas cercanos
 		if (circumferencesCollided.Count > 2)  {
 			circumferencesCollided.Sort( (A,B) => DistanceBetween(newPin.GetPosition(), A.GetPosition()).CompareTo(DistanceBetween(newPin.GetPosition(), B.GetPosition())) );
-			circumferencesCollided = circumferencesCollided.GetRange(0,2);
+			circumferencesCollided = circumferencesCollided.GetRange(0, 2);
 		}
 
 		switch (circumferencesCollided.Count) {
@@ -267,7 +269,7 @@ public class Rotator : Circumference {
 			Destroy(pins[i]);
 		}
 		pinsGroups.Clear();
-		//enabled = true;
+		speed = 100f;
 	}
 
 	void PlaySound(int id) {

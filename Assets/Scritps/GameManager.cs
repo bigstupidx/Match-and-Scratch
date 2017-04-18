@@ -37,10 +37,10 @@ public class GameManager : MonoBehaviour {
 	public int initialLevel;
 	public int currentLevel;
 	public bool canInverseDir;
-	public bool gameHasEnded = false;
+	public bool gameHasEnded;
 
-	private int lastScore = 0;
-	private int score = 0;
+	private int lastScore;
+	private int score;
 	public int Score {
 		get{return score;}
 		set {score = value;}
@@ -53,22 +53,22 @@ public class GameManager : MonoBehaviour {
 		DifficultType.NONE,
 		DifficultType.ADD_COLOR,
 		DifficultType.INCREASE_SPEED,
-		DifficultType.ADD_COLOR, 	//5
+		DifficultType.ADD_COLOR, 		//5
 		DifficultType.INVERSE_ENABLED,
 		DifficultType.ADD_COLOR,
 		DifficultType.NONE,
 		DifficultType.ADD_COLOR,
-		DifficultType.INCREASE_SPEED,			//10
+		DifficultType.INCREASE_SPEED,	//10
 		DifficultType.ADD_COLOR,
 		DifficultType.INVERSE_ENABLED,
 		DifficultType.INCREASE_SPEED,
 		DifficultType.ADD_COLOR,
-		DifficultType.NONE,			//15
+		DifficultType.NONE,				//15
 		DifficultType.INVERSE_ENABLED,
 		DifficultType.ADD_COLOR,	
 		DifficultType.INCREASE_SPEED,
 		DifficultType.INVERSE_ENABLED,
-		DifficultType.ADD_COLOR,	//20
+		DifficultType.ADD_COLOR,		//20
 		DifficultType.INVERSE_ENABLED
 	};
 
@@ -85,7 +85,6 @@ public class GameManager : MonoBehaviour {
 
 	public void Start() {
 		ShowScreen (ScreenDefinitions.MAIN_MENU);
-		//AudioMaster.instance.PlayLoop (SoundDefinitions.THEME_MAINMENU);
 		StartCoroutine(RefreshHighscores());
 		SetGameState(GameState.MainMenu);
 	}
@@ -94,6 +93,7 @@ public class GameManager : MonoBehaviour {
 		if (currentState != newState) {
 			switch(newState) {
 				case GameState.MainMenu:
+					animator.SetBool("highscores", false);
 					ShowScreen (ScreenDefinitions.MAIN_MENU);
 					AudioMaster.instance.StopAll (false);
 					AudioMaster.instance.PlayLoop (SoundDefinitions.THEME_MAINMENU);
@@ -118,6 +118,7 @@ public class GameManager : MonoBehaviour {
 
 				break;
 				case GameState.Highscores:
+					animator.SetBool("highscores", true);
 					ShowScreen (ScreenDefinitions.HIGHSCORES);
 				break;
 			}
