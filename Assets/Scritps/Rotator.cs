@@ -292,6 +292,18 @@ public class Rotator : Circumference {
 			case 6:
 				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_6);
 			break;
+			case 7:
+				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_7);
+			break;
+			case 8:
+				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_8);
+			break;
+			case 9:
+				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_9);
+			break;
+			case 10:
+				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_10);
+			break;
 			default:
 				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_1);
 			break;

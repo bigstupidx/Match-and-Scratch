@@ -24,6 +24,13 @@ namespace ReveloLibrary {
 		SCRATCH_3,
 		SCRATCH_4,
 		SCRATCH_5,
-		SCRATCH_6
+		SCRATCH_6,
+		SCRATCH_7,
+		SCRATCH_8,
+		SCRATCH_9,
+		SCRATCH_10,
+
+		SFX_SPEED,
+		SFX_REVERSE
 	}
 }

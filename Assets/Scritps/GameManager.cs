@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using ReveloLibrary;
+using UnityEngine.Advertisements;
 
 public enum GameState {
 	MainMenu,
@@ -45,6 +46,8 @@ public class GameManager : MonoBehaviour {
 		get{return score;}
 		set {score = value;}
 	}
+
+	public int MAX_COLORS_IN_GAME = 5;
 
 	private List<int> pointsRequiredToLevelUp = new List<int>() { 2, 5, 7, 10, 12, 15, 17, 20, 22, 25 };
 	private List<DifficultType> difficulty = new List<DifficultType>() { 
@@ -217,7 +220,7 @@ public class GameManager : MonoBehaviour {
 
 		DifficultType difficult;
 
-		if (currentLevel <= difficulty.Count)
+		if (currentLevel < difficulty.Count)
 			difficult = difficulty [currentLevel];
 		else if (currentLevel % 2 == 0)
 			difficult = DifficultType.INCREASE_SPEED;
@@ -225,20 +228,42 @@ public class GameManager : MonoBehaviour {
 			difficult = DifficultType.INVERSE_ENABLED;
 		else
 			difficult = DifficultType.NONE;
-			
 
 		switch (difficult) {
 			case DifficultType.ADD_COLOR:
-				spawner.colorsInGame++;
+				spawner.colorsInGame = Mathf.Min (spawner.colorsInGame++, MAX_COLORS_IN_GAME);
+				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
 			case DifficultType.INCREASE_SPEED:
 				rotator.speed += 30;
+				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
 			case DifficultType.INVERSE_ENABLED:
 				canInverseDir = !canInverseDir;
+				AudioMaster.instance.Play (SoundDefinitions.SFX_REVERSE);
 			break;
 		}
 
 		levelUpText.GetComponent<Animator>().SetTrigger("levelup");
+	}
+
+	public void ShowAds() {
+		if ( Advertisement.IsReady() ) {
+			Advertisement.Show ("rewardedVideo", new ShowOptions(){resultCallback = HandleAdResult});
+		}
+	}
+
+	private void HandleAdResult(ShowResult result) {
+		switch (result) {
+		case ShowResult.Finished:
+			Debug.Log ("Video Visto");
+			break;
+		case ShowResult.Skipped:
+			Debug.Log ("Video Saltado");
+			break;
+		case ShowResult.Failed:
+			Debug.Log ("Video Failed");
+			break;
+		}
 	}
 }
