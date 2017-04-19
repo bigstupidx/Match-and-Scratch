@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using ReveloLibrary;
 
 public enum GameState {
+	None,
 	MainMenu,
 	GoToPlay,
 	Playing,
@@ -100,7 +101,7 @@ public class GameManager : MonoBehaviour {
 					AudioMaster.instance.StopAll (false);
 					AudioMaster.instance.PlayLoop (SoundDefinitions.THEME_MAINMENU);
 					rotator.EraseAllPins ();
-					if(currentState != GameState.Highscores)
+				if(currentState != GameState.Highscores && currentState != GameState.None)
 						animator.SetTrigger ("menu");
 				break;
 				case GameState.GoToPlay:

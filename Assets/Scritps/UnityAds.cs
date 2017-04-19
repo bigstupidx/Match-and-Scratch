@@ -1,28 +1,34 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.Advertisements;
+using UnityEngine.Advertisements; 
+//using UnityEditor.Advertisements;
 
 public class UnityAds : MonoBehaviour {
 
-	public string gameID;
-
 	void Start() {
-		Advertisement.Initialize (gameID);
+		
+		Advertisement.Initialize (Advertisement.gameId);
 	}
 
 	public void ShowAds() {
-		if (Advertisement.isSupported) {
-			if (Advertisement.IsReady ("matchscratch")) {
-				Advertisement.Show ("matchscratch", new ShowOptions (){ resultCallback = HandleAdResult });
+
+		if (Advertisement.isInitialized) {
+			if (Advertisement.isSupported) {
+				if (Advertisement.IsReady ("rewardedVideo")) {
+					var options = new ShowOptions { resultCallback = HandleShowResult };
+					Advertisement.Show ("rewardedVideo", options);
+				} else {
+					Debug.Log ("Ads not Ready");
+				}
 			} else {
-				Debug.Log ("Ads not Ready");
+				Debug.Log ("Ads no soportados");
 			}
 		} else {
-			Debug.Log ("Ads no soportados");
+			Debug.Log ("Ads no iniciados");
 		}
 	}
 
-	private void HandleAdResult(ShowResult result) {
+	private void HandleShowResult(ShowResult result) {
 		switch (result) {
 		case ShowResult.Finished:
 			Debug.Log ("Video Visto");
