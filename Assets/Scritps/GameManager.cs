@@ -32,7 +32,6 @@ public class GameManager : MonoBehaviour {
 
 	public Text levelUpText;
 	public Text scoreLabel;
-	public Text maxScoreLabel;
 	public Text GameOverPoints;
 
 	public int initialLevel;
@@ -82,8 +81,8 @@ public class GameManager : MonoBehaviour {
 		else if (instance != this) {
 			Destroy(gameObject);
 		}
-		int highscore = PlayerPrefs.GetInt("MaxScore");
-		maxScoreLabel.text =  highscore == 0 ? "" : "Max: " + highscore.ToString();
+		//int highscore = PlayerPrefs.GetInt("MaxScore");
+		//scoreLabel.text =  highscore == 0 ? "" : "Max: " + highscore.ToString();
 	}
 
 	public void Start() {
@@ -189,7 +188,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Update() {
-		scoreLabel.text = score.ToString();
+		scoreLabel.text = "Score: " + score.ToString();
 	}
 
 	public void CheckDifficulty() {
