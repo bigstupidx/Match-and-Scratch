@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour {
 	public Rotator rotator;
 	public Spawner spawner;
 	public Animator animator;
+	public UnityAds unityAds;
 
 	public Text levelUpText;
 	public Text scoreLabel;
@@ -83,6 +84,7 @@ public class GameManager : MonoBehaviour {
 		}
 		//int highscore = PlayerPrefs.GetInt("MaxScore");
 		//scoreLabel.text =  highscore == 0 ? "" : "Max: " + highscore.ToString();
+		unityAds = GetComponent<UnityAds>();
 	}
 
 	public void Start() {

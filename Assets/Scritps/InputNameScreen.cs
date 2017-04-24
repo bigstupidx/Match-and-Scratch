@@ -39,16 +39,25 @@ public class InputNameScreen : UIScreen {
 	}
 
 	public void SendScore() {
-		lastName = nameField.text;
-		HighScores.instance.AddNewHighscore (lastName, GameManager.instance.Score);
-		PlayerPrefs.SetString ("name", lastName);
-	}
-
-	// Use this for initialization
-	public override void Start () {
-		
+		GameManager.instance.unityAds.ShowAds (SendScoreToBBDD);
 	}
 	
+	void SendScoreToBBDD(int result) {
+		if (result == 2) {
+			lastName = nameField.text;
+			HighScores.instance.AddNewHighscore (lastName, GameManager.instance.Score);
+			PlayerPrefs.SetString ("name", lastName);
+		}
+		//TODO 
+		/*
+		else {
+			Ventana modal avisando de que viendo videos colaboras a que mas juegos gratuitos como este sean creados.
+		} 
+		*/
+		CloseWindow ();
+	}
+	
+
 	// Update is called once per frame
 	public override void Update () {
 		base.Update ();

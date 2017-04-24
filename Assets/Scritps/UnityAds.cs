@@ -5,12 +5,18 @@ using UnityEngine.Advertisements;
 
 public class UnityAds : MonoBehaviour {
 
+
+	public delegate void callback(int result);
+	callback resultCallback;
+
 	void Start() {
 		
 		Advertisement.Initialize (Advertisement.gameId);
 	}
 
-	public void ShowAds() {
+	public void ShowAds(callback _callback = null) {
+
+		resultCallback = _callback;
 
 		if (Advertisement.isInitialized) {
 			if (Advertisement.isSupported) {
@@ -40,5 +46,8 @@ public class UnityAds : MonoBehaviour {
 			Debug.Log ("Video Failed");
 			break;
 		}
+
+		if (resultCallback != null)
+			resultCallback ((int) result);
 	}
 }
