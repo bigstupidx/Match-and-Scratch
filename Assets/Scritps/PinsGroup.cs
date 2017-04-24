@@ -89,6 +89,9 @@ public class PinsGroups {
 				members[i].gameObject.GetComponent<Pin>().Autodestroy();
 			yield return new WaitForSeconds(Pin.TIME_TO_DESTROY/members.Count);
 		}
-		if (sumPoints) GameManager.instance.Score += members.Count - 2; 
+		if (sumPoints) {
+			GameManager.instance.Score += members.Count - 2;
+			GameManager.instance.CheckDifficulty ();
+		}
     }
 }

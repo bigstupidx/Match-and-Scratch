@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour {
 
 	public int MAX_COLORS_IN_GAME = 5;
 
-	private List<int> pointsRequiredToLevelUp = new List<int>() { 2, 5, 7, 10, 12, 15, 17, 20, 22, 25 };
+	private List<int> pointsRequiredToLevelUp = new List<int>() { 1, 5, 7, 10, 12, 15, 17, 20, 22, 25 };
 	private List<DifficultType> difficulty = new List<DifficultType>() { 
 		DifficultType.NONE,
 		DifficultType.ADD_COLOR,
@@ -109,7 +109,8 @@ public class GameManager : MonoBehaviour {
 					SetGameState (GameState.Playing);
 				break;
 				case GameState.Playing:
-					ResetGame();
+					ResetGame ();
+					Tutorial.instance.StartTutorial ();
 				break;
 				case GameState.GameOver:
 					AudioMaster.instance.Play (SoundDefinitions.END_FX);
@@ -147,11 +148,11 @@ public class GameManager : MonoBehaviour {
 	public void EndGame() {
 		if (gameHasEnded)
 			return;
-
+		/*
 		if (score > PlayerPrefs.GetInt("MaxScore")) {
 			PlayerPrefs.SetInt("MaxScore", score);
 		}
-		
+		*/
 		rotator.enabled = false;
 		spawner.enabled = false;
 		gameHasEnded = true;
@@ -166,6 +167,7 @@ public class GameManager : MonoBehaviour {
 	void ResetGame() {
 		spawner.Reset();
 		rotator.Reset();
+		canInverseDir = false;
 		currentLevel = initialLevel;
 		score = 0;
 		gameHasEnded = false;		
@@ -192,14 +194,14 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void CheckDifficulty() {
-		if (lastScore != score) {
-			if (score > 0 ) {
+		//if (lastScore != score) {
+			//if (score > 0 ) {
 				if (canLevelUp(score)) {
 					LevelUp ();
 				}
-			}
-			lastScore = score;
-		}
+			//}
+		//	lastScore = score;
+		//}
 	}
 
 	bool canLevelUp(int score) {
@@ -207,7 +209,7 @@ public class GameManager : MonoBehaviour {
 		if (pointsRequiredToLevelUp.Contains (score)) {
 			return true;
 		} 
-		else if (score % 5 == 0) {
+		else if (score > 0 && score % 5 == 0) {
 			return true;
 		}
 		

@@ -36,7 +36,6 @@ public class Rotator : Circumference {
 			SearchNearestPins(newPin);
 			ProcessPin(newPin);
 			spawnTimeDelay = ProcessPinsGroups();
-			GameManager.instance.CheckDifficulty();
 			GameManager.instance.spawner.SpawnPin(spawnTimeDelay);
 			if (GameManager.instance.canInverseDir) {
 				speed *= -1;
@@ -49,7 +48,7 @@ public class Rotator : Circumference {
 		for (int i = 0; i < pinsGroups.Count; i++) {
 			if (pinsGroups[i].isActive) {
 				foreach (Circumference c in pinsGroups[i].members) {
-					if ( IsColliding(newCircumference, c, newCircumference.GetRadius() *  marginBetweenPins) ) {
+					if ( IsColliding( newCircumference, c, marginBetweenPins ) ) {
 						if (c.colorType !=  newCircumference.colorType) {
 							GameManager.instance.EndGame();
 							// Esto es solamente para que cuando salgamos del juego, este pin tb se borre.
@@ -66,7 +65,6 @@ public class Rotator : Circumference {
 	}
 
 	void Reposition(Circumference newPin) {
-		// Y tambien la distancia con el rotor
 		if ( IsColliding(newPin, me, marginBetweenPins) )
 			circumferencesCollided.Add (me);
 
@@ -258,7 +256,10 @@ public class Rotator : Circumference {
 	}
 
 	bool IsColliding(Circumference A, Circumference B, float margin = 0f) {
-		return DistanceBetween( A.GetPosition(),B.GetPosition() ) < ( (A.GetRadius() + B.GetRadius() + margin) * (A.GetRadius() + B.GetRadius() + margin) );
+		if (A.colorType == B.colorType)
+			return DistanceBetween( A.GetPosition(),B.GetPosition() ) < ( (A.GetRadius() + B.GetRadius() + margin) * (A.GetRadius() + B.GetRadius() + margin) );
+		else
+			return DistanceBetween( A.GetPosition(),B.GetPosition() ) < ( (A.GetRadius() + B.GetRadius()) * (A.GetRadius() + B.GetRadius()) );
 	}
 
 	public void Reset() {
