@@ -44,4 +44,9 @@ public class Tutorial : MonoBehaviour {
 		PlayerPrefs.SetInt ("tutorialShowed", 1);
 		tutorialScreen.SetActive(false);
 	}
+
+
+	public void ClearPlayerPrefs() {
+		PlayerPrefs.SetInt ("tutorialShowed", 0);
+	}
 }
