@@ -14,6 +14,10 @@ public class UnityAds : MonoBehaviour {
 		Advertisement.Initialize (Advertisement.gameId);
 	}
 
+	public void ShowAds() {
+		ShowAds (null);
+	}
+
 	public void ShowAds(callback _callback = null) {
 
 		resultCallback = _callback;

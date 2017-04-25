@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour {
 	public UnityAds unityAds;
 
 	public Text levelUpText;
+	public Text newScore;
 	public Text scoreLabel;
 	public Text GameOverPoints;
 
@@ -43,8 +44,14 @@ public class GameManager : MonoBehaviour {
 	private int lastScore;
 	private int score;
 	public int Score {
-		get{return score;}
-		set {score = value;}
+		get; private set;
+	}
+
+	public void AddScore(int pts) {
+		score += pts;
+		newScore.text = "+" + pts.ToString();
+		if ( !newScore.GetComponent<Animator>().GetCurrentAnimatorStateInfo (0).IsName ("start") )
+			newScore.GetComponent<Animator> ().SetTrigger ("start");
 	}
 
 	public int MAX_COLORS_IN_GAME = 5;
@@ -192,7 +199,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Update() {
-		scoreLabel.text = "Score: " + score.ToString();
+		scoreLabel.text = "Score " + score.ToString();
 	}
 
 	public void CheckDifficulty() {
@@ -248,6 +255,6 @@ public class GameManager : MonoBehaviour {
 			break;
 		}
 
-		levelUpText.GetComponent<Animator>().SetTrigger("levelup");
+		levelUpText.GetComponent<Animator>().SetTrigger("start");
 	}
 }

@@ -130,13 +130,14 @@ public class Rotator : Circumference {
 				#endregion
 				// nos quedamos con la mas cercana al spawner
 				Vector3 sol = DistanceBetween (Solution1, GameManager.instance.spawner.transform.position) <
-			               DistanceBetween (Solution2, GameManager.instance.spawner.transform.position) ? Solution1 : Solution2;
+			                  DistanceBetween (Solution2, GameManager.instance.spawner.transform.position) ? Solution1 : Solution2;
 				
 				if ( float.IsNaN(sol.x) ) {
 					Debug.Log ("<color=red>Error WTF 2: Naaaaaaan</color>");
 				}
-				// Posición final
-				newPin.transform.position = sol;
+				else
+					// Posición final
+					newPin.transform.position = sol;
 				/*
 				/// DEBUG ///
 				//debug posicion new pin en el momento de la collision
