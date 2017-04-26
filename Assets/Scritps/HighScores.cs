@@ -16,7 +16,10 @@ public struct Highscore
 		date = _date;
 	}
 }
-
+/// <summary>
+///  Highscores powered by: dreamlo.com
+///  http://dreamlo.com/lb/J3duL1tLhUSESgpxL-tbHwuoqEW8TI9k-eS_5UfeoOhA
+/// </summary>
 public class HighScores : MonoBehaviour
 {
 
