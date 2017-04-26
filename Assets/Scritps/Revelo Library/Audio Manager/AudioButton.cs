@@ -13,7 +13,7 @@ namespace ReveloLibrary {
 			GetComponent<Button>().onClick.AddListener(OnClick);	
 		}
 
-		public void OnClick()
+		void OnClick()
 		{
 			AudioMaster.instance.Play(soundDefinition);			
 		}

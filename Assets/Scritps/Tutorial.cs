@@ -31,7 +31,7 @@ public class Tutorial : MonoBehaviour {
 
 	IEnumerator ShowTutorial() {
 		if (!tutorialShowed) {
-			while (!screen.IsOpen) {
+			while (!screen.InOpenState) {
 				yield return null;
 			}
 			yield return new WaitForSeconds (2f);

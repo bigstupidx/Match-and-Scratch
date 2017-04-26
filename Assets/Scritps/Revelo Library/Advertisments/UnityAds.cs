@@ -9,6 +9,10 @@ public class UnityAds : MonoBehaviour {
 	public delegate void callback(int result);
 	callback resultCallback;
 
+	public bool IsReady {
+		get { return Advertisement.IsReady ("rewardedVideo");}
+	}
+
 	void Start() {
 		
 		Advertisement.Initialize (Advertisement.gameId);
@@ -28,26 +32,29 @@ public class UnityAds : MonoBehaviour {
 					var options = new ShowOptions { resultCallback = HandleShowResult };
 					Advertisement.Show ("rewardedVideo", options);
 				} else {
+					HandleShowResult (ShowResult.Failed);
 					Debug.Log ("Ads not Ready");
 				}
 			} else {
+				HandleShowResult (ShowResult.Failed);
 				Debug.Log ("Ads no soportados");
 			}
 		} else {
+			HandleShowResult (ShowResult.Failed);
 			Debug.Log ("Ads no iniciados");
 		}
 	}
 
 	private void HandleShowResult(ShowResult result) {
 		switch (result) {
-		case ShowResult.Finished:
-			Debug.Log ("Video Visto");
+			case ShowResult.Finished:
+				Debug.Log ("Video Visto");
 			break;
-		case ShowResult.Skipped:
-			Debug.Log ("Video Saltado");
+			case ShowResult.Skipped:
+				Debug.Log ("Video Saltado");
 			break;
-		case ShowResult.Failed:
-			Debug.Log ("Video Failed");
+			case ShowResult.Failed:
+				Debug.Log ("Video Failed");
 			break;
 		}
 

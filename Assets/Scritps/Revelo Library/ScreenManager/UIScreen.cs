@@ -5,11 +5,13 @@ namespace ReveloLibrary {
 	
 	[RequireComponent(typeof(Animator))]
 	public class UIScreen : MonoBehaviour {
-
+		public bool AlwaysActive;
 		public ScreenDefinitions screenDefinition;
 
 		private CanvasGroup _canvasGroup;
 		protected Animator _animator;
+
+		GameObject ScreenWrapper;
 
 		public virtual void Awake()
 		{
@@ -18,6 +20,8 @@ namespace ReveloLibrary {
 			
 			RectTransform rect = GetComponent<RectTransform>();
 			rect.offsetMax = rect.offsetMin = new Vector2(0, 0);
+			ScreenWrapper = transform.FindChild ("Wrapper").gameObject;
+			if (!AlwaysActive) ScreenWrapper.SetActive (false);
 		}
 
 		public virtual void Start()	{
@@ -33,11 +37,13 @@ namespace ReveloLibrary {
 		}
 			
 		public virtual void OpenWindow() {
+			if (!AlwaysActive) ScreenWrapper.SetActive (true);
 			IsOpen = true;
 		}
 
 		public virtual void CloseWindow() {
 			IsOpen = false;
+			if (!AlwaysActive) StartCoroutine (DesactivateOnClose ());
 		}
 
 		public bool IsOpen
@@ -69,6 +75,13 @@ namespace ReveloLibrary {
 			get {
 				return Animator.GetCurrentAnimatorStateInfo(0).IsName("Close");
 			}
+		}
+
+		IEnumerator DesactivateOnClose() {
+			while (!InCloseState) {
+				yield return null;
+			}
+			ScreenWrapper.SetActive (false);
 		}
 
 	}
