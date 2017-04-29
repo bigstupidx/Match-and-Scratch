@@ -44,7 +44,8 @@ public class GameManager : MonoBehaviour {
 	private int lastScore;
 	private int score;
 	public int Score {
-		get; private set;
+		get { return score;}
+		private set {score = value;}
 	}
 
 	public void AddScore(int pts) {
@@ -113,13 +114,12 @@ public class GameManager : MonoBehaviour {
 						animator.SetTrigger ("menu");
 				break;
 				case GameState.GoToPlay:
-					ShowScreen (ScreenDefinitions.GAME);
 					animator.SetTrigger ("start");
 					SetGameState (GameState.Playing);
 				break;
-				case GameState.Playing:
-					ResetGame ();
-					Tutorial.instance.StartTutorial ();
+			case GameState.Playing:
+				ScreenManager.Instance.HideScreen ();
+					StartCoroutine (WaitUntilPlayingState ());			
 				break;
 				case GameState.GameOver:
 					AudioMaster.instance.Play (SoundDefinitions.END_FX);
@@ -138,7 +138,17 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public void EnableSpawner() {
+	IEnumerator WaitUntilPlayingState() {
+		while ( !animator.GetCurrentAnimatorStateInfo (0).IsName("PlayingGame") ){
+			yield return null;
+		}
+
+		ShowScreen (ScreenDefinitions.GAME, BeginGame);		
+	}
+
+	void BeginGame() {
+		ResetGame ();
+		Tutorial.instance.StartTutorial ();
 		spawner.SpawnPin(0.2f);
 	}
 
@@ -146,8 +156,8 @@ public class GameManager : MonoBehaviour {
 		ShowScreen (ScreenDefinitions.GAME_OVER);
 	}
 
-	public void ShowScreen(ScreenDefinitions screenDef) {
-		ScreenManager.Instance.ShowScreen(screenDef);
+	public void ShowScreen(ScreenDefinitions screenDef, ScreenManager.Callback TheCallback = null) {
+		ScreenManager.Instance.ShowScreen(screenDef, TheCallback);
 	}
 
 	public void StartGame() {		
@@ -184,7 +194,7 @@ public class GameManager : MonoBehaviour {
 		rotator.enabled = true;
 		AudioMaster.instance.StopAll(true);
 		AudioMaster.instance.PlayLoop(SoundDefinitions.LOOP_1);
-		ShowScreen (ScreenDefinitions.GAME);
+		//ShowScreen (ScreenDefinitions.GAME);
 	}
 
 	public void ShowHighscores() {		

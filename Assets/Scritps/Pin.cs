@@ -109,7 +109,7 @@ public class Pin : Circumference {
 				rot.AddPin(me, col);
 			}
 			catch (MissingReferenceException e) {
-				Debug.Log (e.Message);
+				Debug.LogError (e.Source + ": " + e.Message);
 			}
 		}
 	}

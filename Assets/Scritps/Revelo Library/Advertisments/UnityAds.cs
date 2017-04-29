@@ -14,8 +14,18 @@ public class UnityAds : MonoBehaviour {
 	}
 
 	void Start() {
-		
-		Advertisement.Initialize (Advertisement.gameId);
+		StartCoroutine (AssertInitialization ());
+	}
+
+
+	IEnumerator AssertInitialization() {
+		while (true) {
+			if (!Advertisement.isInitialized) {
+				Debug.Log ("Ads no esta inicializado -> Arrancando...");
+				Advertisement.Initialize (Advertisement.gameId);
+			}			
+			yield return new WaitForSeconds (2f);
+		}
 	}
 
 	public void ShowAds() {

@@ -9,12 +9,15 @@ namespace ReveloLibrary {
 
 		public List<UIScreen> screens;
 		public UIScreen currentGUIScreen;
+
+		public delegate void Callback();
+		Callback resultCallback;
+
 		private UIScreen _newScreen;
 
 		private GameObject ProfilePlayerInstance;
 
 		public UIScreen lastGUIScreen { get; set; }
-
 
 		void Awake() {
 			
@@ -49,8 +52,9 @@ namespace ReveloLibrary {
 	    /// Shows the screen.
 	    /// </summary>
 	    /// <param name="guiScreen">GUI screen.</param>
-		public void ShowScreen(ScreenDefinitions definition) {
-			
+		public void ShowScreen(ScreenDefinitions definition, Callback theCallback= null) {
+
+			resultCallback = theCallback;
 			UIScreen uiScreen = screens.Find (s => s.screenDefinition == definition);
 
 			if (currentGUIScreen != null && uiScreen != currentGUIScreen) {
@@ -66,6 +70,23 @@ namespace ReveloLibrary {
 			else {
 				Debug.LogError("[CanvasManager in " + name +"]: La guiScreen es null. Quizás no has establecido la primera desde el inspector.");
 			}
+
+			if (resultCallback != null) {
+				StartCoroutine (RunCallbackOnAnimationEnd ());
+			}
+		}
+	
+		public void HideScreen() {
+			if (currentGUIScreen != null) {
+				currentGUIScreen.CloseWindow();
+			}
+		}
+
+		IEnumerator RunCallbackOnAnimationEnd() {
+			while (currentGUIScreen.Animator.IsInTransition(0))
+				yield return null;
+			
+			resultCallback();
 		}
 	}
 }

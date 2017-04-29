@@ -27,13 +27,14 @@ public class Rotator : Circumference {
 		cn.isPinned = true;
 		newPin.transform.SetParent(transform);
 		circumferencesCollided.Clear();
-
 		SearchNearestPins(newPin);
 		if(!GameManager.instance.gameHasEnded) {
 			PlaySound (newPin.colorType);
 			Reposition(newPin);
+
 			// Volvemos a buscar por si al recolocar se generan nuevas colisiones
-			SearchNearestPins(newPin);
+			//SearchNearestPins(newPin); // TODO: ESTO DA ERRORES....
+
 			ProcessPin(newPin);
 			spawnTimeDelay = ProcessPinsGroups();
 			GameManager.instance.spawner.SpawnPin(spawnTimeDelay);

@@ -43,7 +43,6 @@ namespace ReveloLibrary {
 
 		public virtual void CloseWindow() {
 			IsOpen = false;
-			if (!AlwaysActive) StartCoroutine (DesactivateOnClose ());
 		}
 
 		public bool IsOpen
@@ -67,21 +66,19 @@ namespace ReveloLibrary {
 
 		public bool InOpenState {
 			get {
-				return Animator.GetCurrentAnimatorStateInfo(0).IsName("Open");
+				return !Animator.GetCurrentAnimatorStateInfo(0).IsName("Close") && Animator.GetCurrentAnimatorStateInfo(0).IsName("Open") && !Animator.IsInTransition(0);
 			}
 		}
 
 		public bool InCloseState {
 			get {
-				return Animator.GetCurrentAnimatorStateInfo(0).IsName("Close");
+				return !Animator.GetCurrentAnimatorStateInfo(0).IsName("Open") && Animator.GetCurrentAnimatorStateInfo(0).IsName("Close") &&  !Animator.IsInTransition(0);
 			}
 		}
 
-		IEnumerator DesactivateOnClose() {
-			while (!InCloseState) {
-				yield return null;
-			}
-			ScreenWrapper.SetActive (false);
+		void DesactivateOnClose() {
+			if (!AlwaysActive)
+				ScreenWrapper.SetActive (false);
 		}
 
 	}
