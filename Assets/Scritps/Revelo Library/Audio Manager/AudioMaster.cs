@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 namespace ReveloLibrary {
 	public class AudioMaster : MonoBehaviour {
@@ -279,7 +280,12 @@ namespace ReveloLibrary {
 		{
 			foreach (ClipInfo ci in mActiveAudio) 
 			{
-				Destroy(ci.Source.gameObject);
+				try { 
+					Destroy(ci.Source.gameObject);
+				}
+				catch (NullReferenceException e) {
+					Debug.LogErrorFormat ("El audio:{0} y no existe \n - NullreferenceException: \n {1} \n ] == [ {2}", ci.Source.name, e.Message, e.Data);
+				} 
 			}
 		}
 		

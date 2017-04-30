@@ -105,7 +105,8 @@ public class GameManager : MonoBehaviour {
 		if (currentState != newState) {
 			switch(newState) {
 				case GameState.MainMenu:
-					animator.SetBool("highscores", false);
+					if (ScreenManager.Instance.currentGUIScreen.screenDefinition  == ScreenDefinitions.HIGHSCORES)
+						animator.SetBool("highscores", false);
 					ShowScreen (ScreenDefinitions.MAIN_MENU);
 					AudioMaster.instance.StopAll (false);
 					AudioMaster.instance.PlayLoop (SoundDefinitions.THEME_MAINMENU);

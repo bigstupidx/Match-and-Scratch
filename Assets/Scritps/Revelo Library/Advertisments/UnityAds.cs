@@ -5,27 +5,53 @@ using UnityEngine.Advertisements;
 
 public class UnityAds : MonoBehaviour {
 
+	public enum videoType {
+		REWARDED_VIDEO,
+		SKIPPABLES_VIDEO
+	}
+	string[] videoTypeStrings = new string[] {"rewardedVideo", "video"};
+
+	videoType currentVideoType;
 
 	public delegate void callback(int result);
 	callback resultCallback;
 
 	public bool IsReady {
-		get { return Advertisement.IsReady ("rewardedVideo");}
+		get { 
+			#if UNITY_ANDROID
+			bool videoRewards = Advertisement.IsReady (videoTypeStrings [(int)videoType.REWARDED_VIDEO]);
+			bool videoSkkipables = Advertisement.IsReady (videoTypeStrings [(int)videoType.SKIPPABLES_VIDEO]);
+
+			if (videoRewards) 
+				currentVideoType = videoType.REWARDED_VIDEO;
+			else if (videoSkkipables)
+				currentVideoType = videoType.SKIPPABLES_VIDEO;
+			else {
+				// Si no estan disponibles por que no está el servicio iniciado, intentamos iniciarlos para que la siguiente vez estén disponibles.
+				if (!Advertisement.isInitialized) {
+					StartCoroutine (AssertInitialization ());
+				}
+				return false;
+			}
+			Debug.Log("videos disponibles unityAds: " + currentVideoType.ToString());
+			return true;
+			#endif
+
+			return false;
+		}
 	}
 
 	void Start() {
 		StartCoroutine (AssertInitialization ());
 	}
 
-
 	IEnumerator AssertInitialization() {
-		while (true) {
-			if (!Advertisement.isInitialized) {
-				Debug.Log ("Ads no esta inicializado -> Arrancando...");
-				Advertisement.Initialize (Advertisement.gameId);
-			}			
+		while (!Advertisement.isInitialized) {
+			Debug.Log ("Servicio  UnityAds  Iniciando manualmente...");
+			Advertisement.Initialize (Advertisement.gameId);
 			yield return new WaitForSeconds (2f);
 		}
+		Debug.Log ("Servicio  UnityAds inicializados.");
 	}
 
 	public void ShowAds() {
@@ -38,7 +64,7 @@ public class UnityAds : MonoBehaviour {
 
 		if (Advertisement.isInitialized) {
 			if (Advertisement.isSupported) {
-				if (Advertisement.IsReady ("rewardedVideo")) {
+				if (Advertisement.IsReady (videoTypeStrings[(int)currentVideoType])) {
 					var options = new ShowOptions { resultCallback = HandleShowResult };
 					Advertisement.Show ("rewardedVideo", options);
 				} else {
@@ -68,7 +94,9 @@ public class UnityAds : MonoBehaviour {
 			break;
 		}
 
-		if (resultCallback != null)
-			resultCallback ((int) result);
+		if (resultCallback != null) {
+			
+			resultCallback ((int)result);
+		} 
 	}
 }
