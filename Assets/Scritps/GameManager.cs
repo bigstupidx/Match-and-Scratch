@@ -14,13 +14,15 @@ public enum GameState {
 	Highscores
 }
 
+public enum DifficultType {
+	NONE,
+	MORE_COLORS,
+	REVERSE_ENABLED,
+	SPEEDUP
+}
+
 public class GameManager : MonoBehaviour {
-	enum DifficultType {
-		NONE,
-		ADD_COLOR,
-		INVERSE_ENABLED,
-		INCREASE_SPEED
-	}
+
 
 	public static GameManager instance = null;
 
@@ -31,7 +33,7 @@ public class GameManager : MonoBehaviour {
 	public Animator animator;
 	public UnityAds unityAds;
 
-	public Text levelUpText;
+	public LevelUp levelUp;
 	public Text newScore;
 	public Text scoreLabel;
 	public Text GameOverPoints;
@@ -60,27 +62,27 @@ public class GameManager : MonoBehaviour {
 	private List<int> pointsRequiredToLevelUp = new List<int>() { 1, 5, 7, 10, 12, 15, 17, 20, 22, 25 };
 	private List<DifficultType> difficulty = new List<DifficultType>() { 
 		DifficultType.NONE,
-		DifficultType.ADD_COLOR,
+		DifficultType.MORE_COLORS,
 		DifficultType.NONE,
-		DifficultType.ADD_COLOR,
-		DifficultType.INCREASE_SPEED,
-		DifficultType.ADD_COLOR, 		//5
-		DifficultType.INVERSE_ENABLED,
-		DifficultType.ADD_COLOR,
+		DifficultType.MORE_COLORS,
+		DifficultType.SPEEDUP,
+		DifficultType.MORE_COLORS, 		//5
+		DifficultType.REVERSE_ENABLED,
+		DifficultType.MORE_COLORS,
 		DifficultType.NONE,
-		DifficultType.ADD_COLOR,
-		DifficultType.INCREASE_SPEED,	//10
-		DifficultType.ADD_COLOR,
-		DifficultType.INVERSE_ENABLED,
-		DifficultType.INCREASE_SPEED,
-		DifficultType.ADD_COLOR,
+		DifficultType.MORE_COLORS,
+		DifficultType.SPEEDUP,	//10
+		DifficultType.MORE_COLORS,
+		DifficultType.REVERSE_ENABLED,
+		DifficultType.SPEEDUP,
+		DifficultType.MORE_COLORS,
 		DifficultType.NONE,				//15
-		DifficultType.INVERSE_ENABLED,
-		DifficultType.ADD_COLOR,	
-		DifficultType.INCREASE_SPEED,
-		DifficultType.INVERSE_ENABLED,
-		DifficultType.ADD_COLOR,		//20
-		DifficultType.INVERSE_ENABLED
+		DifficultType.REVERSE_ENABLED,
+		DifficultType.MORE_COLORS,	
+		DifficultType.SPEEDUP,
+		DifficultType.REVERSE_ENABLED,
+		DifficultType.MORE_COLORS,		//20
+		DifficultType.REVERSE_ENABLED
 	};
 
 	void Awake() {
@@ -244,28 +246,28 @@ public class GameManager : MonoBehaviour {
 		if (currentLevel < difficulty.Count)
 			difficult = difficulty [currentLevel];
 		else if (currentLevel % 2 == 0)
-			difficult = DifficultType.INCREASE_SPEED;
+			difficult = DifficultType.SPEEDUP;
 		else if (currentLevel % 4 == 0)
-			difficult = DifficultType.INVERSE_ENABLED;
+			difficult = DifficultType.REVERSE_ENABLED;
 		else
 			difficult = DifficultType.NONE;
 
 		switch (difficult) {
-		case DifficultType.ADD_COLOR:
+		case DifficultType.MORE_COLORS:
 				int newMaxColors = spawner.colorsInGame + 1;
 				spawner.colorsInGame = Mathf.Min (newMaxColors, MAX_COLORS_IN_GAME);
 				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
-			case DifficultType.INCREASE_SPEED:
+			case DifficultType.SPEEDUP:
 				rotator.speed += 30;
 				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
-			case DifficultType.INVERSE_ENABLED:
+			case DifficultType.REVERSE_ENABLED:
 				canInverseDir = !canInverseDir;
 				AudioMaster.instance.Play (SoundDefinitions.SFX_REVERSE);
 			break;
 		}
 
-		levelUpText.GetComponent<Animator>().SetTrigger("start");
+		levelUp.Show (difficult);
 	}
 }

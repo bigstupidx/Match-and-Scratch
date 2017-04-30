@@ -12,9 +12,11 @@ public class UnityAds : MonoBehaviour {
 	string[] videoTypeStrings = new string[] {"rewardedVideo", "video"};
 
 	videoType currentVideoType;
+	videoType lastVideoType;
 
 	public delegate void callback(int result);
 	callback resultCallback;
+
 
 	public bool IsReady {
 		get { 
@@ -33,7 +35,10 @@ public class UnityAds : MonoBehaviour {
 				}
 				return false;
 			}
-			Debug.Log("videos disponibles unityAds: " + currentVideoType.ToString());
+			if (lastVideoType != currentVideoType) {
+				Debug.Log("videos disponibles unityAds: " + currentVideoType.ToString());
+				lastVideoType = currentVideoType;
+			}
 			return true;
 			#endif
 
