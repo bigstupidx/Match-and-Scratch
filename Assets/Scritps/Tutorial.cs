@@ -34,7 +34,6 @@ public class Tutorial : MonoBehaviour {
 			while (!screen.InOpenState) {
 				yield return null;
 			}
-			yield return new WaitForSeconds (2f);
 			tutorialScreen.SetActive(true);
 		}
 		yield return null;
