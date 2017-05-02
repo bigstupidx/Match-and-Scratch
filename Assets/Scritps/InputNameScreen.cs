@@ -39,7 +39,7 @@ public class InputNameScreen : UIScreen {
 	}
 
 	public void SendScore() {
-		GameManager.instance.unityAds.ShowAds (SendScoreToBBDD);
+		UnityAds.Instance.ShowAds (SendScoreToBBDD);
 	}
 	
 	void SendScoreToBBDD(int result) {

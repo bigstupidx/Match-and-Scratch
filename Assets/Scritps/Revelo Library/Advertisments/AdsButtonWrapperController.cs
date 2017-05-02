@@ -17,13 +17,11 @@ public class AdsButtonWrapperController : MonoBehaviour {
 	public ButtonBehaviourType behaviourType;
 	public GameObject AdsButton;
 	Button buttonComp;
-	Image butonBg;
 
 	public GameObject internalIcon;
 	public bool continuousCheck;
 
 	public void Awake() {
-		butonBg = AdsButton.GetComponent<Image> ();
 		buttonComp = AdsButton.GetComponent<Button> ();
 
 		if (internalIcon == null)
@@ -49,13 +47,13 @@ public class AdsButtonWrapperController : MonoBehaviour {
 		if (GameManager.instance) {
 			switch (behaviourType) {
 				case ButtonBehaviourType.DISABLE_BUTTON:
-					buttonComp.interactable = GameManager.instance.unityAds.IsReady;
+					buttonComp.interactable = UnityAds.Instance.IsReady;
 				break;
 				case ButtonBehaviourType.HIDE_BUTTON:
-					AdsButton.SetActive (GameManager.instance.unityAds.IsReady);
+					AdsButton.SetActive (UnityAds.Instance.IsReady);
 				break;
 				case ButtonBehaviourType.HIDE_BUTTON_ICON:
-					internalIcon.SetActive (GameManager.instance.unityAds.IsReady);
+					internalIcon.SetActive (UnityAds.Instance.IsReady);
 				break;
 			}
 		}

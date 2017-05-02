@@ -17,6 +17,16 @@ public class UnityAds : MonoBehaviour {
 	public delegate void callback(int result);
 	callback resultCallback;
 
+	public static UnityAds Instance { get; private set;}
+
+	void Awake() {
+		if (Instance == null) {
+			Instance = this;
+		}
+		else if (Instance != this) {
+			Destroy(gameObject);
+		}
+	}
 
 	public bool IsReady {
 		get { 
@@ -40,9 +50,9 @@ public class UnityAds : MonoBehaviour {
 				lastVideoType = currentVideoType;
 			}
 			return true;
-			#endif
-
+			#else
 			return false;
+			#endif
 		}
 	}
 

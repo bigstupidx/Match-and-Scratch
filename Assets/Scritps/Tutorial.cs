@@ -5,27 +5,19 @@ using ReveloLibrary;
 
 public class Tutorial : MonoBehaviour {
 
-	public static Tutorial instance;
-	public GameObject tutorialScreen;
+	public GameObject tutorialWrapper;
 
 	UIScreen screen;
 	bool tutorialShowed;
 
 	void Awake() {
-		if (instance == null) {
-			instance = this;
-		}
-		else if (instance != this) {
-			Destroy(gameObject);
-		}
-
-		tutorialScreen.SetActive(false);
 		screen = GetComponent<UIScreen> ();
 		tutorialShowed = PlayerPrefs.GetInt ("tutorialShowed", 0) == 1;
+		tutorialWrapper.SetActive(tutorialShowed);
 	}
 
 	// Use this for initialization
-	public void StartTutorial () {
+	public void OnEnable () {
 		StartCoroutine (ShowTutorial());
 	}
 
@@ -34,14 +26,14 @@ public class Tutorial : MonoBehaviour {
 			while (!screen.InOpenState) {
 				yield return null;
 			}
-			tutorialScreen.SetActive(true);
+			tutorialWrapper.SetActive(true);
 		}
 		yield return null;
 	}
 
 	public void EndTutorial() {
 		PlayerPrefs.SetInt ("tutorialShowed", 1);
-		tutorialScreen.SetActive(false);
+		tutorialWrapper.SetActive(false);
 	}
 
 

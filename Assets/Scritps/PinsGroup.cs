@@ -14,7 +14,9 @@ public class PinsGroups {
     
     public List<Circumference> members = new List<Circumference>();
     public int index;
-    public bool isActive;
+	public bool isActive {
+		get { return currentState == GroupState.Active;}
+	}
 	public bool isAnalizing;
     //private int combinedID;
 
@@ -39,7 +41,7 @@ public class PinsGroups {
 		
         if (!members.Contains(c)) {
             members.Add(c);
-			c.colorGroup = index.ToString();
+			c.colorGroup = index;
         }
     }
 
@@ -75,7 +77,7 @@ public class PinsGroups {
 		else {
 			Debug.Log(string.Format("<color=yellow> PinsGroup[{0}] : Se ha vuelto a establecer el mismo estado ( {1} ) que ya tenía que sigue activo </color>", index, newState.ToString()));
 		}
-		isActive = currentState == GroupState.Active;
+		//isActive = currentState == GroupState.Active;
         
     }
 

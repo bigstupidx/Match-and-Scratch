@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 using ReveloLibrary;
+using SmartLocalization;
 
 public enum GameState {
 	None,
@@ -31,7 +32,7 @@ public class GameManager : MonoBehaviour {
 	public Rotator rotator;
 	public Spawner spawner;
 	public Animator animator;
-	public UnityAds unityAds;
+	//public UnityAds unityAds;
 
 	public LevelUp levelUp;
 	public Text newScore;
@@ -92,9 +93,16 @@ public class GameManager : MonoBehaviour {
 		else if (instance != this) {
 			Destroy(gameObject);
 		}
-		//int highscore = PlayerPrefs.GetInt("MaxScore");
-		//scoreLabel.text =  highscore == 0 ? "" : "Max: " + highscore.ToString();
-		unityAds = GetComponent<UnityAds>();
+
+		//TODO: Seleccionar lenguaje del sistema
+		if (Application.systemLanguage == SystemLanguage.Spanish)
+			LanguageManager.Instance.ChangeLanguage("es");
+		else
+			LanguageManager.Instance.ChangeLanguage("en");
+	}
+
+	public void changeLanguage(string lang) {
+		LanguageManager.Instance.ChangeLanguage (lang);
 	}
 
 	public void Start() {
@@ -151,7 +159,7 @@ public class GameManager : MonoBehaviour {
 
 	void BeginGame() {
 		ResetGame ();
-		Tutorial.instance.StartTutorial ();
+		//Tutorial.instance.StartTutorial ();
 		spawner.SpawnPin(0.2f);
 	}
 

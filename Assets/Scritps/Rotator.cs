@@ -6,7 +6,7 @@ using ReveloLibrary;
 public class Rotator : Circumference {
 
 	public float speed = 100f;
-	public float marginBetweenPins = 0.12f;
+	public float marginBetweenPins = 0.004f;
 
 	private float spawnTimeDelay;
 	private Circumference me;
@@ -25,15 +25,21 @@ public class Rotator : Circumference {
 		newPin.colisionador.isTrigger = false;
 		Pin cn = newPin.GetComponent<Pin>();
 		cn.isPinned = true;
+		Circumference collis = col.gameObject.GetComponent<Circumference> ();
+		if (col.name == "Rotator")
+			Debug.Log(string.Format ("{0} collisiona con {1}", newPin.name, col.name));
+		else
+			Debug.Log(string.Format ("{0} collisiona con {1} que pertenece al grupo {2} y su estado es {3} y contiene {4} miembros.", newPin.name, col.name, collis.colorGroup.ToString(), pinsGroups [collis.colorGroup].currentState.ToString (), pinsGroups [collis.colorGroup].Count.ToString()));
 		newPin.transform.SetParent(transform);
 		circumferencesCollided.Clear();
+
 		SearchNearestPins(newPin);
 		if(!GameManager.instance.gameHasEnded) {
 			PlaySound (newPin.colorType);
 			Reposition(newPin);
 
 			// Volvemos a buscar por si al recolocar se generan nuevas colisiones
-			//SearchNearestPins(newPin); // TODO: ESTO DA ERRORES....
+			//SearchNearestPins(newPin);
 
 			ProcessPin(newPin);
 			spawnTimeDelay = ProcessPinsGroups();
@@ -44,7 +50,7 @@ public class Rotator : Circumference {
 		}
 	}
 
-	void SearchNearestPins(Circumference newCircumference) {		
+	void SearchNearestPins(Circumference newCircumference) {
 		// Comprobamos la distancia con el resto de bolas
 		for (int i = 0; i < pinsGroups.Count; i++) {
 			if (pinsGroups[i].isActive) {
@@ -52,22 +58,27 @@ public class Rotator : Circumference {
 					if ( IsColliding( newCircumference, c, marginBetweenPins ) ) {
 						if (c.colorType !=  newCircumference.colorType) {
 							GameManager.instance.EndGame();
-							// Esto es solamente para que cuando salgamos del juego, este pin tb se borre.
-							pinsGroups[pinsGroups.Count-1].AddMember(newCircumference);
-							break;
 						}
-						else if (!circumferencesCollided.Contains(c))
+						if (!circumferencesCollided.Contains(c))
 							circumferencesCollided.Add (c);
 					}
 				}
 			}
 		}
-		//Debug.LogFormat("Colisionando con {0} circumferencias: {1}", circumferencesCollided.Count, circumferencesCollided.ListaAsString());
+		if ( IsColliding(newCircumference, me) )
+			circumferencesCollided.Add (me);
+		
+		if (circumferencesCollided.Count == 0)
+			Debug.Log("<color=red>No se ha encontrado ninguna colision</color>");
+		
+		Debug.Log(string.Format("Colisionando con {0} circumferencias: {1}", circumferencesCollided.Count, circumferencesCollided.ListaAsString()));
+
+		// Esto es solamente para que cuando salgamos del juego, este pin tb se borre.
+		if(GameManager.instance.gameHasEnded)
+			pinsGroups.Add (pinsGroups.Count, new PinsGroups (pinsGroups.Count, newCircumference));
 	}
 
 	void Reposition(Circumference newPin) {
-		if ( IsColliding(newPin, me, marginBetweenPins) )
-			circumferencesCollided.Add (me);
 
 		// Si hay 3 o mas, nos quedamos sólo con los dos mas cercanos
 		if (circumferencesCollided.Count > 2)  {
@@ -167,7 +178,7 @@ public class Rotator : Circumference {
 				*/
 			break;
 			default:				
-				Debug.Log("<color=red> ERROR WTF 111: nomero de colisiones incorrectas: </color>" + circumferencesCollided.Count.ToString());
+				Debug.Log(string.Format("<color=red> ERROR WTF 111: nomero de colisiones incorrectas: {0}</color>", circumferencesCollided.Count.ToString()));
 			break;
 		}
 	}
@@ -227,7 +238,7 @@ public class Rotator : Circumference {
 				int origin = groupsCollided[i];
 				pinsGroups[destiny].AddMembers(pinsGroups[origin].members);
 				pinsGroups[origin].CombineWith(destiny);
-				//Debug.Log(string.Format("<color=yellow>Combinados Grupos {0} y {1} </color>", destiny, origin));
+				Debug.Log(string.Format("<color=yellow>Combinados Grupo {0} en {1} </color>", destiny, origin));
 			}
 		}
 	}
@@ -258,10 +269,10 @@ public class Rotator : Circumference {
 	}
 
 	bool IsColliding(Circumference A, Circumference B, float margin = 0f) {
-		if (A.colorType == B.colorType)
+		if (A.colorType == B.colorType || B.colorType == -1)
 			return DistanceBetween( A.GetPosition(),B.GetPosition() ) < ( (A.GetRadius() + B.GetRadius() + margin) * (A.GetRadius() + B.GetRadius() + margin) );
 		else
-			return DistanceBetween( A.GetPosition(),B.GetPosition() ) < ( (A.GetRadius() + B.GetRadius()) * (A.GetRadius() + B.GetRadius()) );
+			return DistanceBetween( A.GetPosition(),B.GetPosition() ) < ( (A.GetRadius() + B.GetRadius() + (margin * 0.5f)) * (A.GetRadius() + B.GetRadius() + (margin * 0.5f)) );
 	}
 
 	public void Reset() {

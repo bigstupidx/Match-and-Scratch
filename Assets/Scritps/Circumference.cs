@@ -41,13 +41,14 @@ public class Circumference : MonoBehaviour {
 	public float GetRadius() { return radius * transform.lossyScale.x; }
 
 	public TextMesh colorGroupText;
-
-	public string colorGroup {
-		get { return colorGroupText.text;}
-		set { 			
+	int _colorGroup;
+	public int colorGroup {
+		get { return _colorGroup;}
+		set {
+			_colorGroup = value;	
 			if (colorGroupText != null) {
 				#if VISUAL_DEBUG
-					colorGroupText.text = value;
+				colorGroupText.text = value.toString();
 				#endif
 			}
 		}
