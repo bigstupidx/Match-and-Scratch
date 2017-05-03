@@ -18,8 +18,13 @@ public class DisplayHighscores : MonoBehaviour {
 	List<GameObject> allTimesScoreElementsList = new List<GameObject>();
 
 	// Use this for initialization
-	void Start () {
+	void OnEnable () {
+		UpdateHighscores (HighScores.instance.highscoreList);
 		HighScores.OnHighscoresUpdate += UpdateHighscores;
+	}
+
+	void OnDisable (){
+		HighScores.OnHighscoresUpdate -= UpdateHighscores;
 	}
 	
 	// Update is called once per frame
