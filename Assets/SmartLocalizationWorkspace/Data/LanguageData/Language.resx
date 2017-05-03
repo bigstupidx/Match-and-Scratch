@@ -164,4 +164,7 @@
 	<data name="ui.tabitem.weekly" xml:space="preserve">
 		<value>Weekly</value>
 	</data>
+	<data name="ui.label.level" xml:space="preserve">
+		<value>Level</value>
+	</data>
 </root>

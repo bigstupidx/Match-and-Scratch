@@ -1,4 +1,7 @@
-﻿#if DEVELOPMENT_BUILD || DEBUG || UNITY_EDITOR
+﻿/// <summary>
+/// Fuente http://answers.unity3d.com/questions/126315/debuglog-in-build.html
+/// </summary>
+#if DEVELOPMENT_BUILD || DEBUG || UNITY_EDITOR
 #define VERBOSE
 #endif
 

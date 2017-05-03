@@ -26,21 +26,22 @@ public class Rotator : Circumference {
 		Pin cn = newPin.GetComponent<Pin>();
 		cn.isPinned = true;
 		Circumference collis = col.gameObject.GetComponent<Circumference> ();
+
 		if (col.name == "Rotator")
 			Debug.Log(string.Format ("{0} collisiona con {1}", newPin.name, col.name));
 		else
 			Debug.Log(string.Format ("{0} collisiona con {1} que pertenece al grupo {2} y su estado es {3} y contiene {4} miembros.", newPin.name, col.name, collis.colorGroup.ToString(), pinsGroups [collis.colorGroup].currentState.ToString (), pinsGroups [collis.colorGroup].Count.ToString()));
+
 		newPin.transform.SetParent(transform);
+
 		circumferencesCollided.Clear();
 
 		SearchNearestPins(newPin);
-		if(!GameManager.instance.gameHasEnded) {
+		if (!GameManager.instance.gameHasEnded) {
 			PlaySound (newPin.colorType);
-			Reposition(newPin);
-
+			Reposition (newPin);
 			// Volvemos a buscar por si al recolocar se generan nuevas colisiones
-			//SearchNearestPins(newPin);
-
+			// SearchNearestPins(newPin);
 			ProcessPin(newPin);
 			spawnTimeDelay = ProcessPinsGroups();
 			GameManager.instance.spawner.SpawnPin(spawnTimeDelay);

@@ -37,10 +37,19 @@ public class GameManager : MonoBehaviour {
 	public LevelUp levelUp;
 	public Text newScore;
 	public Text scoreLabel;
+	public Text levelLabel;
 	public Text GameOverPoints;
 
 	public int initialLevel;
-	public int currentLevel;
+	[SerializeField]
+	private int currentLevel;
+	public int CurrentLevel {
+		get{return currentLevel;}
+		set { 
+			currentLevel = value;
+			levelLabel.text = LanguageManager.Instance.GetTextValue("ui.label.level") + " " + currentLevel.ToString();
+		}
+	}
 	public bool canInverseDir;
 	public bool gameHasEnded;
 
@@ -48,11 +57,16 @@ public class GameManager : MonoBehaviour {
 	private int score;
 	public int Score {
 		get { return score;}
-		private set {score = value;}
+		private set {
+			score = value;
+			scoreLabel.text = LanguageManager.Instance.GetTextValue("ui.label.score") + " " + score.ToString();
+		}
 	}
 
 	public void AddScore(int pts) {
 		score += pts;
+		scoreLabel.text = LanguageManager.Instance.GetTextValue("ui.label.score") + " " + score.ToString();
+
 		newScore.text = "+" + pts.ToString();
 		if ( !newScore.GetComponent<Animator>().GetCurrentAnimatorStateInfo (0).IsName ("start") )
 			newScore.GetComponent<Animator> ().SetTrigger ("start");
@@ -60,30 +74,25 @@ public class GameManager : MonoBehaviour {
 
 	public int MAX_COLORS_IN_GAME = 5;
 
-	private List<int> pointsRequiredToLevelUp = new List<int>() { 1, 5, 7, 10, 12, 15, 17, 20, 22, 25 };
+	private List<int> pointsRequiredToLevelUp = new List<int>() { 1, 4, 8, 12, 16, 20, 25, 30, 34, 36, 40, 45, 50, 55, 60 };
 	private List<DifficultType> difficulty = new List<DifficultType>() { 
 		DifficultType.NONE,
+
 		DifficultType.MORE_COLORS,
-		DifficultType.NONE,
 		DifficultType.MORE_COLORS,
 		DifficultType.SPEEDUP,
-		DifficultType.MORE_COLORS, 		//5
-		DifficultType.REVERSE_ENABLED,
+		DifficultType.MORE_COLORS, 		
+		DifficultType.REVERSE_ENABLED,	// 5
 		DifficultType.MORE_COLORS,
-		DifficultType.NONE,
 		DifficultType.MORE_COLORS,
-		DifficultType.SPEEDUP,	//10
+		DifficultType.SPEEDUP,	
 		DifficultType.MORE_COLORS,
-		DifficultType.REVERSE_ENABLED,
+		DifficultType.REVERSE_ENABLED,	// 10
 		DifficultType.SPEEDUP,
 		DifficultType.MORE_COLORS,
-		DifficultType.NONE,				//15
 		DifficultType.REVERSE_ENABLED,
 		DifficultType.MORE_COLORS,	
-		DifficultType.SPEEDUP,
-		DifficultType.REVERSE_ENABLED,
-		DifficultType.MORE_COLORS,		//20
-		DifficultType.REVERSE_ENABLED
+		DifficultType.SPEEDUP			// 15
 	};
 
 	void Awake() {
@@ -135,8 +144,8 @@ public class GameManager : MonoBehaviour {
 				case GameState.GameOver:
 					AudioMaster.instance.Play (SoundDefinitions.END_FX);
 					animator.SetTrigger ("exit");
-					GameOverPoints.text = score.ToString ();
-					if (score > 0)
+					GameOverPoints.text = Score.ToString ();
+					if (Score > 0)
 						InputNameScreen.Instance.OpenWindow ();
 
 				break;
@@ -159,7 +168,6 @@ public class GameManager : MonoBehaviour {
 
 	void BeginGame() {
 		ResetGame ();
-		//Tutorial.instance.StartTutorial ();
 		spawner.SpawnPin(0.2f);
 	}
 
@@ -178,11 +186,7 @@ public class GameManager : MonoBehaviour {
 	public void EndGame() {
 		if (gameHasEnded)
 			return;
-		/*
-		if (score > PlayerPrefs.GetInt("MaxScore")) {
-			PlayerPrefs.SetInt("MaxScore", score);
-		}
-		*/
+		
 		rotator.enabled = false;
 		spawner.enabled = false;
 		gameHasEnded = true;
@@ -198,8 +202,8 @@ public class GameManager : MonoBehaviour {
 		spawner.Reset();
 		rotator.Reset();
 		canInverseDir = false;
-		currentLevel = initialLevel;
-		score = 0;
+		CurrentLevel = initialLevel;
+		Score = 0;
 		gameHasEnded = false;		
 		spawner.enabled = true;
 		rotator.enabled = true;
@@ -220,7 +224,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Update() {
-		scoreLabel.text = "Score " + score.ToString();
+		
 	}
 
 	public void CheckDifficulty() {
@@ -247,15 +251,15 @@ public class GameManager : MonoBehaviour {
 	}
 		
 	void LevelUp() {
-		currentLevel++;
+		CurrentLevel++;
 
 		DifficultType difficult;
 
-		if (currentLevel < difficulty.Count)
-			difficult = difficulty [currentLevel];
-		else if (currentLevel % 2 == 0)
+		if (CurrentLevel < difficulty.Count)
+			difficult = difficulty [CurrentLevel];
+		else if (CurrentLevel % 2 == 0)
 			difficult = DifficultType.SPEEDUP;
-		else if (currentLevel % 4 == 0)
+		else if (CurrentLevel % 4 == 0)
 			difficult = DifficultType.REVERSE_ENABLED;
 		else
 			difficult = DifficultType.NONE;

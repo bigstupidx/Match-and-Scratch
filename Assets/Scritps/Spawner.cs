@@ -35,14 +35,15 @@ public class Spawner : MonoBehaviour {
 		yield return new WaitForSeconds(secondsDelay);
 
 		currentColor = nextColor;
-		nextColor = GetNextColor ();
-		nextPin.color = GameManager.instance.posibleColors[nextColor];
 		pin = Instantiate(PinPrefab, transform.position, transform.rotation);
 		pin.GetComponent<Circumference>().colorType   = currentColor;
 		pin.name = pinsCount + "-Type_" + currentColor.ToString();
 		pin.GetComponent<SpriteRenderer>().color = GameManager.instance.posibleColors[currentColor];
 
 		pinsCount++;
+
+		nextColor = GetNextColor ();
+		nextPin.color = GameManager.instance.posibleColors[nextColor];
 	}
 
 	int GetNextColor() {
