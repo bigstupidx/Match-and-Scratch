@@ -13,7 +13,7 @@ public class Tutorial : MonoBehaviour {
 	void Awake() {
 		screen = GetComponent<UIScreen> ();
 		tutorialShowed = PlayerPrefs.GetInt ("tutorialShowed", 0) == 1;
-		tutorialWrapper.SetActive(tutorialShowed);
+		tutorialWrapper.SetActive(!tutorialShowed);
 	}
 
 	// Use this for initialization
@@ -38,6 +38,11 @@ public class Tutorial : MonoBehaviour {
 
 
 	public void ClearPlayerPrefs() {
-		PlayerPrefs.SetInt ("tutorialShowed", 0);
+		PlayerPrefs.DeleteKey ("tutorialShowed");
+		PlayerPrefs.DeleteKey ("undeliveredScores");
+	}
+
+	public void AddTestScore() {
+		HighScores.instance.AddNewHighscore ("test_user", -1);
 	}
 }

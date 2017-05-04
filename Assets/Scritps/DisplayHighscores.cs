@@ -20,11 +20,11 @@ public class DisplayHighscores : MonoBehaviour {
 	// Use this for initialization
 	void OnEnable () {
 		UpdateHighscores (HighScores.instance.highscoreList);
-		HighScores.OnHighscoresUpdate += UpdateHighscores;
+		HighScores.instance.OnHighscoresUpdate += UpdateHighscores;
 	}
 
 	void OnDisable (){
-		HighScores.OnHighscoresUpdate -= UpdateHighscores;
+		HighScores.instance.OnHighscoresUpdate -= UpdateHighscores;
 	}
 	
 	// Update is called once per frame

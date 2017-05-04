@@ -2,44 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class ExtensionMethods {	
-
-	public static List<GameObject> ToList(this GameObject[] list) {
-		List<GameObject> newList = new List<GameObject>();
-		for (int i = 0; i < list.Length; i++) {
-			newList.Add(list[i]);
-		}
-		return newList;
-	}
-
-	public static string ListaAsString(this GameObject[] list, string enunciado = "") {
-		string ret = enunciado + " ";
-		for (int i = 0; i < list.Length; i++) {
-			ret += list[i] == null ? "<null>" : list[i].name;
-			if (i < list.Length -1) ret += ", ";
-		}
-		return ret;
-	}
-
-	public static string ListaAsString(this List<GameObject> list, string enunciado = "") {
-		string ret = enunciado + " ";
-		for (int i = 0; i < list.Count; i++) {
-			ret += list[i].name;
-			if (i < list.Count -1) ret += ", ";
-		}
-		return ret;
-	}
-
-	public static string ListaAsString(this List<Circumference> list, string enunciado = "") {
-		string ret = enunciado + " ";
-		for (int i = 0; i < list.Count; i++) {
-			ret += list[i].gameObject.name;
-			if (i < list.Count -1) ret += ", ";
-		}
-		return ret;
-	}
-}
-
 public class Pin : Circumference {
 	public const float TIME_TO_DESTROY = 0.2f;
 

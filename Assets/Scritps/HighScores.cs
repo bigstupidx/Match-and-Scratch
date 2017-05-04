@@ -15,6 +15,14 @@ public struct Highscore
 		score = _score;
 		date = _date;
 	}
+	/*
+	public bool Equals(Highscore comp) {
+		return comp.ToString() == ToString();
+	}
+	*/
+	public string ToContatString() {
+		return username + "|" + score + "|" + date.ToUniversalTime().ToString().Replace (":", "").Replace ("/", "").Replace (" ", "");
+	}
 }
 /// <summary>
 ///  Highscores powered by: dreamlo.com
@@ -30,10 +38,15 @@ public class HighScores : MonoBehaviour
 	public List<Highscore> highscoreList = new List<Highscore> ();
 
 	public static HighScores instance;
-
+	/*
 	public delegate void OnHighscoresUpdateEventHandler(List<Highscore> HighscoreList);
 
 	public static event OnHighscoresUpdateEventHandler OnHighscoresUpdate;
+	*/
+
+	List<Highscore> undeliveredHighScores = new List<Highscore> ();
+
+	public Action<List<Highscore>> OnHighscoresUpdate;
 
 	void Awake() {
 		if (instance == null) {
@@ -44,21 +57,86 @@ public class HighScores : MonoBehaviour
 		}
 	}
 
+	void Start() {
+		ReadUndeliveredScores ();
+		StartCoroutine (CheckInternetConnection());
+	}
+
+	void ReadUndeliveredScores() {
+		string[] undeliveredScoresStream = PlayerPrefs.GetString("undeliveredScores","").Split (new char[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
+		undeliveredHighScores.Clear ();
+
+		for (int i = 0; i < undeliveredScoresStream.Length; i++) {			
+			string[] entryInfo = undeliveredScoresStream [i].Split (new char[] { '|' });
+			string username = entryInfo [0];
+			int score = int.Parse(entryInfo [1]);
+			DateTime date = DateTime.Parse(entryInfo [2].parseToDateTime());
+		
+			undeliveredHighScores.Add( new Highscore(username, score, date) );
+		}
+		PlayerPrefs.DeleteKey ("undeliveredScores");
+	}
+
 	public void AddNewHighscore(string username, int score) {
 		StartCoroutine(UploadNewHighscore(username, score));
 	}
 
-	IEnumerator UploadNewHighscore(string username, int score) {
-		string utcDay = DateTime.UtcNow.ToString ().Replace (":", "").Replace ("/", "").Replace (" ", "");
-		WWW www = new WWW (webURL + privateCode + "/add/" + WWW.EscapeURL (username + "-" + utcDay) + "/" + score);
+	IEnumerator CheckInternetConnection() {
+		// Source: http://answers.unity3d.com/questions/567497/how-to-100-check-internet-availability.html?childToView=744803#answer-744803
+		Debug.Log ("<color=white>Checking internet connection...</color>");
+		WWW www = new WWW("http://dreamlo.com/");
+		yield return www;
+		if ( string.IsNullOrEmpty (www.error) ) {
+			StartCoroutine( OnInternetConnection (true) );
+		} else {
+			StartCoroutine( OnInternetConnection (false) );
+		}
+	}
+
+	IEnumerator OnInternetConnection(bool result) {
+		if (result) {
+			Debug.Log ("<color=white>... Internet conection available</color>");
+			if (undeliveredHighScores.Count > 0)
+				SendUndeliveredScores ();
+		} else {
+			Debug.Log ("<color=white>... Internet connections not available</color>");
+			yield return new WaitForSeconds (2f);
+			StartCoroutine (CheckInternetConnection());
+		}
+	}
+
+	void SaveUndeliveredScore (Highscore s) {
+		if (!undeliveredHighScores.Contains (s)) {
+			undeliveredHighScores.Add (s);
+			PlayerPrefs.SetString ( "undeliveredScores", undeliveredHighScores.ToSingleString() );
+			Debug.Log ("<color=white>Puntuación guardada en local</color>");
+		}
+		StartCoroutine (CheckInternetConnection());
+	}
+
+	void SendUndeliveredScores () {
+		Debug.Log ("<color=white>Enviando puntuaciones guardadas en local</color>");
+		foreach (Highscore h in undeliveredHighScores) {
+			StartCoroutine ( UploadNewHighscore ( h.username, h.score, h.date.ToUniversalTime().ToString().Replace (":", "").Replace ("/", "").Replace (" ", "") ) );
+		}
+	}
+
+	IEnumerator UploadNewHighscore (string username, int score, string date = "") {
+		Debug.Log ("<color=white>Enviando puntuacion...</color>");
+		DateTime utcTime = DateTime.UtcNow;
+		//Solo llega una fecha 'date' si se trata de una puntuavción sin enviar
+		string utcString = date == "" ? utcTime.ToString ().Replace (":", "").Replace ("/", "").Replace (" ", "") : date;
+
+		WWW www = new WWW (webURL + privateCode + "/add/" + WWW.EscapeURL (username + "-" + utcString) + "/" + score);
 		yield return www;
 
 		if (string.IsNullOrEmpty (www.error)) {
-			Debug.Log ("La puntuación se envió correctamente");
+			Debug.Log ("<color=white>... La puntuación se envió correctamente</color>");
 			DownloadHighscores ();
+		} else {
+			Debug.Log ("<color=white>... Hubo un error durante la subida de puntuación: " + www.error + "</color>");
+			SaveUndeliveredScore (new Highscore(username,score, utcTime));
 		}
-		else
-			Debug.Log("Hubo un error durante la subida de puntuación: " + www.error);
 	}
 
 	public void DownloadHighscores() {
@@ -66,14 +144,16 @@ public class HighScores : MonoBehaviour
 	}
 
 	IEnumerator GetHighscores() {
+		Debug.Log ("<color=white>Obteniendo puntuaciones... </color>");
 		WWW www = new WWW (webURL + publicCode + "/pipe/");
 		yield return www;
 
 		if (string.IsNullOrEmpty (www.error)) {
+			Debug.Log ("<color=white>... Puntuaciones obteniendas con éxito... </color>");
 			FormatHighscores (www.text);
+		} else {
+			Debug.Log ("<color=white>... Hubo un error durante la obtención de puntuaciones: " + www.error + "</color>");
 		}
-		else
-			Debug.Log("Hubo un error durante la obtención de puntuaciones: " + www.error);
 	}
 
 	void FormatHighscores(string textSteam) {
@@ -86,18 +166,9 @@ public class HighScores : MonoBehaviour
 			string username = entryInfo [0];
 			int score = int.Parse(entryInfo [1]);
 			DateTime date = DateTime.Parse(entryInfo [4]);
-			highscoreList.Add(new Highscore(username, score, date));
-			//Debug.Log (highscoreList [i].username + ": " + highscoreList [i].score + highscoreList [i].date);
+			highscoreList.Add( new Highscore(username, score, date) );
 		}
 		if (OnHighscoresUpdate != null)
 			OnHighscoresUpdate (highscoreList);
-	}
-
-	void Start() {
-		
-	}
-
-	void Update() {
-		
 	}
 }

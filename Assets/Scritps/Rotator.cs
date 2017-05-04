@@ -264,9 +264,11 @@ public class Rotator : Circumference {
 	}
 
 	public void EraseAllPins() {
-		for (int i = 0; i < pinsGroups.Count; i++) {
+		foreach( KeyValuePair<int, PinsGroups> pg in pinsGroups)
+			StartCoroutine(pg.Value.DestroyMembers(false));
+		/*for (int i = 0; i < pinsGroups.Count; i++) {
 			StartCoroutine(pinsGroups[i].DestroyMembers(false));
-		}
+		}*/
 	}
 
 	float DistanceBetween(Vector3 A, Vector3 B) {
