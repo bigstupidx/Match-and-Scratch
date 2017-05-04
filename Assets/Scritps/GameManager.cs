@@ -183,7 +183,7 @@ public class GameManager : MonoBehaviour {
 		SetGameState(GameState.GoToPlay);
 	}
 
-	public void EndGame() {
+	public void GameOver() {
 		if (gameHasEnded)
 			return;
 		

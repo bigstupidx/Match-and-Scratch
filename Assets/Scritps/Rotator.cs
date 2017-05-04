@@ -12,12 +12,13 @@ public class Rotator : Circumference {
 	private Circumference me;
 	private List<Circumference> circumferencesCollided = new List<Circumference>();
 	private Dictionary<int, PinsGroups> pinsGroups = new Dictionary<int, PinsGroups>();
+	private List<int> groupsCollided = new List<int>();
 
 	public override void Initialize() {
 		me = this;
 	}
 
-	void FixedUpdate() {
+	void Update() {
 		transform.Rotate(0f, 0f, speed * Time.deltaTime);
 	}
 
@@ -32,55 +33,58 @@ public class Rotator : Circumference {
 		else
 			Debug.Log(string.Format ("{0} collisiona con {1} que pertenece al grupo {2} y su estado es {3} y contiene {4} miembros.", newPin.name, col.name, collis.colorGroup.ToString(), pinsGroups [collis.colorGroup].currentState.ToString (), pinsGroups [collis.colorGroup].Count.ToString()));
 
-		newPin.transform.SetParent(transform);
+		AddToParent (newPin); 		// Metemos el Pin en el rotator
+		SearchNearestPins(newPin);	// Bucamos cercanos
+		Reposition (newPin); 		// Recolocamos
+		SearchNearestPins(newPin);	// Volvemos a buscar por si al recolocar se generan nuevas colisiones
 
-		circumferencesCollided.Clear();
-
-		SearchNearestPins(newPin);
-		if (!GameManager.instance.gameHasEnded) {
-			PlaySound (newPin.colorType);
-			Reposition (newPin);
-			// Volvemos a buscar por si al recolocar se generan nuevas colisiones
-			// SearchNearestPins(newPin);
-			ProcessPin(newPin);
-			spawnTimeDelay = ProcessPinsGroups();
-			GameManager.instance.spawner.SpawnPin(spawnTimeDelay);
+		if (IsFailCollision(newPin)) {
+			GameManager.instance.GameOver ();
+			pinsGroups[pinsGroups.Count-1].AddMember(newPin); // Metemos el pin en el ultimo grupo para que se elimine al terminar 
+		} else {
+			ProcessPin (newPin);
+			spawnTimeDelay = ProcessPinsGroups ();
+			GameManager.instance.spawner.SpawnPin (spawnTimeDelay);
 			if (GameManager.instance.canInverseDir) {
 				speed *= -1;
 			}
 		}
 	}
 
-	void SearchNearestPins(Circumference newCircumference) {
+	void AddToParent(Circumference newPin) {
+		newPin.transform.SetParent(transform);
+		PlaySound (newPin.colorType);
+	}
+
+	void SearchNearestPins(Circumference newPin) {
+		circumferencesCollided.Clear();
 		// Comprobamos la distancia con el resto de bolas
 		for (int i = 0; i < pinsGroups.Count; i++) {
 			if (pinsGroups[i].isActive) {
 				foreach (Circumference c in pinsGroups[i].members) {
-					if ( IsColliding( newCircumference, c, marginBetweenPins ) ) {
-						if (c.colorType !=  newCircumference.colorType) {
-							GameManager.instance.EndGame();
-						}
+					if ( IsColliding( newPin, c, marginBetweenPins ) ) {
 						if (!circumferencesCollided.Contains(c))
 							circumferencesCollided.Add (c);
 					}
 				}
 			}
 		}
-		if ( IsColliding(newCircumference, me) )
+		// Comprobamos la distancia con el rotator
+		if ( IsColliding(newPin, me) )
 			circumferencesCollided.Add (me);
 		
 		if (circumferencesCollided.Count == 0)
-			Debug.Log("<color=red>No se ha encontrado ninguna colision</color>");
-		
-		Debug.Log(string.Format("Colisionando con {0} circumferencias: {1}", circumferencesCollided.Count, circumferencesCollided.ListaAsString()));
+			Debug.Log("<color=red>Error WTF (100): No se ha encontrado ninguna colision</color>");		
+	}
 
-		// Esto es solamente para que cuando salgamos del juego, este pin tb se borre.
-		if(GameManager.instance.gameHasEnded)
-			pinsGroups.Add (pinsGroups.Count, new PinsGroups (pinsGroups.Count, newCircumference));
+	bool IsFailCollision(Circumference newPin) {
+		bool collidedWithDifferent = circumferencesCollided.Exists(c => c.colorType != newPin.colorType && c.tag != "Rotator");
+		return collidedWithDifferent;
+			
 	}
 
 	void Reposition(Circumference newPin) {
-
+		
 		// Si hay 3 o mas, nos quedamos sólo con los dos mas cercanos
 		if (circumferencesCollided.Count > 2)  {
 			circumferencesCollided.Sort( (A,B) => DistanceBetween(newPin.GetPosition(), A.GetPosition()).CompareTo(DistanceBetween(newPin.GetPosition(), B.GetPosition())) );
@@ -201,7 +205,7 @@ public class Rotator : Circumference {
 			}
 		}
 		else if (circumferencesCollided.Count > 1){
-			List<int> groupsCollided = new List<int>();
+			groupsCollided.Clear ();
 			for (int i = 0; i < circumferencesCollided.Count && !GameManager.instance.gameHasEnded; i++) {
 				if (circumferencesCollided [i].tag == "Pin") {
 					for (int j = 0; j < pinsGroups.Count; j++) {
