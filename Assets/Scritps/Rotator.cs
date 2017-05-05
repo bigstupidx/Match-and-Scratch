@@ -38,7 +38,7 @@ public class Rotator : Circumference {
 		Reposition (newPin); 		// Recolocamos
 		SearchNearestPins(newPin);	// Volvemos a buscar por si al recolocar se generan nuevas colisiones
 
-		if (IsFailCollision(newPin)) {
+		if (IsGameOver(newPin)) {
 			GameManager.instance.GameOver ();
 			pinsGroups[pinsGroups.Count-1].AddMember(newPin); // Metemos el pin en el ultimo grupo para que se elimine al terminar 
 		} else {
@@ -77,7 +77,7 @@ public class Rotator : Circumference {
 			Debug.Log("<color=red>Error WTF (100): No se ha encontrado ninguna colision</color>");		
 	}
 
-	bool IsFailCollision(Circumference newPin) {
+	bool IsGameOver(Circumference newPin) {
 		bool collidedWithDifferent = circumferencesCollided.Exists(c => c.colorType != newPin.colorType && c.tag != "Rotator");
 		return collidedWithDifferent;
 			
@@ -260,7 +260,7 @@ public class Rotator : Circumference {
 				}
 			}
 		}
-		return Spawner.MINIMUM_SPAWN_TIME + (totalPinsToDestroy * Pin.TIME_TO_DESTROY);
+		return Spawner.MINIMUM_SPAWN_TIME;// + (totalPinsToDestroy * Pin.TIME_TO_DESTROY);
 	}
 
 	public void EraseAllPins() {

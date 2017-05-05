@@ -64,9 +64,6 @@ public class Pin : Circumference {
 		DrawTheSpear();
 	}
 
-	void LateUpdate() {
-	}
-
 	void OnTriggerEnter2D (Collider2D col) {
 		if ( isShooted && !isPinned) {
 			try {

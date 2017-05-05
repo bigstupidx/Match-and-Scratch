@@ -168,7 +168,7 @@ public class GameManager : MonoBehaviour {
 
 	void BeginGame() {
 		ResetGame ();
-		spawner.SpawnPin(0.2f);
+		spawner.SpawnPin();
 	}
 
 	public void ShowGameOverScreen() {
@@ -223,19 +223,10 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	void Update() {
-		
-	}
-
 	public void CheckDifficulty() {
-		//if (lastScore != score) {
-			//if (score > 0 ) {
-				if (canLevelUp(score)) {
-					LevelUp ();
-				}
-			//}
-		//	lastScore = score;
-		//}
+		if (canLevelUp(score)) {
+			LevelUp ();
+		}
 	}
 
 	bool canLevelUp(int score) {
@@ -271,7 +262,7 @@ public class GameManager : MonoBehaviour {
 				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
 			case DifficultType.SPEEDUP:
-				rotator.speed += 30;
+				rotator.speed += 20;
 				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
 			case DifficultType.REVERSE_ENABLED:
