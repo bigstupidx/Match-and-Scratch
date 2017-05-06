@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "307954089793",
+    "firebase_url": "https://match-and-scratch-92345929.firebaseio.com",
+    "project_id": "match-and-scratch-92345929",
+    "storage_bucket": "match-and-scratch-92345929.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:307954089793:android:1077daf9aae15652",
+        "android_client_info": {
+          "package_name": "com.santiagorevelo.matchandscratch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "307954089793-88mor31q7c1io325dt2gi1j0he18gb36.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkliP3jWOwjdS-HBKANN6ZpCxmIUyXee8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
