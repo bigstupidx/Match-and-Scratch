@@ -15,11 +15,7 @@ public struct Highscore
 		score = _score;
 		date = _date;
 	}
-	/*
-	public bool Equals(Highscore comp) {
-		return comp.ToString() == ToString();
-	}
-	*/
+
 	public string ToContatString() {
 		return username + "|" + score + "|" + date.ToUniversalTime().ToString().Replace (":", "").Replace ("/", "").Replace (" ", "");
 	}
@@ -37,16 +33,11 @@ public class HighScores : MonoBehaviour
 
 	public List<Highscore> highscoreList = new List<Highscore> ();
 
-	public static HighScores instance;
-	/*
-	public delegate void OnHighscoresUpdateEventHandler(List<Highscore> HighscoreList);
+	public Action<List<Highscore>> OnHighscoresUpdate;
 
-	public static event OnHighscoresUpdateEventHandler OnHighscoresUpdate;
-	*/
+	public static HighScores instance;
 
 	List<Highscore> undeliveredHighScores = new List<Highscore> ();
-
-	public Action<List<Highscore>> OnHighscoresUpdate;
 
 	void Awake() {
 		if (instance == null) {

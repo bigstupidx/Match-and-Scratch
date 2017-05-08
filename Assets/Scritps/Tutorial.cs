@@ -43,6 +43,7 @@ public class Tutorial : MonoBehaviour {
 	}
 
 	public void AddTestScore() {
-		HighScores.instance.AddNewHighscore ("test_user", -1);
+		//HighScores.instance.AddNewHighscore ("test_user", -1);
+		Leaderboards.instance.AddScore("user_" + Random.Range(100,999), Random.Range(-10, 0));
 	}
 }

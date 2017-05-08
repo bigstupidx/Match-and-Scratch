@@ -19,12 +19,15 @@ public class DisplayHighscores : MonoBehaviour {
 
 	// Use this for initialization
 	void OnEnable () {
-		UpdateHighscores (HighScores.instance.highscoreList);
-		HighScores.instance.OnHighscoresUpdate += UpdateHighscores;
+		//UpdateHighscores (HighScores.instance.highscoreList);
+		UpdateHighscores (Leaderboards.instance.ScoresList);
+		Leaderboards.instance.OnLeaderBoardUpdate += UpdateHighscores;
+		//HighScores.instance.OnHighscoresUpdate += UpdateHighscores;
 	}
 
 	void OnDisable (){
-		HighScores.instance.OnHighscoresUpdate -= UpdateHighscores;
+		Leaderboards.instance.OnLeaderBoardUpdate -= UpdateHighscores;
+		//HighScores.instance.OnHighscoresUpdate -= UpdateHighscores;
 	}
 	
 	// Update is called once per frame
@@ -32,8 +35,38 @@ public class DisplayHighscores : MonoBehaviour {
 		
 	}
 
-	void UpdateHighscores(List<Highscore> list) {
+	/// <summary>
+	/// Handles update highscores from Firebase
+	/// </summary>
+	/// <param name="list">List.</param>
+	void UpdateHighscores(List<Score> list) {
 
+		// Alltimes
+		CleanHighscoreElementsList (allTimesScoreElementsList);
+		UpdateHighscoreList (list, allTimesScoreElementsList, allTimesHighscoresContent);
+
+		// Daily
+		DateTime utcDate = DateTime.UtcNow;
+		List<Score> todayList = list.FindAll (s => DateTime.FromOADate(s.date).Day == utcDate.Day);
+		CleanHighscoreElementsList (dailyScoreElementsList);
+		UpdateHighscoreList (todayList, dailyScoreElementsList, dailyHighscoresContent);
+
+		// Weekly
+		int utcYear = DateTime.UtcNow.Year;
+		DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
+		Calendar cal = dfi.Calendar;
+		List<Score> weekList = list.FindAll (entry => 	DateTime.FromOADate(entry.date).Year == utcDate.Year && cal.GetWeekOfYear(DateTime.FromOADate(entry.date), dfi.CalendarWeekRule, dfi.FirstDayOfWeek) ==  cal.GetWeekOfYear(utcDate, dfi.CalendarWeekRule, dfi.FirstDayOfWeek));
+		CleanHighscoreElementsList (weeklyScoreElementsList);
+		UpdateHighscoreList (weekList, weeklyScoreElementsList, weeklyHighscoresContent);
+
+	}
+
+	/*
+	/// <summary>
+	/// Handles update highscores from Dream.lo
+	/// </summary>
+	/// <param name="list">List.</param>
+	void UpdateHighscores(List<Highscore> list) {
 		// Alltimes
 		CleanHighscoreElementsList (allTimesScoreElementsList);
 		UpdateHighscoreList (list, allTimesScoreElementsList, allTimesHighscoresContent);
@@ -53,6 +86,7 @@ public class DisplayHighscores : MonoBehaviour {
 		UpdateHighscoreList (weekList, weeklyScoreElementsList, weeklyHighscoresContent);
 
 	}
+	*/
 
 	void CleanHighscoreElementsList(List<GameObject> list) {
 		foreach (GameObject item in list) {
@@ -60,7 +94,28 @@ public class DisplayHighscores : MonoBehaviour {
 		}
 		list.Clear();
 	}
+		
+	/// <summary>
+	/// Updates the highscore list from Firebase
+	/// </summary>
+	/// <param name="elements">Elements.</param>
+	/// <param name="goList">Go list.</param>
+	/// <param name="parent">Parent.</param>
+	void UpdateHighscoreList(List<Score> elements, List<GameObject> goList, Transform parent) {
+		for (int i = 0; i < elements.GetRange( 0, Mathf.Min( elements.Count, 10 ) ).Count; i++) {
+			GameObject g = Instantiate (scoreElement, parent, false);
+			g.GetComponent<ScoreElement> ().SetScore (elements [i].username, elements [i].score.ToString());
+			goList.Add (g);
+		}
+	}
 
+	/*
+	/// <summary>
+	/// Updates the highscore list from Dream.lo.
+	/// </summary>
+	/// <param name="elements">Elements.</param>
+	/// <param name="goList">Go list.</param>
+	/// <param name="parent">Parent.</param>
 	void UpdateHighscoreList(List<Highscore> elements, List<GameObject> goList, Transform parent) {
 		for (int i = 0; i < elements.GetRange( 0, Mathf.Min( elements.Count, 10 ) ).Count; i++) {
 			GameObject g = Instantiate (scoreElement, parent, false);
@@ -68,4 +123,5 @@ public class DisplayHighscores : MonoBehaviour {
 			goList.Add (g);
 		}
 	}
+	*/
 }
