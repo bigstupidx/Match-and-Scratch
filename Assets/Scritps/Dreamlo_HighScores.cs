@@ -3,41 +3,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-
-public struct Highscore 
-{
-	public string username;
-	public int score;
-	public DateTime date;
-
-	public Highscore(string _username, int _score, DateTime _date) {
-		username = _username;
-		score = _score;
-		date = _date;
-	}
-
-	public string ToContatString() {
-		return username + "|" + score + "|" + date.ToUniversalTime().ToString().Replace (":", "").Replace ("/", "").Replace (" ", "");
-	}
-}
 /// <summary>
 ///  Highscores powered by: dreamlo.com
 ///  http://dreamlo.com/lb/J3duL1tLhUSESgpxL-tbHwuoqEW8TI9k-eS_5UfeoOhA
 /// </summary>
-public class HighScores : MonoBehaviour
+public class Dreamlo_HighScores : MonoBehaviour
 {
 
 	const string privateCode= "J3duL1tLhUSESgpxL-tbHwuoqEW8TI9k-eS_5UfeoOhA";
 	const string publicCode	= "58da1c3c12e7f00688faab7b";
 	const string webURL		= "http://dreamlo.com/lb/";
 
-	public List<Highscore> highscoreList = new List<Highscore> ();
+	public List<ScoreEntry> highscoreList = new List<ScoreEntry> ();
 
-	public Action<List<Highscore>> OnHighscoresUpdate;
+	public Action<List<ScoreEntry>> Dreamlo_OnHighscoresUpdate;
 
-	public static HighScores instance;
+	public static Dreamlo_HighScores instance;
 
-	List<Highscore> undeliveredHighScores = new List<Highscore> ();
+	List<ScoreEntry> undeliveredHighScores = new List<ScoreEntry> ();
 
 	void Awake() {
 		if (instance == null) {
@@ -61,15 +44,15 @@ public class HighScores : MonoBehaviour
 			string[] entryInfo = undeliveredScoresStream [i].Split (new char[] { '|' });
 			string username = entryInfo [0];
 			int score = int.Parse(entryInfo [1]);
-			DateTime date = DateTime.Parse(entryInfo [2].parseToDateTime());
+			double date = DateTime.Parse(entryInfo [2].parseToDateTime()).ToOADate();
 		
-			undeliveredHighScores.Add( new Highscore(username, score, date) );
+			undeliveredHighScores.Add( new ScoreEntry(username, score, date) );
 		}
 		PlayerPrefs.DeleteKey ("undeliveredScores");
 	}
 
-	public void AddNewHighscore(string username, int score) {
-		StartCoroutine(UploadNewHighscore(username, score));
+	public void AddNewHighscore(string username, int score, double date = 0) {
+		StartCoroutine(UploadNewHighscore(username, score, date == 0 ? "": DateTime.FromOADate(date).ToString()));
 	}
 
 	IEnumerator CheckInternetConnection() {
@@ -96,7 +79,7 @@ public class HighScores : MonoBehaviour
 		}
 	}
 
-	void SaveUndeliveredScore (Highscore s) {
+	void SaveUndeliveredScore (ScoreEntry s) {
 		if (!undeliveredHighScores.Contains (s)) {
 			undeliveredHighScores.Add (s);
 			PlayerPrefs.SetString ( "undeliveredScores", undeliveredHighScores.ToSingleString() );
@@ -107,8 +90,8 @@ public class HighScores : MonoBehaviour
 
 	void SendUndeliveredScores () {
 		Debug.Log ("<color=white>Enviando puntuaciones guardadas en local</color>");
-		foreach (Highscore h in undeliveredHighScores) {
-			StartCoroutine ( UploadNewHighscore ( h.username, h.score, h.date.ToUniversalTime().ToString().Replace (":", "").Replace ("/", "").Replace (" ", "") ) );
+		foreach (ScoreEntry h in undeliveredHighScores) {
+			StartCoroutine ( UploadNewHighscore ( h.username, h.score, DateTime.FromOADate(h.date).ToUniversalTime().ToString().Replace (":", "").Replace ("/", "").Replace (" ", "") ) );
 		}
 	}
 
@@ -126,7 +109,7 @@ public class HighScores : MonoBehaviour
 			DownloadHighscores ();
 		} else {
 			Debug.Log ("<color=white>... Hubo un error durante la subida de puntuación: " + www.error + "</color>");
-			SaveUndeliveredScore (new Highscore(username,score, utcTime));
+			SaveUndeliveredScore (new ScoreEntry(username,score, utcTime.ToOADate()));
 		}
 	}
 
@@ -156,10 +139,10 @@ public class HighScores : MonoBehaviour
 			string[] entryInfo = entries [i].Split (new char[] { '|' });
 			string username = entryInfo [0];
 			int score = int.Parse(entryInfo [1]);
-			DateTime date = DateTime.Parse(entryInfo [4]);
-			highscoreList.Add( new Highscore(username, score, date) );
+			double date = DateTime.Parse(entryInfo [4]).ToOADate();
+			highscoreList.Add( new ScoreEntry(username, score, date) );
 		}
-		if (OnHighscoresUpdate != null)
-			OnHighscoresUpdate (highscoreList);
+		if (Dreamlo_OnHighscoresUpdate != null)
+			Dreamlo_OnHighscoresUpdate (highscoreList);
 	}
 }

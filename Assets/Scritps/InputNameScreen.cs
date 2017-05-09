@@ -45,7 +45,7 @@ public class InputNameScreen : UIScreen {
 	void SendScoreToBBDD(int result) {
 		//if (result == 2) {
 			lastName = nameField.text;
-			HighScores.instance.AddNewHighscore (lastName, GameManager.instance.Score);
+			Dreamlo_HighScores.instance.AddNewHighscore (lastName, GameManager.instance.Score);
 			PlayerPrefs.SetString ("name", lastName);
 		//}
 		//TODO 

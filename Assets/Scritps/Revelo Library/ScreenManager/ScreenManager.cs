@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 namespace ReveloLibrary {
 	public class ScreenManager : MonoBehaviour {
@@ -18,6 +19,8 @@ namespace ReveloLibrary {
 		private GameObject ProfilePlayerInstance;
 
 		public UIScreen lastGUIScreen { get; set; }
+
+		public Action<ScreenDefinitions> OnScreenChange;
 
 		void Awake() {
 			
@@ -71,9 +74,7 @@ namespace ReveloLibrary {
 				Debug.LogError("[CanvasManager in " + name +"]: La guiScreen es null. Quizás no has establecido la primera desde el inspector.");
 			}
 
-			if (resultCallback != null) {
-				StartCoroutine (RunCallbackOnAnimationEnd ());
-			}
+			StartCoroutine (AnimationEndProcess ());
 		}
 	
 		public void HideScreen() {
@@ -82,11 +83,15 @@ namespace ReveloLibrary {
 			}
 		}
 
-		IEnumerator RunCallbackOnAnimationEnd() {
+		IEnumerator AnimationEndProcess() {
 			while (currentGUIScreen.Animator.IsInTransition(0))
 				yield return null;
+
+			if (OnScreenChange != null)
+				OnScreenChange (currentGUIScreen.screenDefinition);
 			
-			resultCallback();
+			if (resultCallback != null) 
+				resultCallback();
 		}
 	}
 }

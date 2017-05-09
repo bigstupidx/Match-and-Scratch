@@ -218,7 +218,7 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator RefreshHighscores() {
 		while (true) {
-			HighScores.instance.DownloadHighscores ();
+			Dreamlo_HighScores.instance.DownloadHighscores ();
 			yield return new WaitForSeconds (20);
 		}
 	}

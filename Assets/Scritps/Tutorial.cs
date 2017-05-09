@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ReveloLibrary;
@@ -43,7 +44,7 @@ public class Tutorial : MonoBehaviour {
 	}
 
 	public void AddTestScore() {
-		//HighScores.instance.AddNewHighscore ("test_user", -1);
-		Leaderboards.instance.AddScore("user_" + Random.Range(100,999), Random.Range(-10, 0));
+		Dreamlo_HighScores.instance.AddNewHighscore ("user_" + UnityEngine.Random.Range(100,999), UnityEngine.Random.Range(-10, 0), DateTime.UtcNow.AddDays(UnityEngine.Random.Range(-10,10)).ToOADate());
+		Firebase_HighScores.instance.AddNewHighscore("user_" + UnityEngine.Random.Range(100,999), UnityEngine.Random.Range(-10, 0), DateTime.UtcNow.AddDays(UnityEngine.Random.Range(-10,10)).ToOADate());
 	}
 }
