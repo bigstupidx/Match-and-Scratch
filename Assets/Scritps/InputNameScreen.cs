@@ -43,11 +43,16 @@ public class InputNameScreen : UIScreen {
 	}
 	
 	void SendScoreToBBDD(int result) {
-		//if (result == 2) {
-			lastName = nameField.text;
+		lastName = nameField.text;
+		PlayerPrefs.SetString ("name", lastName);
+
+		if (GameManager.instance.currentSource == HighScoresSource.DREAMLO) {			
 			Dreamlo_HighScores.instance.AddNewHighscore (lastName, GameManager.instance.Score);
-			PlayerPrefs.SetString ("name", lastName);
-		//}
+		} 
+		else if (GameManager.instance.currentSource == HighScoresSource.FIREBASE) {
+			Firebase_HighScores.instance.AddNewHighscore(lastName, GameManager.instance.Score);
+		}
+
 		//TODO 
 		/*
 		else {

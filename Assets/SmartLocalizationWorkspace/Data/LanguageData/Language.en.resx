@@ -155,6 +155,9 @@
 	<data name="ui.label.score" xml:space="preserve">
 		<value>Score</value>
 	</data>
+	<data name="ui.label.speed" xml:space="preserve">
+		<value>Speed</value>
+	</data>
 	<data name="ui.label.submitscore" xml:space="preserve">
 		<value>Submit your score</value>
 	</data>

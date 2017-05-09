@@ -4,8 +4,13 @@ using UnityEngine;
 using ReveloLibrary;
 
 public class Rotator : Circumference {
-
-	public float speed = 100f;
+	public const float INITIAL_SPEED = 100f;
+	private float rotationSpeed;
+	public float RotationSpeed {
+		get { return rotationSpeed;}
+		set { rotationSpeed = value;}
+	}
+	public int rotationDirection = 1;
 	public float marginBetweenPins = 0.004f;
 
 	private float spawnTimeDelay;
@@ -19,7 +24,7 @@ public class Rotator : Circumference {
 	}
 
 	void Update() {
-		transform.Rotate(0f, 0f, speed * Time.deltaTime);
+		transform.Rotate(0f, 0f, RotationSpeed * rotationDirection * Time.deltaTime);
 	}
 
 	public void AddPin(Circumference newPin, Collider2D col) {
@@ -46,7 +51,7 @@ public class Rotator : Circumference {
 			spawnTimeDelay = ProcessPinsGroups ();
 			GameManager.instance.spawner.SpawnPin (spawnTimeDelay);
 			if (GameManager.instance.canInverseDir) {
-				speed *= -1;
+				rotationDirection *= -1;
 			}
 		}
 	}
@@ -290,7 +295,7 @@ public class Rotator : Circumference {
 			Destroy(pins[i]);
 		}
 		pinsGroups.Clear();
-		speed = 100f;
+		RotationSpeed = INITIAL_SPEED;
 	}
 
 	void PlaySound(int id) {

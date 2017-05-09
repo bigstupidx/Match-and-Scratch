@@ -30,16 +30,10 @@ public struct ScoreEntry
 	}
 }
 
-public enum HighScoresSource {
-	DREAMLO,
-	FIREBASE
-}
 
 public class DisplayHighscores : MonoBehaviour {
 
 	public GameObject scoreElement;
-
-	public HighScoresSource currentSource;
 
 	public Transform dailyHighscoresContent;
 	List<GameObject> dailyScoreElementsList = new List<GameObject>();
@@ -52,25 +46,24 @@ public class DisplayHighscores : MonoBehaviour {
 
 	// Use this for initialization
 	void OnEnable () {		
-		SetSource ((int)currentSource);
+		HandleChangeHighScoresSource (GameManager.instance.currentSource);
+		GameManager.instance.OnChangeHighScoresSource += HandleChangeHighScoresSource;
 	}
 
-	public void SetSource (int source) {
-		if (source != (int)currentSource) {
-			
-			RemoveHandles ();
-			if (source == (int)HighScoresSource.DREAMLO) {
-				UpdateHighscores (Dreamlo_HighScores.instance.highscoreList);
-				Dreamlo_HighScores.instance.Dreamlo_OnHighscoresUpdate += UpdateHighscores;
-			} else if (source == (int)HighScoresSource.FIREBASE) {
-				UpdateHighscores (Firebase_HighScores.instance.highscoreList);
-				Firebase_HighScores.instance.Firebase_OnHighscoresUpdate += UpdateHighscores;
-			}
-			currentSource = (HighScoresSource)source;
+	public void HandleChangeHighScoresSource (HighScoresSource source) {				
+		RemoveHandles ();
+
+		if (GameManager.instance.currentSource == HighScoresSource.DREAMLO) {
+			UpdateHighscores (Dreamlo_HighScores.instance.highscoreList);
+			Dreamlo_HighScores.instance.Dreamlo_OnHighscoresUpdate += UpdateHighscores;
+		} else if (GameManager.instance.currentSource == HighScoresSource.FIREBASE) {
+			UpdateHighscores (Firebase_HighScores.instance.highscoreList);
+			Firebase_HighScores.instance.Firebase_OnHighscoresUpdate += UpdateHighscores;
 		}
 	}
 
 	void OnDisable (){
+		GameManager.instance.OnChangeHighScoresSource += HandleChangeHighScoresSource;
 		RemoveHandles ();
 	}
 
@@ -119,9 +112,9 @@ public class DisplayHighscores : MonoBehaviour {
 	void UpdateHighscoreList(List<ScoreEntry> elements, List<GameObject> goList, Transform parent) {
 		for (int i = 0; i < elements.GetRange( 0, Mathf.Min( elements.Count, 10 ) ).Count; i++) {
 			GameObject g = Instantiate (scoreElement, parent, false);
-			if (currentSource == HighScoresSource.DREAMLO)
+			if (GameManager.instance.currentSource == HighScoresSource.DREAMLO)
 				g.GetComponent<ScoreElement> ().SetScore (elements [i].username.Split(new char[] {'-'})[0], elements [i].score.ToString());
-			else if (currentSource == HighScoresSource.FIREBASE)
+			else if (GameManager.instance.currentSource == HighScoresSource.FIREBASE)
 				g.GetComponent<ScoreElement> ().SetScore (elements [i].username, elements [i].score.ToString());	
 			goList.Add (g);
 		}

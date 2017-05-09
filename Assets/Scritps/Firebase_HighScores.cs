@@ -60,9 +60,6 @@ public class Firebase_HighScores : MonoBehaviour {
 
 		if (app.Options.DatabaseUrl != null) app.SetEditorDatabaseUrl(app.Options.DatabaseUrl);
 
-		/*dbReference = FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE);
-		dbReference.OrderByChild ("/score/");
-		dbReference.ValueChanged += HandleValueChange;*/
 		FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE)
 			.OrderByChild ("score")
 			.ValueChanged += HandleValueChange;
@@ -88,8 +85,6 @@ public class Firebase_HighScores : MonoBehaviour {
 		if (args.DatabaseError != null) {
 			Debug.LogError (args.DatabaseError.Message);
 		} else {
-			//Debug.Log("args: " + args.Snapshot.ToString());
-			//args.Snapshot.Reference.OrderByChild("score");
 			highscoreList.Clear ();
 			if (args.Snapshot != null && args.Snapshot.ChildrenCount > 0) {
 				foreach (var childSnapshot in args.Snapshot.Children.Reverse()) {

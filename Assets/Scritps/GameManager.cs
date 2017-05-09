@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using ReveloLibrary;
 using SmartLocalization;
+using System;
 
 public enum GameState {
 	None,
@@ -22,8 +23,12 @@ public enum DifficultType {
 	SPEEDUP
 }
 
-public class GameManager : MonoBehaviour {
+public enum HighScoresSource {
+	DREAMLO,
+	FIREBASE
+}
 
+public class GameManager : MonoBehaviour {
 
 	public static GameManager instance = null;
 
@@ -32,15 +37,16 @@ public class GameManager : MonoBehaviour {
 	public Rotator rotator;
 	public Spawner spawner;
 	public Animator animator;
-	//public UnityAds unityAds;
 
 	public LevelUp levelUp;
 	public Text newScore;
 	public Text scoreLabel;
 	public Text levelLabel;
+	public Text speedLabel;
 	public Text GameOverPoints;
 
 	public int initialLevel;
+
 	[SerializeField]
 	private int currentLevel;
 	public int CurrentLevel {
@@ -53,6 +59,7 @@ public class GameManager : MonoBehaviour {
 	public bool canInverseDir;
 	public bool gameHasEnded;
 
+
 	private int lastScore;
 	private int score;
 	public int Score {
@@ -61,6 +68,15 @@ public class GameManager : MonoBehaviour {
 			score = value;
 			scoreLabel.text = LanguageManager.Instance.GetTextValue("ui.label.score") + " " + score.ToString();
 		}
+	}
+
+	public HighScoresSource currentSource;
+	public Action<HighScoresSource> OnChangeHighScoresSource;
+
+	public void SetNewHighScoresSource(HighScoresSource newSource) {
+		currentSource = newSource;
+		if(OnChangeHighScoresSource != null)
+			OnChangeHighScoresSource (currentSource);
 	}
 
 	public void AddScore(int pts) {
@@ -262,7 +278,7 @@ public class GameManager : MonoBehaviour {
 				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
 			case DifficultType.SPEEDUP:
-				rotator.speed += 20;
+				rotator.RotationSpeed += 20;
 				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
 			case DifficultType.REVERSE_ENABLED:
@@ -270,7 +286,7 @@ public class GameManager : MonoBehaviour {
 				AudioMaster.instance.Play (SoundDefinitions.SFX_REVERSE);
 			break;
 		}
-
+		speedLabel.text = LanguageManager.Instance.GetTextValue("ui.label.speed") + " " + rotator.RotationSpeed.ToString();
 		levelUp.Show (difficult);
 	}
 }

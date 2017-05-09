@@ -36,15 +36,4 @@ public class Tutorial : MonoBehaviour {
 		PlayerPrefs.SetInt ("tutorialShowed", 1);
 		tutorialWrapper.SetActive(false);
 	}
-
-
-	public void ClearPlayerPrefs() {
-		PlayerPrefs.DeleteKey ("tutorialShowed");
-		PlayerPrefs.DeleteKey ("undeliveredScores");
-	}
-
-	public void AddTestScore() {
-		Dreamlo_HighScores.instance.AddNewHighscore ("user_" + UnityEngine.Random.Range(100,999), UnityEngine.Random.Range(-10, 0), DateTime.UtcNow.AddDays(UnityEngine.Random.Range(-10,10)).ToOADate());
-		Firebase_HighScores.instance.AddNewHighscore("user_" + UnityEngine.Random.Range(100,999), UnityEngine.Random.Range(-10, 0), DateTime.UtcNow.AddDays(UnityEngine.Random.Range(-10,10)).ToOADate());
-	}
 }
