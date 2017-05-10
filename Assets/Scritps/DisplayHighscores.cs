@@ -63,7 +63,7 @@ public class DisplayHighscores : MonoBehaviour {
 	}
 
 	void OnDisable (){
-		GameManager.instance.OnChangeHighScoresSource += HandleChangeHighScoresSource;
+		GameManager.instance.OnChangeHighScoresSource -= HandleChangeHighScoresSource;
 		RemoveHandles ();
 	}
 
