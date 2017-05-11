@@ -5,11 +5,15 @@ using ReveloLibrary;
 
 public class Rotator : Circumference {
 	public const float INITIAL_SPEED = 100f;
+	[SerializeField]
 	private float rotationSpeed;
 	public float RotationSpeed {
 		get { return rotationSpeed;}
 		set { rotationSpeed = value;}
 	}
+	[SerializeField]
+	private float variableSpeedInc;
+
 	public int rotationDirection = 1;
 	public float marginBetweenPins = 0.004f;
 
@@ -23,8 +27,8 @@ public class Rotator : Circumference {
 		me = this;
 	}
 
-	void Update() {
-		transform.Rotate(0f, 0f, RotationSpeed * rotationDirection * Time.deltaTime);
+	void FixedUpdate() {
+		transform.Rotate(0f, 0f, (RotationSpeed + variableSpeedInc) * rotationDirection * Time.fixedDeltaTime);
 	}
 
 	public void AddPin(Circumference newPin, Collider2D col) {
@@ -296,6 +300,8 @@ public class Rotator : Circumference {
 		}
 		pinsGroups.Clear();
 		RotationSpeed = INITIAL_SPEED;
+		variableSpeedInc = 0;
+		rotationDirection = 1;
 	}
 
 	void PlaySound(int id) {
@@ -333,6 +339,19 @@ public class Rotator : Circumference {
 			default:
 				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_1);
 			break;
+		}
+	}
+
+	public IEnumerator VariableSpeedDifficult() {
+		while (GameManager.instance.canUseVariableSpeed) {
+			variableSpeedInc = 100f;
+			yield return new WaitForSeconds (2f);
+			variableSpeedInc = 0f;
+			yield return new WaitForSeconds (2f);
+			variableSpeedInc = -30f;
+			yield return new WaitForSeconds (2f);
+			variableSpeedInc = 0f;
+			yield return new WaitForSeconds (2f);
 		}
 	}
 

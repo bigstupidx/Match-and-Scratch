@@ -19,8 +19,9 @@ public enum GameState {
 public enum DifficultType {
 	NONE,
 	MORE_COLORS,
-	REVERSE_ENABLED,
-	SPEEDUP
+	SWITCH_REVERSE,
+	SPEEDUP,
+	VARIABLE_SPEED
 }
 
 public enum HighScoresSource {
@@ -57,10 +58,13 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 	public bool canInverseDir;
+	public bool canUseVariableSpeed;
+
 	public bool gameHasEnded;
 
 
-	private int lastScore;
+	//private int lastScore;
+	[SerializeField]
 	private int score;
 	public int Score {
 		get { return score;}
@@ -80,7 +84,11 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void AddScore(int pts) {
-		score += pts;
+		for (int i = 1; i <= pts; i++) {
+			score++;
+			CheckDifficulty();
+		}
+
 		scoreLabel.text = LanguageManager.Instance.GetTextValue("ui.label.score") + " " + score.ToString();
 
 		newScore.text = "+" + pts.ToString();
@@ -90,26 +98,47 @@ public class GameManager : MonoBehaviour {
 
 	public int MAX_COLORS_IN_GAME = 5;
 
-	private List<int> pointsRequiredToLevelUp = new List<int>() { 1, 4, 8, 12, 16, 20, 25, 30, 34, 36, 40, 45, 50, 55, 60 };
-	private List<DifficultType> difficulty = new List<DifficultType>() { 
-		DifficultType.NONE,
-
-		DifficultType.MORE_COLORS,
+	private Queue<int> pointsRequiredToLevelUpQueue;
+	private List<int> pointsRequiredToLevelUp = new List<int>() {
+		1,
+		4,
+		8,
+		12,
+		16, 	// 5
+		20,
+		25,
+		30,
+		34,
+		36,		// 10
+		40,
+		45,
+		50,
+		55,
+		60 		// 15
+	};
+	private Queue<DifficultType> difficultyStepsQueue;
+	private List<DifficultType> difficultySteps = new List<DifficultType>() {
 		DifficultType.MORE_COLORS,
 		DifficultType.SPEEDUP,
 		DifficultType.MORE_COLORS, 		
-		DifficultType.REVERSE_ENABLED,	// 5
-		DifficultType.MORE_COLORS,
-		DifficultType.MORE_COLORS,
-		DifficultType.SPEEDUP,	
-		DifficultType.MORE_COLORS,
-		DifficultType.REVERSE_ENABLED,	// 10
+		DifficultType.SWITCH_REVERSE,
+		DifficultType.MORE_COLORS,		// 5
+		DifficultType.VARIABLE_SPEED,
 		DifficultType.SPEEDUP,
+		DifficultType.SWITCH_REVERSE,
 		DifficultType.MORE_COLORS,
-		DifficultType.REVERSE_ENABLED,
+		DifficultType.VARIABLE_SPEED,
+		DifficultType.SPEEDUP,			// 10
+		DifficultType.VARIABLE_SPEED,	
+		DifficultType.SWITCH_REVERSE,
 		DifficultType.MORE_COLORS,	
-		DifficultType.SPEEDUP			// 15
+		DifficultType.VARIABLE_SPEED,
+		DifficultType.SPEEDUP,			// 15
+		DifficultType.VARIABLE_SPEED
 	};
+
+	SoundDefinitions[] musics = { SoundDefinitions.LOOP_1, SoundDefinitions.LOOP_2, SoundDefinitions.LOOP_3 };
+	int currentMusic = 0;
 
 	void Awake() {
 		if (instance == null) {
@@ -215,6 +244,8 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void ResetGame() {
+		pointsRequiredToLevelUpQueue = new Queue<int> (pointsRequiredToLevelUp);
+		difficultyStepsQueue = new Queue<DifficultType> (difficultySteps);
 		spawner.Reset();
 		rotator.Reset();
 		canInverseDir = false;
@@ -223,9 +254,9 @@ public class GameManager : MonoBehaviour {
 		gameHasEnded = false;		
 		spawner.enabled = true;
 		rotator.enabled = true;
+		currentMusic = 0;
 		AudioMaster.instance.StopAll(true);
-		AudioMaster.instance.PlayLoop(SoundDefinitions.LOOP_1);
-		//ShowScreen (ScreenDefinitions.GAME);
+		AudioMaster.instance.PlayLoop(musics[currentMusic]);
 	}
 
 	public void ShowHighscores() {		
@@ -240,37 +271,46 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void CheckDifficulty() {
-		if (canLevelUp(score)) {
+		if (CanLevelUp(score)) {
 			LevelUp ();
 		}
 	}
 
-	bool canLevelUp(int score) {
+	bool CanLevelUp(int score) {
 
-		if (pointsRequiredToLevelUp.Contains (score)) {
+		if (pointsRequiredToLevelUpQueue.Count == 0 && currentLevel % 5 == 0) {
 			return true;
 		} 
-		else if (score > 0 && score % 5 == 0) {
+		else if (score >= pointsRequiredToLevelUpQueue.Peek()) {
 			return true;
-		}
+		} 
 		
 		return false;
 	}
 		
 	void LevelUp() {
+		DifficultType difficult = DifficultType.NONE;
+
 		CurrentLevel++;
 
-		DifficultType difficult;
+		// hacemos cambios de musica
+		if (currentLevel % 30 == 0) {
+			AudioMaster.instance.StopSound (musics[currentMusic], true);
+			currentMusic = ++currentMusic > musics.Length ? 0 : currentMusic++;
+			AudioMaster.instance.PlayLoop (musics[currentMusic]);
+		}
 
-		if (CurrentLevel < difficulty.Count)
-			difficult = difficulty [CurrentLevel];
-		else if (CurrentLevel % 2 == 0)
-			difficult = DifficultType.SPEEDUP;
-		else if (CurrentLevel % 4 == 0)
-			difficult = DifficultType.REVERSE_ENABLED;
-		else
-			difficult = DifficultType.NONE;
+		pointsRequiredToLevelUpQueue.Dequeue ();
 
+		if (difficultyStepsQueue.Count == 0) {
+			if (CurrentLevel % 10 == 0)
+				difficult = DifficultType.SPEEDUP;
+			else if (CurrentLevel % 5 == 0)
+				difficult = DifficultType.SWITCH_REVERSE;
+		} else {
+			difficult = difficultyStepsQueue.Dequeue ();
+		}
+			
 		switch (difficult) {
 		case DifficultType.MORE_COLORS:
 				int newMaxColors = spawner.colorsInGame + 1;
@@ -281,10 +321,15 @@ public class GameManager : MonoBehaviour {
 				rotator.RotationSpeed += 20;
 				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
-			case DifficultType.REVERSE_ENABLED:
+			case DifficultType.SWITCH_REVERSE:
 				canInverseDir = !canInverseDir;
 				AudioMaster.instance.Play (SoundDefinitions.SFX_REVERSE);
 			break;
+			case DifficultType.VARIABLE_SPEED:
+				canUseVariableSpeed = !canUseVariableSpeed;
+				StartCoroutine(rotator.VariableSpeedDifficult());
+				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_9);
+				break;
 		}
 		speedLabel.text = LanguageManager.Instance.GetTextValue("ui.label.speed") + " " + rotator.RotationSpeed.ToString();
 		levelUp.Show (difficult);

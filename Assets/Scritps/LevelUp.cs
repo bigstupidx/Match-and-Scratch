@@ -7,6 +7,7 @@ public class LevelUp : MonoBehaviour {
 	public GameObject MoreColors;
 	public GameObject SpeedUp;
 	public GameObject ReverseDirection;
+	public GameObject VariableSpeed;
 
 	Animator animator;
 
@@ -25,8 +26,11 @@ public class LevelUp : MonoBehaviour {
 		case DifficultType.SPEEDUP:
 			SpeedUp.SetActive (true);
 			break;
-		case DifficultType.REVERSE_ENABLED:
+		case DifficultType.SWITCH_REVERSE:
 			ReverseDirection.SetActive (true);
+			break;
+		case DifficultType.VARIABLE_SPEED:
+			VariableSpeed.SetActive (true);
 			break;
 		}
 		animator.SetTrigger("start");
@@ -36,5 +40,6 @@ public class LevelUp : MonoBehaviour {
 		MoreColors.SetActive (false);
 		SpeedUp.SetActive (false);
 		ReverseDirection.SetActive (false);
+		VariableSpeed.SetActive (false);
 	}
 }

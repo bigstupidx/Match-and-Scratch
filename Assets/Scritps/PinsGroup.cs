@@ -77,7 +77,6 @@ public class PinsGroups {
 		else {
 			Debug.Log(string.Format("<color=yellow> PinsGroup[{0}] : Se ha vuelto a establecer el mismo estado ( {1} ) que ya tenía que sigue activo </color>", index, newState.ToString()));
 		}
-		//isActive = currentState == GroupState.Active;
         
     }
 
@@ -87,7 +86,6 @@ public class PinsGroups {
 
 		if (sumPoints) {
 			GameManager.instance.AddScore(members.Count - 2);
-			GameManager.instance.CheckDifficulty ();
 		}
 
         for( int i = 0; i < members.Count; i++) {

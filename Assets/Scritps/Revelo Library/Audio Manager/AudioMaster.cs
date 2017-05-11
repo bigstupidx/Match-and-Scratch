@@ -213,13 +213,17 @@ namespace ReveloLibrary {
 		}
 		
 		// Para y elimina un sonido activo
-		public void StopSound(SoundDefinitions defToStop) 
+		public void StopSound(SoundDefinitions defToStop, bool stopFading = false) 
 		{
 			GameObject sound = null;
 			foreach ( ClipInfo ci in mActiveAudio)
 			{
-				if(ci.Definition == defToStop)
-					sound = ci.Source.gameObject;
+				if (ci.Definition == defToStop) {
+					if (ci.Volume > 0)
+						ci.StopFading = true;
+					else
+						sound = ci.Source.gameObject;
+				}
 			}
 
 			if( sound != null)	
@@ -243,7 +247,7 @@ namespace ReveloLibrary {
 				StopAllFx();
 			else
 			{
-				foreach (var audioClip in mActiveAudio) 
+				foreach (ClipInfo audioClip in mActiveAudio) 
 				{
 					if(audioClip.Volume > 0)
 						if(!audioClip.Source.loop)
@@ -256,7 +260,7 @@ namespace ReveloLibrary {
 		// Para y elimina los Sonidos (incluidos los loops) menos el que especifiquemos
 		public void StopFaddingAllButKeepThisPlaying(SoundDefinitions soundDef) 
 		{
-			foreach (var audioClip in mActiveAudio) 
+			foreach (ClipInfo audioClip in mActiveAudio) 
 			{
 				if( audioClip.Volume > 0 )
 					if( audioClip.Definition != soundDef )
@@ -267,7 +271,7 @@ namespace ReveloLibrary {
 		// Para y elimina los Sonidos que no estén en bucle
 		public void StopFaddingAllFxButThis(SoundDefinitions soundDef) 
 		{
-			foreach (var audioClip in mActiveAudio) 
+			foreach (ClipInfo audioClip in mActiveAudio) 
 			{
 				if(audioClip.Volume > 0)
 					if(!audioClip.Source.loop && audioClip.Definition != soundDef)
@@ -296,7 +300,7 @@ namespace ReveloLibrary {
 				StopAll();
 			else
 			{
-				foreach (var audioClip in mActiveAudio) 
+				foreach (ClipInfo audioClip in mActiveAudio) 
 				{
 					if(audioClip.Volume > 0)
 						audioClip.StopFading = true;
@@ -307,7 +311,7 @@ namespace ReveloLibrary {
 		// Pausa los sonidos activos
 		public void PauseFX() 
 		{ 
-			foreach (var audioClip in mActiveAudio) 
+			foreach (ClipInfo audioClip in mActiveAudio) 
 			{
 				try 
 				{
@@ -324,7 +328,7 @@ namespace ReveloLibrary {
 		// Des-pausa los sonidos activos
 		public void UnpauseFX() 
 		{
-			foreach (var audioClip in mActiveAudio)
+			foreach (ClipInfo audioClip in mActiveAudio)
 			{
 				try 
 				{

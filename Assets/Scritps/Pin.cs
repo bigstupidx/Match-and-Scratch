@@ -60,7 +60,6 @@ public class Pin : Circumference {
 		if (isShooted && !isPinned)
 			rb.MovePosition(rb.position + Vector2.up * speed * Time.deltaTime);
 
-
 		DrawTheSpear();
 	}
 

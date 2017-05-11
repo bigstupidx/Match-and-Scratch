@@ -107,6 +107,13 @@ public class Firebase_HighScores : MonoBehaviour {
 		}
 	}
 
+	/*void CleanDataBase() {
+		DatabaseReference reference = FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE);
+		foreach(var c in reference) {
+			
+		}
+	}*/
+
 	// Update is called once per frame
 	void Update () {
 		
