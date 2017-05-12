@@ -96,8 +96,6 @@ public class GameManager : MonoBehaviour {
 			newScore.GetComponent<Animator> ().SetTrigger ("start");
 	}
 
-	public int MAX_COLORS_IN_GAME = 5;
-
 	private Queue<int> pointsRequiredToLevelUpQueue;
 	private List<int> pointsRequiredToLevelUp = new List<int>() {
 		1,
@@ -123,18 +121,16 @@ public class GameManager : MonoBehaviour {
 		DifficultType.MORE_COLORS, 		
 		DifficultType.SWITCH_REVERSE,
 		DifficultType.MORE_COLORS,		// 5
-		DifficultType.VARIABLE_SPEED,
 		DifficultType.SPEEDUP,
 		DifficultType.SWITCH_REVERSE,
+		DifficultType.SPEEDUP,
 		DifficultType.MORE_COLORS,
-		DifficultType.VARIABLE_SPEED,
-		DifficultType.SPEEDUP,			// 10
-		DifficultType.VARIABLE_SPEED,	
+		DifficultType.SPEEDUP,			// 10	
 		DifficultType.SWITCH_REVERSE,
+		DifficultType.SPEEDUP,
 		DifficultType.MORE_COLORS,	
-		DifficultType.VARIABLE_SPEED,
-		DifficultType.SPEEDUP,			// 15
-		DifficultType.VARIABLE_SPEED
+		DifficultType.SPEEDUP,
+		DifficultType.VARIABLE_SPEED	// 15
 	};
 
 	SoundDefinitions[] musics = { SoundDefinitions.LOOP_1, SoundDefinitions.LOOP_2, SoundDefinitions.LOOP_3 };
@@ -270,6 +266,10 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	public void ThrowCurrentPin() {
+		spawner.ThrowCurrentPin();
+	}
+
 	public void CheckDifficulty() {
 		if (CanLevelUp(score)) {
 			LevelUp ();
@@ -277,15 +277,12 @@ public class GameManager : MonoBehaviour {
 	}
 
 	bool CanLevelUp(int score) {
-
-		if (pointsRequiredToLevelUpQueue.Count == 0 && currentLevel % 5 == 0) {
-			return true;
-		} 
-		else if (score >= pointsRequiredToLevelUpQueue.Peek()) {
-			return true;
-		} 
-		
-		return false;
+		if (pointsRequiredToLevelUpQueue.Count == 0) {
+			return score % 5 == 0;
+		}
+		else {
+			return score == pointsRequiredToLevelUpQueue.Peek ();
+		}
 	}
 		
 	void LevelUp() {
@@ -300,25 +297,23 @@ public class GameManager : MonoBehaviour {
 			AudioMaster.instance.PlayLoop (musics[currentMusic]);
 		}
 
-		pointsRequiredToLevelUpQueue.Dequeue ();
-
 		if (difficultyStepsQueue.Count == 0) {
-			if (CurrentLevel % 10 == 0)
+			if (score % 10 == 0)
 				difficult = DifficultType.SPEEDUP;
-			else if (CurrentLevel % 5 == 0)
+			else if (score % 5 == 0)
 				difficult = DifficultType.SWITCH_REVERSE;
 		} else {
+			pointsRequiredToLevelUpQueue.Dequeue ();
 			difficult = difficultyStepsQueue.Dequeue ();
 		}
 			
 		switch (difficult) {
 		case DifficultType.MORE_COLORS:
-				int newMaxColors = spawner.colorsInGame + 1;
-				spawner.colorsInGame = Mathf.Min (newMaxColors, MAX_COLORS_IN_GAME);
+				spawner.AddColorsInGame(1);
 				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
 			case DifficultType.SPEEDUP:
-				rotator.RotationSpeed += 20;
+				rotator.RotationSpeed += 10;
 				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
 			case DifficultType.SWITCH_REVERSE:
@@ -333,5 +328,7 @@ public class GameManager : MonoBehaviour {
 		}
 		speedLabel.text = LanguageManager.Instance.GetTextValue("ui.label.speed") + " " + rotator.RotationSpeed.ToString();
 		levelUp.Show (difficult);
+
+		Debug.LogFormat ("<color=green>Level {0} a los {1} puntos -> Dificultad añadida: {2}</color>", currentLevel, score, difficult.ToString ());
 	}
 }

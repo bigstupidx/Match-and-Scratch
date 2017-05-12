@@ -54,9 +54,10 @@ public class Pin : Circumference {
 	}
 
 	void Update() {
+		/*
 		if (!isShooted) 
 			if (Input.GetButtonDown("Fire1")) isShooted = true;
-
+		*/
 		if (isShooted && !isPinned)
 			rb.MovePosition(rb.position + Vector2.up * speed * Time.deltaTime);
 

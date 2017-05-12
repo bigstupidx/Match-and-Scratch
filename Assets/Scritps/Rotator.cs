@@ -344,13 +344,8 @@ public class Rotator : Circumference {
 
 	public IEnumerator VariableSpeedDifficult() {
 		while (GameManager.instance.canUseVariableSpeed) {
-			variableSpeedInc = 100f;
-			yield return new WaitForSeconds (2f);
-			variableSpeedInc = 0f;
-			yield return new WaitForSeconds (2f);
-			variableSpeedInc = -30f;
-			yield return new WaitForSeconds (2f);
-			variableSpeedInc = 0f;
+			float inc = Random.Range(0.4f, 0.4f);
+			variableSpeedInc = RotationSpeed * inc;
 			yield return new WaitForSeconds (2f);
 		}
 	}

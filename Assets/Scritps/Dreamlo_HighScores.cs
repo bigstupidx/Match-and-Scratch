@@ -96,7 +96,7 @@ public class Dreamlo_HighScores : MonoBehaviour
 	}
 
 	IEnumerator UploadNewHighscore (string username, int score, string date = "") {
-		Debug.Log ("<color=white>Enviando puntuacion...</color>");
+		//Debug.Log ("<color=white>Enviando puntuacion...</color>");
 		DateTime utcTime = DateTime.UtcNow;
 		//Solo llega una fecha 'date' si se trata de una puntuavción sin enviar
 		string utcString = date == "" ? utcTime.ToString ().Replace (":", "").Replace ("/", "").Replace (" ", "") : date;
@@ -105,10 +105,10 @@ public class Dreamlo_HighScores : MonoBehaviour
 		yield return www;
 
 		if (string.IsNullOrEmpty (www.error)) {
-			Debug.Log ("<color=white>... La puntuación se envió correctamente</color>");
+			//Debug.Log ("<color=white>... La puntuación se envió correctamente</color>");
 			DownloadHighscores ();
 		} else {
-			Debug.Log ("<color=white>... Hubo un error durante la subida de puntuación: " + www.error + "</color>");
+			Debug.Log ("<color=red>... Hubo un error durante la subida de puntuación: " + www.error + "</color>");
 			SaveUndeliveredScore (new ScoreEntry(username,score, utcTime.ToOADate()));
 		}
 	}
@@ -118,15 +118,15 @@ public class Dreamlo_HighScores : MonoBehaviour
 	}
 
 	IEnumerator GetHighscores() {
-		Debug.Log ("<color=white>Obteniendo puntuaciones... </color>");
+		//Debug.Log ("<color=white>Obteniendo puntuaciones... </color>");
 		WWW www = new WWW (webURL + publicCode + "/pipe/");
 		yield return www;
 
 		if (string.IsNullOrEmpty (www.error)) {
-			Debug.Log ("<color=white>... Puntuaciones obteniendas con éxito... </color>");
+			//Debug.Log ("<color=white>... Puntuaciones obteniendas con éxito... </color>");
 			FormatHighscores (www.text);
 		} else {
-			Debug.Log ("<color=white>... Hubo un error durante la obtención de puntuaciones: " + www.error + "</color>");
+			Debug.Log ("<color=red>... Hubo un error durante la obtención de puntuaciones: " + www.error + "</color>");
 		}
 	}
 

@@ -69,19 +69,22 @@ public class UnityAds : MonoBehaviour {
 		Debug.Log ("Servicio  UnityAds inicializados.");
 	}
 
-	public void ShowAds() {
-		ShowAds (null);
+	public void ShowAds(bool rewarded) {
+		ShowAds (rewarded, null);
 	}
 
-	public void ShowAds(callback _callback = null) {
+	public void ShowAds( bool rewarded, callback _callback = null) {
 
 		resultCallback = _callback;
 
 		if (Advertisement.isInitialized) {
 			if (Advertisement.isSupported) {
-				if (Advertisement.IsReady (videoTypeStrings[(int)currentVideoType])) {
+				
+
+				if (Advertisement.IsReady () ) {
 					var options = new ShowOptions { resultCallback = HandleShowResult };
-					Advertisement.Show ("rewardedVideo", options);
+					string videotypeString = videoTypeStrings [rewarded ? (int)videoType.REWARDED_VIDEO : (int)videoType.SKIPPABLES_VIDEO];
+					Advertisement.Show (videotypeString, options);
 				} else {
 					HandleShowResult (ShowResult.Failed);
 					Debug.Log ("Ads not Ready");

@@ -8,6 +8,7 @@ using Random = UnityEngine.Random;
 public class Spawner : MonoBehaviour {
 	[SerializeField]
 	public const float MINIMUM_SPAWN_TIME = 0f;
+	public int MAX_COLORS_IN_GAME = 6;
 	 
 	public GameObject PinPrefab;
 	public int nextColor;
@@ -16,10 +17,16 @@ public class Spawner : MonoBehaviour {
 	public Image nextPin;
 	public int pinsCount;
 
+	public GameObject lastSpawnedPin;
+
 	void Start() {}
 
 	public void SpawnPin(float secondsDelay = 0) {
 		StartCoroutine(Spawn(secondsDelay));
+	}
+
+	public void AddColorsInGame(int inc) {
+		colorsInGame = Mathf.Min (colorsInGame + inc, MAX_COLORS_IN_GAME - 1);
 	}
 
 	public void Reset() {
@@ -30,15 +37,14 @@ public class Spawner : MonoBehaviour {
 	}
 
 	private IEnumerator Spawn (float secondsDelay = 0f) {
-		GameObject pin;
 
 		yield return new WaitForSeconds(secondsDelay);
 
 		currentColor = nextColor;
-		pin = Instantiate(PinPrefab, transform.position, transform.rotation);
-		pin.GetComponent<Circumference>().colorType   = currentColor;
-		pin.name = pinsCount + "-Type_" + currentColor.ToString();
-		pin.GetComponent<SpriteRenderer>().color = GameManager.instance.posibleColors[currentColor];
+		lastSpawnedPin = Instantiate(PinPrefab, transform.position, transform.rotation);
+		lastSpawnedPin.GetComponent<Circumference>().colorType   = currentColor;
+		lastSpawnedPin.name = pinsCount + "-Type_" + currentColor.ToString();
+		lastSpawnedPin.GetComponent<SpriteRenderer>().color = GameManager.instance.posibleColors[currentColor];
 
 		pinsCount++;
 
@@ -48,5 +54,9 @@ public class Spawner : MonoBehaviour {
 
 	int GetNextColor() {
 		return Random.Range (0, Mathf.Min(Mathf.Max(0, colorsInGame +1), GameManager.instance.posibleColors.Length));
+	}
+
+	public void ThrowCurrentPin() {
+		lastSpawnedPin.GetComponent<Pin> ().isShooted = true;
 	}
 }
