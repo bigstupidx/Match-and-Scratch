@@ -51,8 +51,8 @@ public class Dreamlo_HighScores : MonoBehaviour
 		PlayerPrefs.DeleteKey ("undeliveredScores");
 	}
 
-	public void AddNewHighscore(string username, int score, double date = 0) {
-		StartCoroutine(UploadNewHighscore(username, score, date == 0 ? "": DateTime.FromOADate(date).ToString()));
+	public void AddNewHighscore(ScoreEntry sc) {
+		StartCoroutine(UploadNewHighscore(sc.username, sc.score, sc.date == 0 ? "": DateTime.FromOADate(sc.date).ToString()));
 	}
 
 	IEnumerator CheckInternetConnection() {
@@ -118,22 +118,30 @@ public class Dreamlo_HighScores : MonoBehaviour
 	}
 
 	IEnumerator GetHighscores() {
-		//Debug.Log ("<color=white>Obteniendo puntuaciones... </color>");
-		WWW www = new WWW (webURL + publicCode + "/pipe/");
-		yield return www;
+		highscoreList.Clear();
+		bool isAllDataCollected = false;
+		int iterations = 0;
+		while (!isAllDataCollected) {
+			//Debug.Log ("<color=white>Obteniendo puntuaciones... </color>");
+			WWW www = new WWW (webURL + publicCode + "/pipe/" + iterations * 100 + "/100");
+			http://dreamlo.com/lb/58da1c3c12e7f00688faab7b/pipe/0/100
+			iterations++;
 
-		if (string.IsNullOrEmpty (www.error)) {
-			//Debug.Log ("<color=white>... Puntuaciones obteniendas con éxito... </color>");
-			FormatHighscores (www.text);
-		} else {
-			Debug.Log ("<color=red>... Hubo un error durante la obtención de puntuaciones: " + www.error + "</color>");
+			yield return www;
+
+			if (string.IsNullOrEmpty (www.error)) {
+				if (www.text == "")
+					isAllDataCollected = true;
+				else
+					FormatHighscores (www.text);
+			} else {
+				Debug.Log ("<color=red>... Hubo un error durante la obtención de puntuaciones: " + www.error + "</color>");
+			}
 		}
 	}
 
 	void FormatHighscores(string textSteam) {
 		string[] entries = textSteam.Split (new char[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
-
-		highscoreList.Clear();
 
 		for (int i = 0; i < entries.Length ; i++) {
 			string[] entryInfo = entries [i].Split (new char[] { '|' });

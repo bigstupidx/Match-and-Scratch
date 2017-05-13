@@ -47,10 +47,10 @@ public class InputNameScreen : UIScreen {
 		PlayerPrefs.SetString ("name", lastName);
 
 		if (GameManager.instance.currentSource == HighScoresSource.DREAMLO) {			
-			Dreamlo_HighScores.instance.AddNewHighscore (lastName, GameManager.instance.Score);
+			Dreamlo_HighScores.instance.AddNewHighscore ( new ScoreEntry ( lastName, GameManager.instance.Score ) );
 		} 
 		else if (GameManager.instance.currentSource == HighScoresSource.FIREBASE) {
-			Firebase_HighScores.instance.AddNewHighscore(lastName, GameManager.instance.Score);
+			Firebase_HighScores.instance.AddNewHighscore( new ScoreEntry ( lastName, GameManager.instance.Score ) );
 		}
 
 		//TODO 

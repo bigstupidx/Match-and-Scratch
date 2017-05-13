@@ -65,20 +65,25 @@ public class Firebase_HighScores : MonoBehaviour {
 			.ValueChanged += HandleValueChange;
 	}
 
-	public void AddNewHighscore(string name, int points, double date = 0) {
+	public void AddNewHighscore(ScoreEntry scoreEntry) {
 		string key = FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE).Push().Key;
 
 		DateTime utcTime = DateTime.UtcNow;
-		if (date == 0)
-			date = utcTime.ToOADate();
+		if (scoreEntry.date == 0)
+			scoreEntry.date = utcTime.ToOADate();
 		
-		ScoreEntry score = new ScoreEntry (name, points, date);
-		Dictionary<string, object> entryValues = score.ToDictionary ();
+		Dictionary<string, object> entryValues = scoreEntry.ToDictionary ();
 
 		Dictionary<string, object> childUpdates = new Dictionary<string, object>();
 		childUpdates[key] = entryValues;
 
-		FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE).UpdateChildrenAsync (childUpdates);
+		FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE).UpdateChildrenAsync (childUpdates).ContinueWith (task => {
+			if(task.Exception != null)
+				Debug.Log("Error al insertar Score: " + task.Exception.ToString());
+			else if (task.IsCompleted) {
+				Debug.Log("Añadido: " + key + ": "+ scoreEntry.ToContatString());
+			}
+		});
 	}
 
 	void HandleValueChange (object sender, ValueChangedEventArgs args) {
@@ -107,13 +112,30 @@ public class Firebase_HighScores : MonoBehaviour {
 		}
 	}
 
-	/*void CleanDataBase() {
-		DatabaseReference reference = FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE);
-		foreach(var c in reference) {
-			
+	public void DreamloToFireBase() {
+		if (Dreamlo_HighScores.instance != null) {
+			if (Dreamlo_HighScores.instance.highscoreList != null && Dreamlo_HighScores.instance.highscoreList.Count > 0) {
+				foreach (ScoreEntry se in Dreamlo_HighScores.instance.highscoreList) {
+					string[] nameAndDate = se.username.Split (new char[]{ '-' }, StringSplitOptions.RemoveEmptyEntries);
+					ScoreEntry newSe = new ScoreEntry (nameAndDate [0].Replace ('+', ' '), se.score, se.date ); //double.Parse (nameAndDate [1]) );
+					AddNewHighscore (newSe);
+				}
+			}
 		}
-	}*/
+	}
+	/*
+	public void CleanDataBase() {
+		DatabaseReference reference = FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE);
 
+		reference.RemoveValueAsync ().ContinueWith(task => {
+			if(task.Exception != null)
+				Debug.Log("Error al eliminar: " + task.Exception.ToString());
+			else if (task.IsCompleted) {
+				Debug.Log("Success!");
+			}
+		});
+	}
+	*/
 	// Update is called once per frame
 	void Update () {
 		

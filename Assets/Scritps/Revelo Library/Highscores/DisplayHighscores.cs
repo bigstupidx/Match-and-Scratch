@@ -10,7 +10,7 @@ public struct ScoreEntry
 	public int score;
 	public double date;
 
-	public ScoreEntry(string _username, int _score, double _date) {
+	public ScoreEntry(string _username, int _score, double _date = 0) {
 		username = _username;
 		score = _score;
 		date = _date;
