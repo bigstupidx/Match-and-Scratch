@@ -137,6 +137,7 @@ public class Dreamlo_HighScores : MonoBehaviour
 			} else {
 				Debug.Log ("<color=red>... Hubo un error durante la obtención de puntuaciones: " + www.error + "</color>");
 			}
+			yield return null;
 		}
 	}
 

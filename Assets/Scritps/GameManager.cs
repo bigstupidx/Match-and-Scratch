@@ -251,7 +251,7 @@ public class GameManager : MonoBehaviour {
 		spawner.enabled = true;
 		rotator.enabled = true;
 		currentMusic = 0;
-		AudioMaster.instance.StopAll(true);
+		AudioMaster.instance.StopAll(false);
 		AudioMaster.instance.PlayLoop(musics[currentMusic]);
 	}
 
@@ -274,6 +274,15 @@ public class GameManager : MonoBehaviour {
 		if (CanLevelUp(score)) {
 			LevelUp ();
 		}
+		// hacemos cambios de musica
+		if (score % 30 == 0) {
+			AudioMaster.instance.StopSound (musics[currentMusic], true);
+			currentMusic++;
+			if (currentMusic > musics.Length) {
+				currentMusic = 0;
+			}
+			AudioMaster.instance.PlayLoop (musics[currentMusic]);
+		}
 	}
 
 	bool CanLevelUp(int score) {
@@ -289,13 +298,6 @@ public class GameManager : MonoBehaviour {
 		DifficultType difficult = DifficultType.NONE;
 
 		CurrentLevel++;
-
-		// hacemos cambios de musica
-		if (currentLevel % 30 == 0) {
-			AudioMaster.instance.StopSound (musics[currentMusic], true);
-			currentMusic = ++currentMusic > musics.Length ? 0 : currentMusic++;
-			AudioMaster.instance.PlayLoop (musics[currentMusic]);
-		}
 
 		if (difficultyStepsQueue.Count == 0) {
 			if (score % 10 == 0)
@@ -314,7 +316,7 @@ public class GameManager : MonoBehaviour {
 			break;
 			case DifficultType.SPEEDUP:
 				rotator.RotationSpeed += 10;
-				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
+				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_7);
 			break;
 			case DifficultType.SWITCH_REVERSE:
 				canInverseDir = !canInverseDir;
@@ -323,7 +325,7 @@ public class GameManager : MonoBehaviour {
 			case DifficultType.VARIABLE_SPEED:
 				canUseVariableSpeed = !canUseVariableSpeed;
 				StartCoroutine(rotator.VariableSpeedDifficult());
-				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_9);
+				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_10);
 				break;
 		}
 		speedLabel.text = LanguageManager.Instance.GetTextValue("ui.label.speed") + " " + rotator.RotationSpeed.ToString();
