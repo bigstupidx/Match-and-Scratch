@@ -106,31 +106,36 @@ public class GameManager : MonoBehaviour {
 		20,
 		25,
 		30,
-		34,
-		36,		// 10
-		40,
+		35,
+		40,		// 10
 		45,
 		50,
 		55,
-		60 		// 15
+		60,
+		65,		// 15
+		70,
+		75
+
 	};
 	private Queue<DifficultType> difficultyStepsQueue;
 	private List<DifficultType> difficultySteps = new List<DifficultType>() {
 		DifficultType.MORE_COLORS,
 		DifficultType.SPEEDUP,
-		DifficultType.MORE_COLORS, 		
 		DifficultType.SWITCH_REVERSE,
-		DifficultType.MORE_COLORS,		// 5
-		DifficultType.SPEEDUP,
+		DifficultType.MORE_COLORS, 
+		DifficultType.SWITCH_REVERSE,	// 5
+		DifficultType.SPEEDUP,	
 		DifficultType.SWITCH_REVERSE,
 		DifficultType.SPEEDUP,
+		DifficultType.VARIABLE_SPEED,
+		DifficultType.MORE_COLORS,		// 10
+		DifficultType.VARIABLE_SPEED,
+		DifficultType.SPEEDUP,		
+		DifficultType.SWITCH_REVERSE,
 		DifficultType.MORE_COLORS,
-		DifficultType.SPEEDUP,			// 10	
-		DifficultType.SWITCH_REVERSE,
-		DifficultType.SPEEDUP,
-		DifficultType.MORE_COLORS,	
-		DifficultType.SPEEDUP,
-		DifficultType.VARIABLE_SPEED	// 15
+		DifficultType.VARIABLE_SPEED,	// 15
+		DifficultType.MORE_COLORS,		
+		DifficultType.SPEEDUP,	
 	};
 
 	SoundDefinitions[] musics = { SoundDefinitions.LOOP_1, SoundDefinitions.LOOP_2, SoundDefinitions.LOOP_3 };
