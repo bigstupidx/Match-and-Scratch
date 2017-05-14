@@ -42,8 +42,6 @@ public class GameManager : MonoBehaviour {
 	public LevelUp levelUp;
 	public Text newScore;
 	public Text scoreLabel;
-	public Text levelLabel;
-	public Text speedLabel;
 	public Text GameOverPoints;
 
 	public int initialLevel;
@@ -54,7 +52,6 @@ public class GameManager : MonoBehaviour {
 		get{return currentLevel;}
 		set { 
 			currentLevel = value;
-			levelLabel.text = LanguageManager.Instance.GetTextValue("ui.label.level") + " " + currentLevel.ToString();
 		}
 	}
 	public bool canInverseDir;
@@ -107,14 +104,15 @@ public class GameManager : MonoBehaviour {
 		25,
 		30,
 		35,
-		40,		// 10
+		38,		// 10
+		40,
 		45,
 		50,
 		55,
-		60,
-		65,		// 15
+		60,		// 15
+		65,		
 		70,
-		75
+		75		// 18
 
 	};
 	private Queue<DifficultType> difficultyStepsQueue;
@@ -133,9 +131,10 @@ public class GameManager : MonoBehaviour {
 		DifficultType.SPEEDUP,		
 		DifficultType.SWITCH_REVERSE,
 		DifficultType.MORE_COLORS,
-		DifficultType.VARIABLE_SPEED,	// 15
+		DifficultType.SPEEDUP,			// 15
+		DifficultType.VARIABLE_SPEED,
 		DifficultType.MORE_COLORS,		
-		DifficultType.SPEEDUP,	
+		DifficultType.SPEEDUP,			// 18
 	};
 
 	SoundDefinitions[] musics = { SoundDefinitions.LOOP_1, SoundDefinitions.LOOP_2, SoundDefinitions.LOOP_3 };
@@ -283,7 +282,7 @@ public class GameManager : MonoBehaviour {
 		if (score % 30 == 0) {
 			AudioMaster.instance.StopSound (musics[currentMusic], true);
 			currentMusic++;
-			if (currentMusic > musics.Length) {
+			if (currentMusic > musics.Length -1) {
 				currentMusic = 0;
 			}
 			AudioMaster.instance.PlayLoop (musics[currentMusic]);
@@ -333,7 +332,6 @@ public class GameManager : MonoBehaviour {
 				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_10);
 				break;
 		}
-		speedLabel.text = LanguageManager.Instance.GetTextValue("ui.label.speed") + " " + rotator.RotationSpeed.ToString();
 		levelUp.Show (difficult);
 
 		Debug.LogFormat ("<color=green>Level {0} a los {1} puntos -> Dificultad añadida: {2}</color>", currentLevel, score, difficult.ToString ());

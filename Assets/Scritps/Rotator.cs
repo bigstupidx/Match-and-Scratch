@@ -11,8 +11,12 @@ public class Rotator : Circumference {
 		get { return rotationSpeed;}
 		set { rotationSpeed = value;}
 	}
+	public float currentSpeed;
+
 	[SerializeField]
 	private float variableSpeedInc;
+
+	private float[] speedIncs = new float[]{ -0.6f, -0.2f, 0, 0.2f, 0.4f };
 
 	public int rotationDirection = 1;
 	public float marginBetweenPins = 0.004f;
@@ -28,7 +32,9 @@ public class Rotator : Circumference {
 	}
 
 	void FixedUpdate() {
-		transform.Rotate(0f, 0f, (RotationSpeed + variableSpeedInc) * rotationDirection * Time.fixedDeltaTime);
+		currentSpeed = (RotationSpeed + variableSpeedInc) * rotationDirection;
+
+		transform.Rotate(0f, 0f, currentSpeed * Time.fixedDeltaTime);
 	}
 
 	public void AddPin(Circumference newPin, Collider2D col) {
@@ -344,8 +350,8 @@ public class Rotator : Circumference {
 
 	public IEnumerator VariableSpeedDifficult() {
 		while (GameManager.instance.canUseVariableSpeed) {
-			float inc = Random.Range(0.4f, 0.4f);
-			variableSpeedInc = RotationSpeed * inc;
+			int inc = Random.Range(0, speedIncs.Length);
+			variableSpeedInc = RotationSpeed * speedIncs[inc];
 			yield return new WaitForSeconds (2f);
 		}
 	}
