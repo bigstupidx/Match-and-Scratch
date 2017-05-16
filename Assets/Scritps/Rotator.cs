@@ -305,6 +305,7 @@ public class Rotator : Circumference {
 			Destroy(pins[i]);
 		}
 		pinsGroups.Clear();
+		StopCoroutine (VariableSpeedDifficult());
 		RotationSpeed = INITIAL_SPEED;
 		variableSpeedInc = 0;
 		rotationDirection = 1;
