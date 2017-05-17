@@ -29,7 +29,7 @@ public class LevelUp : MonoBehaviour {
 		case DifficultType.SWITCH_REVERSE:
 			ReverseDirection.SetActive (true);
 			break;
-		case DifficultType.VARIABLE_SPEED:
+		case DifficultType.SWITCH_VARIABLE_SPEED:
 			VariableSpeed.SetActive (true);
 			break;
 		}

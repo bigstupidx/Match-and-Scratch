@@ -16,7 +16,7 @@ public class Rotator : Circumference {
 	[SerializeField]
 	private float variableSpeedInc;
 
-	private float[] speedIncs = new float[]{ -0.6f, -0.2f, 0, 0.2f, 0.4f };
+	private float[] speedIncs = new float[]{ -2.0f, -0.50f, 0, 0.25f, 0.50f };
 
 	public int rotationDirection = 1;
 	public float marginBetweenPins = 0.004f;
@@ -32,7 +32,7 @@ public class Rotator : Circumference {
 	}
 
 	void FixedUpdate() {
-		currentSpeed = (RotationSpeed + variableSpeedInc) * rotationDirection;
+		currentSpeed = (RotationSpeed + (RotationSpeed * variableSpeedInc)) * rotationDirection;
 
 		transform.Rotate(0f, 0f, currentSpeed * Time.fixedDeltaTime);
 	}
@@ -221,7 +221,7 @@ public class Rotator : Circumference {
 		}
 		else if (circumferencesCollided.Count > 1){
 			groupsCollided.Clear ();
-			for (int i = 0; i < circumferencesCollided.Count && !GameManager.instance.gameHasEnded; i++) {
+			for (int i = 0; i < circumferencesCollided.Count && !GameManager.instance.isGameOver; i++) {
 				if (circumferencesCollided [i].tag == "Pin") {
 					for (int j = 0; j < pinsGroups.Count; j++) {
 						if (pinsGroups [j].isActive) {
@@ -348,13 +348,29 @@ public class Rotator : Circumference {
 			break;
 		}
 	}
-
+	float newInc;
 	public IEnumerator VariableSpeedDifficult() {
-		while (GameManager.instance.canUseVariableSpeed) {
-			int inc = Random.Range(0, speedIncs.Length);
-			variableSpeedInc = RotationSpeed * speedIncs[inc];
-			yield return new WaitForSeconds (2f);
+		while (GameManager.instance.canUseVariableSpeed && !GameManager.instance.isGameOver) {
+			float tmpInc = speedIncs[Random.Range (0, speedIncs.Length)];
+			// No permitimos que salga dos veces el mismo numero
+			while (newInc == tmpInc) {
+				tmpInc = speedIncs [Random.Range (0, speedIncs.Length)];
+			}
+			newInc = tmpInc;
+			StartCoroutine(SmoothSpeedIncrement(variableSpeedInc, newInc, 1f));
+
+			yield return new WaitForSeconds (3f);
 		}
+	}
+
+	public IEnumerator SmoothSpeedIncrement(float from, float to, float time) {
+		float elapsedTime = 0;
+		while (elapsedTime < time) {
+			elapsedTime += Time.deltaTime;
+			variableSpeedInc = Mathf.Lerp(from, to, elapsedTime / time);
+			yield return null;
+		}
+		Debug.LogFormat ("<color=blue>From: {0} \n to: {1} \n variableSpeedInc: {2}</color>", from, to, variableSpeedInc);
 	}
 
 	/*   

@@ -124,7 +124,7 @@ public class Dreamlo_HighScores : MonoBehaviour
 		while (!isAllDataCollected) {
 			//Debug.Log ("<color=white>Obteniendo puntuaciones... </color>");
 			WWW www = new WWW (webURL + publicCode + "/pipe/" + iterations * 100 + "/100");
-			http://dreamlo.com/lb/58da1c3c12e7f00688faab7b/pipe/0/100
+			//http://dreamlo.com/lb/58da1c3c12e7f00688faab7b/pipe/0/100
 			iterations++;
 
 			yield return www;

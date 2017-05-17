@@ -21,7 +21,7 @@ public enum DifficultType {
 	MORE_COLORS,
 	SWITCH_REVERSE,
 	SPEEDUP,
-	VARIABLE_SPEED
+	SWITCH_VARIABLE_SPEED
 }
 
 public enum HighScoresSource {
@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour {
 	public bool canInverseDir;
 	public bool canUseVariableSpeed;
 
-	public bool gameHasEnded;
+	public bool isGameOver;
 
 
 	//private int lastScore;
@@ -103,16 +103,16 @@ public class GameManager : MonoBehaviour {
 		20,
 		25,
 		30,
-		35,
-		38,		// 10
+		31,
+		35,		// 10
 		40,
 		45,
 		50,
 		55,
 		60,		// 15
 		65,		
-		70,
-		75		// 18
+		69,
+		70		// 18
 
 	};
 	private Queue<DifficultType> difficultyStepsQueue;
@@ -125,16 +125,16 @@ public class GameManager : MonoBehaviour {
 		DifficultType.SPEEDUP,	
 		DifficultType.SWITCH_REVERSE,
 		DifficultType.SPEEDUP,
-		DifficultType.VARIABLE_SPEED,
+		DifficultType.SWITCH_VARIABLE_SPEED,
 		DifficultType.MORE_COLORS,		// 10
-		DifficultType.VARIABLE_SPEED,
+		DifficultType.SWITCH_VARIABLE_SPEED,
 		DifficultType.SPEEDUP,		
 		DifficultType.SWITCH_REVERSE,
 		DifficultType.MORE_COLORS,
 		DifficultType.SPEEDUP,			// 15
-		DifficultType.VARIABLE_SPEED,
 		DifficultType.MORE_COLORS,		
 		DifficultType.SPEEDUP,			// 18
+		DifficultType.SWITCH_VARIABLE_SPEED
 	};
 
 	SoundDefinitions[] musics = { SoundDefinitions.LOOP_1, SoundDefinitions.LOOP_2, SoundDefinitions.LOOP_3 };
@@ -229,12 +229,12 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void GameOver() {
-		if (gameHasEnded)
+		if (isGameOver)
 			return;
 		
 		rotator.enabled = false;
 		spawner.enabled = false;
-		gameHasEnded = true;
+		isGameOver = true;
 		
 		SetGameState(GameState.GameOver);
 	}
@@ -251,7 +251,7 @@ public class GameManager : MonoBehaviour {
 		canInverseDir = false;
 		CurrentLevel = initialLevel;
 		Score = 0;
-		gameHasEnded = false;		
+		isGameOver = false;		
 		spawner.enabled = true;
 		rotator.enabled = true;
 		currentMusic = 0;
@@ -304,7 +304,9 @@ public class GameManager : MonoBehaviour {
 		CurrentLevel++;
 
 		if (difficultyStepsQueue.Count == 0) {
-			if (score % 10 == 0)
+			if (score % 15 == 0)
+				difficult = DifficultType.SWITCH_VARIABLE_SPEED;
+			else if (score % 10 == 0)
 				difficult = DifficultType.SPEEDUP;
 			else if (score % 5 == 0)
 				difficult = DifficultType.SWITCH_REVERSE;
@@ -319,14 +321,14 @@ public class GameManager : MonoBehaviour {
 				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
 			case DifficultType.SPEEDUP:
-				rotator.RotationSpeed += 10;
+				rotator.RotationSpeed += 15;
 				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_7);
 			break;
 			case DifficultType.SWITCH_REVERSE:
 				canInverseDir = !canInverseDir;
 				AudioMaster.instance.Play (SoundDefinitions.SFX_REVERSE);
 			break;
-			case DifficultType.VARIABLE_SPEED:
+			case DifficultType.SWITCH_VARIABLE_SPEED:
 				canUseVariableSpeed = !canUseVariableSpeed;
 				StartCoroutine(rotator.VariableSpeedDifficult());
 				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_10);
