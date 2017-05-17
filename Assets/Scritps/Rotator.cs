@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ReveloLibrary;
+using System;
 
 public class Rotator : Circumference {
 	public const float INITIAL_SPEED = 100f;
@@ -16,10 +17,15 @@ public class Rotator : Circumference {
 	[SerializeField]
 	private float variableSpeedInc;
 
+	public float smoothCurrentSpeed;
+
 	private float[] speedIncs = new float[]{ -2.0f, -0.50f, 0, 0.25f, 0.50f };
 
 	public int rotationDirection = 1;
 	public float marginBetweenPins = 0.004f;
+
+	public Action OnPinPinned;
+	public Action OnCompleteRotation;
 
 	private float spawnTimeDelay;
 	private Circumference me;
@@ -30,14 +36,25 @@ public class Rotator : Circumference {
 	public override void Initialize() {
 		me = this;
 	}
-
+	float angleRotated = 0;
 	void FixedUpdate() {
 		currentSpeed = (RotationSpeed + (RotationSpeed * variableSpeedInc)) * rotationDirection;
+		smoothCurrentSpeed = currentSpeed * Time.fixedDeltaTime;
 
-		transform.Rotate(0f, 0f, currentSpeed * Time.fixedDeltaTime);
+		transform.Rotate(0f, 0f, smoothCurrentSpeed);
+		angleRotated += smoothCurrentSpeed;
+		if (angleRotated >= 360) {
+			angleRotated = 0;
+			if (OnCompleteRotation != null)
+				OnCompleteRotation ();
+		}
+		//Debug.Log("Angulo de rotación del rotator = " + angleRotated.ToString());
 	}
 
 	public void AddPin(Circumference newPin, Collider2D col) {
+		if (OnPinPinned != null)
+			OnPinPinned ();
+		
 		newPin.colisionador.isTrigger = false;
 		Pin cn = newPin.GetComponent<Pin>();
 		cn.isPinned = true;
@@ -351,10 +368,10 @@ public class Rotator : Circumference {
 	float newInc;
 	public IEnumerator VariableSpeedDifficult() {
 		while (GameManager.instance.canUseVariableSpeed && !GameManager.instance.isGameOver) {
-			float tmpInc = speedIncs[Random.Range (0, speedIncs.Length)];
+			float tmpInc = speedIncs[UnityEngine.Random.Range (0, speedIncs.Length)];
 			// No permitimos que salga dos veces el mismo numero
 			while (newInc == tmpInc) {
-				tmpInc = speedIncs [Random.Range (0, speedIncs.Length)];
+				tmpInc = speedIncs [UnityEngine.Random.Range (0, speedIncs.Length)];
 			}
 			newInc = tmpInc;
 			StartCoroutine(SmoothSpeedIncrement(variableSpeedInc, newInc, 1f));

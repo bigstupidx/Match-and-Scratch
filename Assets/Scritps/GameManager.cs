@@ -16,6 +16,11 @@ public enum GameState {
 	Highscores
 }
 
+public enum GamePlayState {
+	Tutorial, 
+	Normal
+}
+
 public enum DifficultType {
 	NONE,
 	MORE_COLORS,
@@ -59,6 +64,7 @@ public class GameManager : MonoBehaviour {
 
 	public bool isGameOver;
 
+	public GamePlayState currentGamePlayState = GamePlayState.Normal;
 
 	//private int lastScore;
 	[SerializeField]
@@ -73,6 +79,8 @@ public class GameManager : MonoBehaviour {
 
 	public HighScoresSource currentSource;
 	public Action<HighScoresSource> OnChangeHighScoresSource;
+
+	public Action OnBeginGame;
 
 	public void SetNewHighScoresSource(HighScoresSource newSource) {
 		currentSource = newSource;
@@ -214,6 +222,8 @@ public class GameManager : MonoBehaviour {
 	void BeginGame() {
 		ResetGame ();
 		spawner.SpawnPin();
+		if (OnBeginGame != null)
+			OnBeginGame ();
 	}
 
 	public void ShowGameOverScreen() {
