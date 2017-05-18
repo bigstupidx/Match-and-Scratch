@@ -32,6 +32,11 @@ namespace ReveloLibrary {
 		private AudioSource mActiveMusic;		// Musica en reproducción
 
 		public static AudioMaster instance = null;
+
+		public float OriginalVolume {
+			get;
+			private set;
+		}
 		
 		void Awake()
 		{
@@ -41,6 +46,8 @@ namespace ReveloLibrary {
 			else if (instance != this) {
 				Destroy(gameObject);
 			}
+
+			OriginalVolume = masterVolume;
 
 			mOriginOfTheSounds = transform;
 			//mOriginOfTheSounds.localPosition = new Vector3(0, 0, 0);				
@@ -60,7 +67,11 @@ namespace ReveloLibrary {
 			UpdateActiveAudio();
 			CheckFaddingSoundsToStopIt();
 		}
-		
+
+		public void Mute(bool isMuted) {
+			masterVolume = isMuted ? 0 : OriginalVolume;
+		}
+
 		public void PlayUniqueSoundDefinitionType(SoundDefinitions soundDef)
 		{
 			bool alreadyPlaying = false;
@@ -109,7 +120,7 @@ namespace ReveloLibrary {
 					//Set the source as active
 					if (mActiveAudio != null && GameSounds != null && GameSounds.Count >= (int)soundDef)
 					{
-						mActiveAudio.Add(new ClipInfo { Source = source, Volume = gs.Volume * masterVolume, Definition = soundDef });
+						mActiveAudio.Add(new ClipInfo { Source = source, Volume = gs.Volume /* * masterVolume */, Definition = soundDef });
 					}
 				}
 			}
@@ -122,7 +133,7 @@ namespace ReveloLibrary {
 			GameObject soundLoc = CreateSoundLocation("Sound_" + soundDef);
 			//Create the Audio source
 			AudioSource source = soundLoc.AddComponent<AudioSource>();
-			source.volume *= masterVolume;
+			//source.volume *= masterVolume;
 
 			//Configure the GameSound
 			GameSound gs = GetTheSoundClip(soundDef);
@@ -145,7 +156,7 @@ namespace ReveloLibrary {
 				//Drstroy it when stop
 				Destroy(soundLoc, gs.TheSound.length);			
 				//Set the source as active
-				mActiveAudio.Add(new ClipInfo{Source = source, Volume = GameSounds[(int)soundDef].Volume * masterVolume, Definition = soundDef});
+				mActiveAudio.Add(new ClipInfo{Source = source, Volume = GameSounds[(int)soundDef].Volume /* * masterVolume*/, Definition = soundDef});
 			}
 			return source;
 		}
@@ -196,7 +207,7 @@ namespace ReveloLibrary {
 			source.Play();
 			
 			//Set the source as active
-			mActiveAudio.Add(new ClipInfo{Source = source, Volume = gs.Volume * masterVolume, Definition = soundDef});
+			mActiveAudio.Add(new ClipInfo{Source = source, Volume = gs.Volume /* * masterVolume */, Definition = soundDef});
 			return source;
 		}
 		
@@ -401,7 +412,7 @@ namespace ReveloLibrary {
 			source.minDistance = 150;
 			source.maxDistance = 1500;
 			source.clip = clip;
-			source.volume = volume * masterVolume;
+			source.volume = volume /* * masterVolume */;
 			source.pitch = 1;
 		}
 		
