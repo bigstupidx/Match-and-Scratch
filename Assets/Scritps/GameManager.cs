@@ -265,6 +265,8 @@ public class GameManager : MonoBehaviour {
 		spawner.enabled = true;
 		rotator.enabled = true;
 		currentMusic = 0;
+		levelUp.GetComponent<Animator> ().ResetTrigger ("start");
+		levelUp.GetComponent<Animator> ().Play ("Idle");
 		AudioMaster.instance.StopAll(false);
 		AudioMaster.instance.PlayLoop(musics[currentMusic]);
 	}
