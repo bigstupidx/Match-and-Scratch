@@ -124,8 +124,8 @@ public class Rotator : Circumference {
 	void Reposition(Circumference newPin) {
 		
 
-		foreach (Circumference c in circumferencesCollided)
-			Debug.LogFormat ("<color=blue>Colision con {0} ({1}): distancia: {2}</color>", c.name, c.tag, DistanceBetweenCircumferences (newPin, c));
+		//foreach (Circumference c in circumferencesCollided)
+		//	Debug.LogFormat ("<color=blue>Colision con {0} ({1}): distancia: {2}</color>", c.name, c.tag, DistanceBetweenCircumferences (newPin, c));
 
 		if (circumferencesCollided.Count > 1)
 			circumferencesCollided.Sort( (A,B) => DistanceBetweenCircumferences(newPin, A).CompareTo(DistanceBetweenCircumferences(newPin, B)) );
@@ -135,8 +135,8 @@ public class Rotator : Circumference {
 			circumferencesCollided = circumferencesCollided.GetRange(0, 2);
 		}
 
-		foreach (Circumference c in circumferencesCollided)
-			Debug.LogFormat ("<color=yellow>Colision aceptada: {0} ({1}) ( distancia: {2})</color>", c.name, c.tag, DistanceBetweenCircumferences (newPin, c));
+		//foreach (Circumference c in circumferencesCollided)
+		//	Debug.LogFormat ("<color=yellow>Colision aceptada: {0} ({1}) ( distancia: {2})</color>", c.name, c.tag, DistanceBetweenCircumferences (newPin, c));
 
 		switch (circumferencesCollided.Count) {
 			case 1:

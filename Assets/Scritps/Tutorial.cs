@@ -53,7 +53,7 @@ public class Tutorial : MonoBehaviour {
 			}
 
 			tutorialWrapper.SetActive(true);
-
+			Debug.Log ("Tutoral Start");
 
 
 			EnableClick (true);
@@ -64,7 +64,7 @@ public class Tutorial : MonoBehaviour {
 			while (currentTutorialStep == TutorialStep.FIRST_THROW) {
 				yield return null;
 			}
-
+			Debug.Log ("Tutoral First Throw");
 
 			// · Second Throw: Iniciamos la rotación del rotor
 			GameManager.instance.rotator.RotationSpeed = Rotator.INITIAL_SPEED;
@@ -81,7 +81,7 @@ public class Tutorial : MonoBehaviour {
 			while (currentTutorialStep == TutorialStep.SECOND_THROW) {
 				yield return null;
 			}
-
+			Debug.Log ("Tutoral Second Throw");
 
 			// · Third Throw: Iniciamos la rotación del rotor
 			GameManager.instance.rotator.RotationSpeed = Rotator.INITIAL_SPEED;
@@ -98,12 +98,11 @@ public class Tutorial : MonoBehaviour {
 			while (currentTutorialStep == TutorialStep.THIRD_THROW) {
 				yield return null;
 			}
-
+			Debug.Log ("Tutoral Third Throw");
 			// Terminamos el tutorial
 			EndTutorial();
-
 		}
-		yield return null;
+		//yield return null;
 	}
 
 	void EnableClick(bool value) {
@@ -112,6 +111,7 @@ public class Tutorial : MonoBehaviour {
 	}
 
 	public void ContinueTurorial() {
+		Debug.Log ("<color=yellow>Click enabled: " + clickAvailable + "</color>");
 		if (clickAvailable) {
 			GameManager.instance.spawner.lastSpawnedPin.GetComponent<Pin> ().isShooted = true;
 		}
@@ -142,5 +142,6 @@ public class Tutorial : MonoBehaviour {
 
 		tutorialWrapper.SetActive(false);
 		Analytics.CustomEvent("tutorialEnd", new Dictionary<string, object>());
+		Debug.Log ("Tutoral End");
 	}
 }

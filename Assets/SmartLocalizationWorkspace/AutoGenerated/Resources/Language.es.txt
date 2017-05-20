@@ -165,7 +165,8 @@
 		<value>Envía tu puntuación</value>
 	</data>
 	<data name="ui.tabitem.alltimes" xml:space="preserve">
-		<value>Siempre</value>
+		<value>Mejores
+Jugadores</value>
 	</data>
 	<data name="ui.tabitem.daily" xml:space="preserve">
 		<value>Diarias</value>

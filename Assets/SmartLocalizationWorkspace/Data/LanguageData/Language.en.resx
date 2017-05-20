@@ -165,7 +165,8 @@
 		<value>Submit your score</value>
 	</data>
 	<data name="ui.tabitem.alltimes" xml:space="preserve">
-		<value>All times</value>
+		<value>Best
+Players</value>
 	</data>
 	<data name="ui.tabitem.daily" xml:space="preserve">
 		<value>Daily</value>
