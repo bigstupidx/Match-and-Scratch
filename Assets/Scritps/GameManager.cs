@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using ReveloLibrary;
 using SmartLocalization;
 using System;
+using UnityEngine.Analytics;
 
 public enum GameState {
 	None,
@@ -169,7 +170,7 @@ public class GameManager : MonoBehaviour {
 
 	public void Start() {
 		ShowScreen (ScreenDefinitions.MAIN_MENU);
-		StartCoroutine(RefreshHighscores());
+		// StartCoroutine(RefreshHighscores());
 		SetGameState(GameState.MainMenu);
 	}
 
@@ -220,6 +221,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void BeginGame() {
+		Analytics.CustomEvent("gameStart", new Dictionary<string, object>());
 		ResetGame ();
 		spawner.SpawnPin();
 		if (OnBeginGame != null)
@@ -247,6 +249,12 @@ public class GameManager : MonoBehaviour {
 		isGameOver = true;
 		
 		SetGameState(GameState.GameOver);
+		Analytics.CustomEvent("gameOver", new Dictionary<string, object> 
+		{
+				{ "score", Score },
+				{ "pinsCount", spawner.pinsCount}
+
+		});
 	}
 
 	public void BackToMainMenu() {
@@ -274,14 +282,14 @@ public class GameManager : MonoBehaviour {
 	public void ShowHighscores() {		
 		SetGameState(GameState.Highscores);
 	}
-
+	/*
 	IEnumerator RefreshHighscores() {
 		while (true) {
 			Dreamlo_HighScores.instance.DownloadHighscores ();
 			yield return new WaitForSeconds (20);
 		}
 	}
-
+	*/
 	public void ThrowCurrentPin() {
 		spawner.ThrowCurrentPin();
 	}

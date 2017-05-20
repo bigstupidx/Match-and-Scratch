@@ -170,4 +170,7 @@
 	<data name="ui.tabitem.weekly" xml:space="preserve">
 		<value>Weekly</value>
 	</data>
+	<data name="ui.label.loading" xml:space="preserve">
+		<value>Loading...</value>
+	</data>
 </root>

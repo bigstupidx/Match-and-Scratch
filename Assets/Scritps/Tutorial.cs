@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ReveloLibrary;
+using UnityEngine.Analytics;
 
 public class Tutorial : MonoBehaviour {
 
@@ -140,5 +141,6 @@ public class Tutorial : MonoBehaviour {
 		GameManager.instance.rotator.RotationSpeed = Rotator.INITIAL_SPEED;
 
 		tutorialWrapper.SetActive(false);
+		Analytics.CustomEvent("tutorialEnd", new Dictionary<string, object>());
 	}
 }

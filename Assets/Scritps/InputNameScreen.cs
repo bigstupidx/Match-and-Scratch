@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using ReveloLibrary;
+using UnityEngine.Analytics;
 
 public class InputNameScreen : UIScreen {
 
@@ -30,6 +31,14 @@ public class InputNameScreen : UIScreen {
 		base.OpenWindow();
 	}
 
+	public void CancelSendScore() {
+		Analytics.CustomEvent("scoreNotSend", new Dictionary<string, object> {
+			{ "score", GameManager.instance.Score },
+			{ "nameUSedLastTime", lastName}
+		});
+		CloseWindow();
+	}
+
 	public override void CloseWindow() {
 		base.CloseWindow ();
 	}
@@ -53,6 +62,10 @@ public class InputNameScreen : UIScreen {
 			Firebase_HighScores.instance.AddNewHighscore( new ScoreEntry ( lastName, GameManager.instance.Score ) );
 		}
 
+		Analytics.CustomEvent("scoreSended", new Dictionary<string, object> {
+			{ "score", GameManager.instance.Score },
+			{ "name", lastName}
+		});
 		//TODO 
 		/*
 		else {

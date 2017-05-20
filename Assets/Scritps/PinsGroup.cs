@@ -42,13 +42,15 @@ public class PinsGroups {
         if (!members.Contains(c)) {
             members.Add(c);
 			c.colorGroup = index;
+			c.name += "_group" + index;
         }
     }
 
     public void AddMembers(List<Circumference> membersList) {
         foreach (Circumference member in membersList)
         {
-            AddMember(member);
+			member.name += "_group" + index;
+			AddMember(member);
         }
     }
 

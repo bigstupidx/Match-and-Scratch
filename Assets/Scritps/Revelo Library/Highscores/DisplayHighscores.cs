@@ -34,6 +34,7 @@ public struct ScoreEntry
 public class DisplayHighscores : MonoBehaviour {
 
 	public GameObject scoreElement;
+	public GameObject loadingText;
 
 	public Transform dailyHighscoresContent;
 	List<GameObject> dailyScoreElementsList = new List<GameObject>();
@@ -45,7 +46,7 @@ public class DisplayHighscores : MonoBehaviour {
 	List<GameObject> allTimesScoreElementsList = new List<GameObject>();
 
 	// Use this for initialization
-	void OnEnable () {		
+	void OnEnable () {
 		HandleChangeHighScoresSource (GameManager.instance.currentSource);
 		GameManager.instance.OnChangeHighScoresSource += HandleChangeHighScoresSource;
 	}
@@ -53,13 +54,13 @@ public class DisplayHighscores : MonoBehaviour {
 	public void HandleChangeHighScoresSource (HighScoresSource source) {				
 		RemoveHandles ();
 
-		if (GameManager.instance.currentSource == HighScoresSource.DREAMLO) {
+		/*if (GameManager.instance.currentSource == HighScoresSource.DREAMLO) {
 			UpdateHighscores (Dreamlo_HighScores.instance.highscoreList);
 			Dreamlo_HighScores.instance.Dreamlo_OnHighscoresUpdate += UpdateHighscores;
-		} else if (GameManager.instance.currentSource == HighScoresSource.FIREBASE) {
+		} else if (GameManager.instance.currentSource == HighScoresSource.FIREBASE) {*/
 			UpdateHighscores (Firebase_HighScores.instance.highscoreList);
 			Firebase_HighScores.instance.Firebase_OnHighscoresUpdate += UpdateHighscores;
-		}
+		//}
 	}
 
 	void OnDisable (){
@@ -68,10 +69,10 @@ public class DisplayHighscores : MonoBehaviour {
 	}
 
 	void RemoveHandles() {
-
+		/*
 		if (Dreamlo_HighScores.instance.Dreamlo_OnHighscoresUpdate != null)
 			Dreamlo_HighScores.instance.Dreamlo_OnHighscoresUpdate -= UpdateHighscores;
-		
+		*/
 		if (Firebase_HighScores.instance.Firebase_OnHighscoresUpdate != null)
 			Firebase_HighScores.instance.Firebase_OnHighscoresUpdate -= UpdateHighscores;
 	}
@@ -81,6 +82,7 @@ public class DisplayHighscores : MonoBehaviour {
 	/// </summary>
 	/// <param name="list">List.</param>
 	void UpdateHighscores(List<ScoreEntry> list) {
+
 		// Alltimes
 		CleanHighscoreElementsList (allTimesScoreElementsList);
 		UpdateHighscoreList (list, allTimesScoreElementsList, allTimesHighscoresContent);
@@ -96,10 +98,13 @@ public class DisplayHighscores : MonoBehaviour {
 		int utcYear = DateTime.UtcNow.Year;
 		DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
 		Calendar cal = dfi.Calendar;
+		//dfi.FirstDayOfWeek = DayOfWeek.Monday;
 		List<ScoreEntry> weekList = list.FindAll (entry => 	DateTime.FromOADate(entry.date).Year == utcDate.Year && cal.GetWeekOfYear(DateTime.FromOADate(entry.date), dfi.CalendarWeekRule, dfi.FirstDayOfWeek) ==  cal.GetWeekOfYear(utcDate, dfi.CalendarWeekRule, dfi.FirstDayOfWeek));
 		
 		CleanHighscoreElementsList (weeklyScoreElementsList);
 		UpdateHighscoreList (weekList, weeklyScoreElementsList, weeklyHighscoresContent);
+
+		loadingText.SetActive (list.Count == 0);
 	}
 
 	void CleanHighscoreElementsList(List<GameObject> list) {

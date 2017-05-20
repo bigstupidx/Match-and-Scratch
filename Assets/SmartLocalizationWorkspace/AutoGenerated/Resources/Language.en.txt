@@ -146,6 +146,9 @@
 	<data name="ui.label.levelup" xml:space="preserve">
 		<value>Level Up</value>
 	</data>
+	<data name="ui.label.loading" xml:space="preserve">
+		<value>Loading scores...</value>
+	</data>
 	<data name="ui.label.nameplaceholder" xml:space="preserve">
 		<value>Enter your name...</value>
 	</data>

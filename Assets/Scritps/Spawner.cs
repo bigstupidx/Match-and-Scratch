@@ -57,7 +57,9 @@ public class Spawner : MonoBehaviour {
 	}
 
 	public void ThrowCurrentPin() {
+		#if !UNITY_EDITOR
 		if (GameManager.instance.currentGamePlayState == GamePlayState.Normal)
 			lastSpawnedPin.GetComponent<Pin> ().isShooted = true;
+		#endif
 	}
 }

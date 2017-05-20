@@ -22,7 +22,7 @@ public class Rotator : Circumference {
 	private float[] speedIncs = new float[]{ -2.0f, -0.50f, 0, 0.25f, 0.50f };
 
 	public int rotationDirection = 1;
-	public float marginBetweenPins = 0.004f;
+	public float marginBetweenPins = 0.08f;
 
 	public Action OnPinPinned;
 	public Action OnCompleteRotation;
@@ -68,7 +68,7 @@ public class Rotator : Circumference {
 		AddToParent (newPin); 		// Metemos el Pin en el rotator
 		SearchNearestPins(newPin);	// Bucamos cercanos
 		Reposition (newPin); 		// Recolocamos
-		SearchNearestPins(newPin);	// Volvemos a buscar por si al recolocar se generan nuevas colisiones
+		SearchNearestPins(newPin, false);	// Volvemos a buscar por si al recolocar se generan nuevas colisiones
 
 		if (IsGameOver(newPin)) {
 			GameManager.instance.GameOver ();
@@ -88,25 +88,31 @@ public class Rotator : Circumference {
 		PlaySound (newPin.colorType);
 	}
 
-	void SearchNearestPins(Circumference newPin) {
-		circumferencesCollided.Clear();
+	void SearchNearestPins(Circumference newPin, bool startOver = true) {
+		if (startOver)
+			circumferencesCollided.Clear();
 		// Comprobamos la distancia con el resto de bolas
 		for (int i = 0; i < pinsGroups.Count; i++) {
 			if (pinsGroups[i].isActive) {
-				foreach (Circumference c in pinsGroups[i].members) {
-					if ( IsColliding( newPin, c, marginBetweenPins ) ) {
-						if (!circumferencesCollided.Contains(c))
-							circumferencesCollided.Add (c);
-					}
+				//foreach (Circumference c in pinsGroups[i].members) {
+				for (int c = 0; c < pinsGroups[i].members.Count; c++) {
+					if ( IsColliding( newPin,  pinsGroups[i].members[c], marginBetweenPins ) ) {
+						if (!circumferencesCollided.Contains(pinsGroups[i].members[c]))
+							circumferencesCollided.Add (pinsGroups[i].members[c]);
+					}	
 				}
+				//}
 			}
 		}
 		// Comprobamos la distancia con el rotator
-		if ( IsColliding(newPin, me) )
-			circumferencesCollided.Add (me);
+		if (IsColliding (newPin, me)) {
+			if (!circumferencesCollided.Contains (me)) {
+				circumferencesCollided.Add (me);
+			}
+		}
 		
 		if (circumferencesCollided.Count == 0)
-			Debug.Log("<color=red>Error WTF (100): No se ha encontrado ninguna colision</color>");		
+			Debug.Log("<color=red>Error WTF (0001): No se ha encontrado ninguna colision</color>");		
 	}
 
 	bool IsGameOver(Circumference newPin) {
@@ -117,11 +123,20 @@ public class Rotator : Circumference {
 
 	void Reposition(Circumference newPin) {
 		
-		// Si hay 3 o mas, nos quedamos sólo con los dos mas cercanos
+
+		foreach (Circumference c in circumferencesCollided)
+			Debug.LogFormat ("<color=blue>Colision con {0} ({1}): distancia: {2}</color>", c.name, c.tag, DistanceBetweenCircumferences (newPin, c));
+
+		if (circumferencesCollided.Count > 1)
+			circumferencesCollided.Sort( (A,B) => DistanceBetweenCircumferences(newPin, A).CompareTo(DistanceBetweenCircumferences(newPin, B)) );
+
+		// Si mas de dos, nos quedamos sólo con los dos mas cercanos
 		if (circumferencesCollided.Count > 2)  {
-			circumferencesCollided.Sort( (A,B) => DistanceBetween(newPin.GetPosition(), A.GetPosition()).CompareTo(DistanceBetween(newPin.GetPosition(), B.GetPosition())) );
 			circumferencesCollided = circumferencesCollided.GetRange(0, 2);
 		}
+
+		foreach (Circumference c in circumferencesCollided)
+			Debug.LogFormat ("<color=yellow>Colision aceptada: {0} ({1}) ( distancia: {2})</color>", c.name, c.tag, DistanceBetweenCircumferences (newPin, c));
 
 		switch (circumferencesCollided.Count) {
 			case 1:
@@ -132,7 +147,7 @@ public class Rotator : Circumference {
 				DrawTheGizmo( new GizmoToDraw( GizmoType.sphere, newPin.GetPosition(), newPin.GetRadius(), Color.yellow ) );
 				*/
 				// Reposición
-				newPin.transform.position = circumferencesCollided[0].GetPosition() + ( (newPin.GetPosition() - circumferencesCollided[0].GetPosition() ).normalized * ( newPin.GetRadius() + circumferencesCollided[0].GetRadius() ) );
+				newPin.transform.position = circumferencesCollided[0].GetPosition() + ( ( newPin.GetPosition() - circumferencesCollided[0].GetPosition() ).normalized * ( newPin.GetRadius() + circumferencesCollided[0].GetRadius() ) );
 				//debug posicion new pin en despues de la colocación
 				//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, newPin.GetPosition(), newPin.GetRadius(), Color.green ) );
 				if ( circumferencesCollided[0].tag == "Rotator" ) newPin.GetComponent<Pin>().DrawSpear();
@@ -141,7 +156,7 @@ public class Rotator : Circumference {
 				Circumference A = circumferencesCollided [0];
 				Circumference B = circumferencesCollided [1];
 				if (A == B)
-					Debug.Log ("Error WTF 3: Hemos colisionador dos veces con el mismo Pin");
+					Debug.Log ("Error WTF 0002: Hemos colisionador dos veces con el mismo Pin");
 			
 				//Solución de Fernando Rojas basada en: https://es.wikipedia.org/wiki/Teorema_del_coseno
 				float Lc = (B.GetPosition () - A.GetPosition ()).magnitude; //A.GetRadius() + B.GetRadius();
@@ -178,11 +193,13 @@ public class Rotator : Circumference {
 				*/
 				#endregion
 				// nos quedamos con la mas cercana al spawner
-				Vector3 sol = DistanceBetween (Solution1, GameManager.instance.spawner.transform.position) <
-			                  DistanceBetween (Solution2, GameManager.instance.spawner.transform.position) ? Solution1 : Solution2;
+				Vector3 sol = DistanceBetween(Solution1, GameManager.instance.spawner.transform.position) <
+			                  DistanceBetween(Solution2, GameManager.instance.spawner.transform.position) ? Solution1 : Solution2;
 				
 				if ( float.IsNaN(sol.x) ) {
-					Debug.Log ("<color=red>Error WTF 2: Naaaaaaan</color>");
+					Debug.Log ("<color=red>Error WTF 0003: Naaaaaaan</color>");
+					sol = new Vector3 (float.IsNaN (sol.x) ? 0 : sol.x, float.IsNaN (sol.y) ? 0 : sol.y, float.IsNaN (sol.y) ? 0 : sol.y);
+					// TODO: Enviar como estadística de errores
 				}
 				else
 					// Posición final
@@ -262,7 +279,7 @@ public class Rotator : Circumference {
 				{
 					log += "\n - " + item.name;
 				}
-				Debug.Log ("<color=red>Error WTF(1): Los pins colisionados no están en ningún grupo. Esto no debería suceder</color> \n - Pin Evaluado: " + newCircumference.name + "\n - Pins Colisionados:" + log);
+				Debug.Log ("<color=red>Error WTF 0004: Los pins colisionados no están en ningún grupo. Esto no debería suceder</color> \n - Pin Evaluado: " + newCircumference.name + "\n - Pins Colisionados:" + log);
 			}
 		}
 	}
@@ -304,14 +321,29 @@ public class Rotator : Circumference {
 	}
 
 	float DistanceBetween(Vector3 A, Vector3 B) {
-		return Mathf.Round( (B-A).sqrMagnitude * 100 ) / 100;
+		float d = Mathf.Round( (B-A).sqrMagnitude * 100 ) / 100;
+		//float d = (B-A).sqrMagnitude ;
+		return d;
+	}
+
+	float DistanceBetweenCircumferences(Circumference A, Circumference B) {
+		float d = DistanceBetween(A.GetPosition (), B.GetPosition ()) - ((A.GetRadius () + B.GetRadius ()) * (A.GetRadius () + B.GetRadius ()));
+		return d;
 	}
 
 	bool IsColliding(Circumference A, Circumference B, float margin = 0f) {
-		if (A.colorType == B.colorType || B.colorType == -1)
-			return DistanceBetween( A.GetPosition(),B.GetPosition() ) < ( (A.GetRadius() + B.GetRadius() + margin) * (A.GetRadius() + B.GetRadius() + margin) );
-		else
-			return DistanceBetween( A.GetPosition(),B.GetPosition() ) < ( (A.GetRadius() + B.GetRadius() + (margin * 0.5f)) * (A.GetRadius() + B.GetRadius() + (margin * 0.5f)) );
+		bool ret;
+		if (A.colorType == B.colorType || B.colorType == -1) {
+			//return DistanceBetween( A.GetPosition(),B.GetPosition() ) < ( (A.GetRadius() + B.GetRadius() + margin) * (A.GetRadius() + B.GetRadius() + margin) );
+			//return DistanceBetween(A.GetPosition (), B.GetPosition()) - ((A.GetRadius() + B.GetRadius ()) * (A.GetRadius() + B.GetRadius ())) <= margin;
+			ret = DistanceBetweenCircumferences(A, B) <= margin;
+		}
+		else {
+			//return DistanceBetween( A.GetPosition(),B.GetPosition() ) < ( (A.GetRadius() + B.GetRadius() + (margin * 0.5f)) * (A.GetRadius() + B.GetRadius() + (margin * 0.5f)) );
+			//return DistanceBetween(A.GetPosition (), B.GetPosition()) - ((A.GetRadius() + B.GetRadius ()) * (A.GetRadius() + B.GetRadius ())) <= 0;
+			ret = DistanceBetweenCircumferences(A, B) <= 0;
+		}
+		return ret;
 	}
 
 	public void Reset() {

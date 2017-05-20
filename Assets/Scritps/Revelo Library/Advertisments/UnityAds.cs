@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEngine.Advertisements; 
 //using UnityEditor.Advertisements;
+using UnityEngine.Analytics;
+using System.Collections.Generic;
 
 public class UnityAds : MonoBehaviour {
 
@@ -84,6 +86,9 @@ public class UnityAds : MonoBehaviour {
 				if (Advertisement.IsReady () ) {
 					var options = new ShowOptions { resultCallback = HandleShowResult };
 					string videotypeString = videoTypeStrings [rewarded ? (int)videoType.REWARDED_VIDEO : (int)videoType.SKIPPABLES_VIDEO];
+					Analytics.CustomEvent("supportVideo", new Dictionary<string, object>() {
+						{"type", rewarded ? "rewarded" : "skippable"}
+					});
 					Advertisement.Show (videotypeString, options);
 				} else {
 					HandleShowResult (ShowResult.Failed);
