@@ -34,7 +34,7 @@ public class InputNameScreen : UIScreen {
 	public void CancelSendScore() {
 		Analytics.CustomEvent("scoreNotSend", new Dictionary<string, object> {
 			{ "score", GameManager.instance.Score },
-			{ "nameUSedLastTime", lastName}
+			{ "nameUsedLastTime", lastName}
 		});
 		CloseWindow();
 	}

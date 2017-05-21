@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ReveloLibrary;
 using System;
+using UnityEngine.Analytics;
 
 public class Rotator : Circumference {
 	public const float INITIAL_SPEED = 100f;
@@ -111,8 +112,13 @@ public class Rotator : Circumference {
 			}
 		}
 		
-		if (circumferencesCollided.Count == 0)
-			Debug.Log("<color=red>Error WTF (0001): No se ha encontrado ninguna colision</color>");		
+		if (circumferencesCollided.Count == 0) {
+			Debug.Log ("<color=red>Error WTF (0001): No se ha encontrado ninguna colision</color>");
+			Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
+				{"type", "0001"},
+				{"message", "No se ha encontrado ninguna colision"}
+			});
+		}
 	}
 
 	bool IsGameOver(Circumference newPin) {
@@ -152,11 +158,16 @@ public class Rotator : Circumference {
 				//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, newPin.GetPosition(), newPin.GetRadius(), Color.green ) );
 				if ( circumferencesCollided[0].tag == "Rotator" ) newPin.GetComponent<Pin>().DrawSpear();
 			break;
-			case 2:
+		case 2:
 				Circumference A = circumferencesCollided [0];
 				Circumference B = circumferencesCollided [1];
-				if (A == B)
+				if (A == B) {
 					Debug.Log ("Error WTF 0002: Hemos colisionador dos veces con el mismo Pin");
+					Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
+						{"type", "0002"},
+						{"message", "Hemos colisionador dos veces con el mismo Pin"}
+					});
+				}
 			
 				//Solución de Fernando Rojas basada en: https://es.wikipedia.org/wiki/Teorema_del_coseno
 				float Lc = (B.GetPosition () - A.GetPosition ()).magnitude; //A.GetRadius() + B.GetRadius();
@@ -195,9 +206,13 @@ public class Rotator : Circumference {
 				// nos quedamos con la mas cercana al spawner
 				Vector3 sol = DistanceBetween(Solution1, GameManager.instance.spawner.transform.position) <
 			                  DistanceBetween(Solution2, GameManager.instance.spawner.transform.position) ? Solution1 : Solution2;
-				
-				if ( float.IsNaN(sol.x) ) {
+
+				if ( float.IsNaN( sol.x) ) {
 					Debug.Log ("<color=red>Error WTF 0003: Naaaaaaan</color>");
+					Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
+						{"type", "0003"},
+						{"message", "La reposición contiene numero inválidos: (" + sol.ToString() + "). Cambio NaN -> cero"}
+					});
 					sol = new Vector3 (float.IsNaN (sol.x) ? 0 : sol.x, float.IsNaN (sol.y) ? 0 : sol.y, float.IsNaN (sol.y) ? 0 : sol.y);
 					// TODO: Enviar como estadística de errores
 				}
@@ -232,7 +247,12 @@ public class Rotator : Circumference {
 				*/
 			break;
 			default:				
-				Debug.Log(string.Format("<color=red> ERROR WTF 111: nomero de colisiones incorrectas: {0}</color>", circumferencesCollided.Count.ToString()));
+				Debug.Log(string.Format("<color=red> ERROR WTF 0004: número de colisiones incorrectas: {0}</color>", circumferencesCollided.Count.ToString()));
+
+				Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
+					{"type", "0004"},
+					{"message", "número de colisiones incorrectas: (" + circumferencesCollided.Count.ToString() + ")"}
+				});
 			break;
 		}
 	}
@@ -279,7 +299,11 @@ public class Rotator : Circumference {
 				{
 					log += "\n - " + item.name;
 				}
-				Debug.Log ("<color=red>Error WTF 0004: Los pins colisionados no están en ningún grupo. Esto no debería suceder</color> \n - Pin Evaluado: " + newCircumference.name + "\n - Pins Colisionados:" + log);
+				Debug.Log ("<color=red>Error WTF 0005: Los pins colisionados no están en ningún grupo. Esto no debería suceder</color> \n - Pin Evaluado: " + newCircumference.name + "\n - Pins Colisionados:" + log);
+				Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
+					{"type", "0005"},
+					{"message", string.Format("Los pins colisionados no están en ningún grupo. \nPin Evaluado: {0} - \nPin Colisionados: {1}", newCircumference.name, log)}
+				});
 			}
 		}
 	}
