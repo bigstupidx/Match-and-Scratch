@@ -90,7 +90,7 @@ public class PinsGroups {
 			GameManager.instance.AddScore(members.Count - 2);
 		}
 
-        for( int i = 0; i < members.Count; i++) {
+		for( int i = members.Count-1; i >=0; i--) {
 			//childPins.Remove(circumferences[i]);
 			if (members[i] != null)
 				members[i].gameObject.GetComponent<Pin>().Autodestroy();

@@ -36,6 +36,9 @@ public class DisplayHighscores : MonoBehaviour {
 	public GameObject scoreElement;
 	public GameObject loadingText;
 
+	DateTimeFormatInfo dfi;
+	Calendar cal;
+
 	public Transform dailyHighscoresContent;
 	List<GameObject> dailyScoreElementsList = new List<GameObject>();
 
@@ -44,6 +47,20 @@ public class DisplayHighscores : MonoBehaviour {
 
 	public Transform allTimesHighscoresContent;
 	List<GameObject> allTimesScoreElementsList = new List<GameObject>();
+
+	void Awake(){
+		CultureInfo _culture = (CultureInfo)CultureInfo.CurrentCulture.Clone();
+		CultureInfo _uiculture = (CultureInfo)CultureInfo.CurrentUICulture.Clone();
+
+		_culture.DateTimeFormat.FirstDayOfWeek = DayOfWeek.Monday;
+		_uiculture.DateTimeFormat.FirstDayOfWeek = DayOfWeek.Monday;
+
+		System.Threading.Thread.CurrentThread.CurrentCulture = _culture;
+		System.Threading.Thread.CurrentThread.CurrentUICulture = _uiculture;
+
+		dfi = DateTimeFormatInfo.CurrentInfo;
+		cal = dfi.Calendar;
+	} 
 
 	// Use this for initialization
 	void OnEnable () {
@@ -89,16 +106,12 @@ public class DisplayHighscores : MonoBehaviour {
 
 		// Daily
 		DateTime utcDate = DateTime.UtcNow;
-		List<ScoreEntry> todayList = list.FindAll (s => DateTime.FromOADate(s.date).Day == utcDate.Day);
-		
+		List<ScoreEntry> todayList = list.FindAll (s => DateTime.FromOADate(s.date).Date == utcDate.Date);
 		CleanHighscoreElementsList (dailyScoreElementsList);
 		UpdateHighscoreList (todayList, dailyScoreElementsList, dailyHighscoresContent);
 
 		// Weekly
 		int utcYear = DateTime.UtcNow.Year;
-		DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
-		Calendar cal = dfi.Calendar;
-		//dfi.FirstDayOfWeek = DayOfWeek.Monday;
 		List<ScoreEntry> weekList = list.FindAll (entry => 	DateTime.FromOADate(entry.date).Year == utcDate.Year && cal.GetWeekOfYear(DateTime.FromOADate(entry.date), dfi.CalendarWeekRule, dfi.FirstDayOfWeek) ==  cal.GetWeekOfYear(utcDate, dfi.CalendarWeekRule, dfi.FirstDayOfWeek));
 		
 		CleanHighscoreElementsList (weeklyScoreElementsList);

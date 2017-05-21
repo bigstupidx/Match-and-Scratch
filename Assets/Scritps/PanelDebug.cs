@@ -23,9 +23,10 @@ public class PanelDebug : MonoBehaviour {
 
 	public void ClearPlayerPrefs() {
 		PlayerPrefs.DeleteKey ("tutorialShowed");
-		PlayerPrefs.DeleteKey ("tutorialVisto");
+		//PlayerPrefs.DeleteKey ("tutorialVisto");
 		PlayerPrefs.DeleteKey ("undeliveredScores");
 		PlayerPrefs.DeleteKey ("name");
+		PlayerPrefs.DeleteKey ("soundState");
 	}
 
 	public void AddTestScore() {

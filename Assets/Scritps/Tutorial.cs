@@ -62,13 +62,15 @@ public class Tutorial : MonoBehaviour {
 			GameManager.instance.rotator.RotationSpeed = 0;
 			clickAvailable = true;
 			while (currentTutorialStep == TutorialStep.FIRST_THROW) {
+				if ( Input.GetButtonDown("Fire1") )
+					ContinueTurorial();
 				yield return null;
 			}
 			Debug.Log ("Tutoral First Throw");
 
 			// · Second Throw: Iniciamos la rotación del rotor
 			GameManager.instance.rotator.RotationSpeed = Rotator.INITIAL_SPEED;
-			EnableClick (false);
+			//EnableClick (false);
 			// · --> Esperamos a que de un giro completo.
 			while (!completedRotation) {
 				yield return null;
@@ -79,6 +81,8 @@ public class Tutorial : MonoBehaviour {
 			GameManager.instance.rotator.RotationSpeed = 0;
 			EnableClick (true);
 			while (currentTutorialStep == TutorialStep.SECOND_THROW) {
+				if ( Input.GetButtonDown("Fire1") )
+					ContinueTurorial();
 				yield return null;
 			}
 			Debug.Log ("Tutoral Second Throw");
@@ -96,6 +100,8 @@ public class Tutorial : MonoBehaviour {
 			GameManager.instance.rotator.RotationSpeed = 0;
 			EnableClick (true);
 			while (currentTutorialStep == TutorialStep.THIRD_THROW) {
+				if ( Input.GetButtonDown("Fire1"))
+					ContinueTurorial();
 				yield return null;
 			}
 			Debug.Log ("Tutoral Third Throw");
@@ -111,10 +117,11 @@ public class Tutorial : MonoBehaviour {
 	}
 
 	public void ContinueTurorial() {
-		Debug.Log ("<color=yellow>Click enabled: " + clickAvailable + "</color>");
+		//Debug.Log ("<color=yellow>Click enabled: " + clickAvailable + "</color>");
 		if (clickAvailable) {
 			GameManager.instance.spawner.lastSpawnedPin.GetComponent<Pin> ().isShooted = true;
 		}
+		EnableClick (false);
 	}
 
 	void HandleOnBeginGame() {
