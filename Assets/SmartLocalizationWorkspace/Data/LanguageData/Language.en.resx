@@ -116,6 +116,24 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+	<data name="game.difficulty.crazyspeed" xml:space="preserve">
+		<value>Crazy Speed</value>
+	</data>
+	<data name="game.difficulty.crazyspeedcancel" xml:space="preserve">
+		<value>Crazy Speed Cancelled</value>
+	</data>
+	<data name="game.difficulty.moreballs" xml:space="preserve">
+		<value>More Balls</value>
+	</data>
+	<data name="game.difficulty.reversedir" xml:space="preserve">
+		<value>Reversible direction</value>
+	</data>
+	<data name="game.difficulty.reversedircancel" xml:space="preserve">
+		<value>Reversible Direction Cancelled</value>
+	</data>
+	<data name="game.difficulty.speedup" xml:space="preserve">
+		<value>Faster!</value>
+	</data>
 	<data name="ui.button.back" xml:space="preserve">
 		<value>Back</value>
 	</data>
