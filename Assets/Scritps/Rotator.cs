@@ -34,10 +34,14 @@ public class Rotator : Circumference {
 	private Dictionary<int, PinsGroups> pinsGroups = new Dictionary<int, PinsGroups>();
 	private List<int> groupsCollided = new List<int>();
 
+	float angleRotated = 0;
+
 	public override void Initialize() {
 		me = this;
 	}
-	float angleRotated = 0;
+
+
+
 	void FixedUpdate() {
 		currentSpeed = (RotationSpeed + (RotationSpeed * variableSpeedInc)) * rotationDirection;
 		smoothCurrentSpeed = currentSpeed * Time.fixedDeltaTime;
@@ -49,22 +53,26 @@ public class Rotator : Circumference {
 			if (OnCompleteRotation != null)
 				OnCompleteRotation ();
 		}
-		//Debug.Log("Angulo de rotación del rotator = " + angleRotated.ToString());
 	}
 
-	public void AddPin(Circumference newPin, Collider2D col) {
+
+
+
+	public void AddPin(Circumference newPin, GameObject col) {
 		if (OnPinPinned != null)
 			OnPinPinned ();
 		
 		newPin.colisionador.isTrigger = false;
 		Pin cn = newPin.GetComponent<Pin>();
 		cn.isPinned = true;
-		Circumference collis = col.gameObject.GetComponent<Circumference> ();
+		newPin.colisionador.enabled = true;
+		Circumference collis = col.GetComponent<Circumference> ();
 
 		if (col.name == "Rotator")
-			Debug.Log(string.Format ("{0} collisiona con {1}", newPin.name, col.name));
-		else
-			Debug.Log(string.Format ("{0} collisiona con {1} que pertenece al grupo {2} y su estado es {3} y contiene {4} miembros.", newPin.name, col.name, collis.colorGroup.ToString(), pinsGroups [collis.colorGroup].currentState.ToString (), pinsGroups [collis.colorGroup].Count.ToString()));
+			Debug.Log (string.Format ("{0} collisiona con {1}", newPin.name, col.name));
+		else {
+			Debug.Log (string.Format ("{0} collisiona con {1} que pertenece al grupo {2} y su estado es {3} y contiene {4} miembros.", newPin.name, col.name, collis.colorGroup.ToString (), pinsGroups [collis.colorGroup].currentState.ToString (), pinsGroups [collis.colorGroup].Count.ToString ()));
+		}
 
 		AddToParent (newPin); 		// Metemos el Pin en el rotator
 		SearchNearestPins(newPin);	// Bucamos cercanos
@@ -92,19 +100,19 @@ public class Rotator : Circumference {
 	void SearchNearestPins(Circumference newPin, bool startOver = true) {
 		if (startOver)
 			circumferencesCollided.Clear();
+		
 		// Comprobamos la distancia con el resto de bolas
 		for (int i = 0; i < pinsGroups.Count; i++) {
 			if (pinsGroups[i].isActive) {
-				//foreach (Circumference c in pinsGroups[i].members) {
 				for (int c = 0; c < pinsGroups[i].members.Count; c++) {
 					if ( IsColliding( newPin,  pinsGroups[i].members[c], marginBetweenPins ) ) {
 						if (!circumferencesCollided.Contains(pinsGroups[i].members[c]))
 							circumferencesCollided.Add (pinsGroups[i].members[c]);
 					}	
 				}
-				//}
 			}
 		}
+
 		// Comprobamos la distancia con el rotator
 		if (IsColliding (newPin, me)) {
 			if (!circumferencesCollided.Contains (me)) {
@@ -123,12 +131,10 @@ public class Rotator : Circumference {
 
 	bool IsGameOver(Circumference newPin) {
 		bool collidedWithDifferent = circumferencesCollided.Exists(c => c.colorType != newPin.colorType && c.tag != "Rotator");
-		return collidedWithDifferent;
-			
+		return collidedWithDifferent;			
 	}
 
-	void Reposition(Circumference newPin) {
-		
+	void Reposition(Circumference newPin) {		
 
 		//foreach (Circumference c in circumferencesCollided)
 		//	Debug.LogFormat ("<color=blue>Colision con {0} ({1}): distancia: {2}</color>", c.name, c.tag, DistanceBetweenCircumferences (newPin, c));
@@ -325,7 +331,7 @@ public class Rotator : Circumference {
 		int totalPinsToDestroy = 0;	
 		// Si encontramos un grupo de mas de dos miembros del mismo color...
 		for(int i = 0; i < pinsGroups.Count; i++) {
-			if (pinsGroups[i].isActive){
+			if (pinsGroups[i].isActive) {
 				if (pinsGroups[i].Count > 2) {
 					totalPinsToDestroy += pinsGroups[i].Count;
 					// ...eliminamos el grupo.
@@ -339,14 +345,10 @@ public class Rotator : Circumference {
 	public void EraseAllPins() {
 		foreach( KeyValuePair<int, PinsGroups> pg in pinsGroups)
 			StartCoroutine(pg.Value.DestroyMembers(false));
-		/*for (int i = 0; i < pinsGroups.Count; i++) {
-			StartCoroutine(pinsGroups[i].DestroyMembers(false));
-		}*/
 	}
 
 	float DistanceBetween(Vector3 A, Vector3 B) {
 		float d = Mathf.Round( (B-A).sqrMagnitude * 100 ) / 100;
-		//float d = (B-A).sqrMagnitude ;
 		return d;
 	}
 

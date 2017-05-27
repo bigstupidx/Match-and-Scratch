@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
+
 public enum GizmoType {
 	sphere,
 	line
@@ -31,9 +31,16 @@ public struct GizmoToDraw {
 		color = col;
 	}
 }
-*/
+
+
+
+
 [RequireComponent (typeof (CircleCollider2D))]
 public class Circumference : MonoBehaviour {
+	/// <debug>
+	public List<GizmoToDraw> gizmosToDraw = new List<GizmoToDraw> ();
+	/// </debug>
+
 	public int colorType = -1;
 	public CircleCollider2D colisionador;
 	private float radius;

@@ -12,16 +12,16 @@ public class Pin : Circumference {
 	public bool drawSpear = false;
 
 	private Circumference me;
-	private Rigidbody2D rb;
+
 	private LineRenderer line;
 	private SpriteRenderer sr;
 	Rotator rot;
 
 	public override void Initialize() {
-		rb = GetComponent<Rigidbody2D>();
 		sr = GetComponent<SpriteRenderer>();
-		me = this;//GetComponent<Circumference>();
+		me = this;
 		rot = GameManager.instance.rotator;
+		colisionador.enabled = false;
 		SetupLine();
 	}
 
@@ -53,28 +53,38 @@ public class Pin : Circumference {
 		drawSpear = true;
 	}
 
+	Vector3 vel;
+
 	void Update() {
+		#if UNITY_EDITOR
+		if ( Input.GetKeyDown(KeyCode.Space) )
+			GameManager.instance.spawner.ThrowCurrentPin();
+		#endif
 		//#if UNITY_EDITOR
 		//if (!isShooted) 
 		//	if (Input.GetButtonDown("Fire1")) isShooted = true;
 		//#endif
-		if (isShooted && !isPinned)
-			rb.MovePosition(rb.position + Vector2.up * speed * Time.deltaTime);
+		if (!isPinned && isShooted) {
+			float smoothSpeed = speed * Time.deltaTime;
+			float moveInc = Mathf.Min (smoothSpeed, 2 * GetRadius ());
+			vel = Vector3.up * moveInc;
+			Debug.LogFormat("Velocidad del pin {0}: {1} ----- moveInc: {2}, diametro: {3}", name, moveInc, smoothSpeed, 2 * GetRadius());
+			transform.position += vel;
+			RaycastHit2D hit = Physics2D.CircleCast (transform.position, GetRadius (), vel.normalized, 0);
+			if (hit) {
+				if ((hit.collider.tag == "Pin" && hit.collider.GetComponent<Pin> ().isPinned && hit.collider.GetComponent<Pin> ()) || hit.collider.tag == "Rotator") {
+					rot.AddPin (me, hit.collider.gameObject);
+					#if UNITY_EDITOR
+					DrawTheGizmo (new GizmoToDraw (GizmoType.sphere, transform.position, GetRadius (), RandomColor ()));
+					DrawX(hit.point, RandomColor(), GetRadius (), 3, 1);
+					#endif
+				}
+			}
+		}
 	}
 
 	void LateUpdate() {
 		DrawTheSpear();
-	}
-
-	void OnTriggerEnter2D (Collider2D col) {
-		if ( isShooted && !isPinned) {
-			try {
-				rot.AddPin(me, col);
-			}
-			catch (MissingReferenceException e) {
-				Debug.LogError (e.Source + ": " + e.Message);
-			}
-		}
 	}
 
 	public override void Disable() {
@@ -94,4 +104,40 @@ public class Pin : Circumference {
 		}		
 		Destroy(gameObject);
 	}
+
+
+	////////////// DEBUG //////////////
+#if UNITY_EDITOR
+	void DrawX(Vector2 position, Color color, float size, float duration, float shape)
+	{
+		Debug.DrawLine(position - Vector2.one * (size / 2f), position + Vector2.one * (size / 2f), color, duration);
+		Debug.DrawLine(position + new Vector2(-1 * shape, 1) * (size / 2f), position + new Vector2(1, -1 * shape) * (size / 2f), color, duration);
+	}
+
+
+	Color RandomColor()
+	{
+		return new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 1);
+	}
+
+	void DrawTheGizmo(GizmoToDraw g) {
+		if (!gizmosToDraw.Contains(g))
+			gizmosToDraw.Add(g);
+	}
+
+	void OnDrawGizmos() {
+		foreach (GizmoToDraw gtd in gizmosToDraw) {
+			switch (gtd.gizmoType) {
+			case GizmoType.line:
+				Gizmos.color = gtd.color;
+				Gizmos.DrawLine(gtd.from, gtd.to);
+				break;
+			case GizmoType.sphere:
+				Gizmos.color = gtd.color;
+				Gizmos.DrawWireSphere(gtd.from, gtd.size);
+				break;
+			}
+		}
+	}
+#endif
 }

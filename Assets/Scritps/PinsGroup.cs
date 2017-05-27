@@ -18,10 +18,8 @@ public class PinsGroups {
 		get { return currentState == GroupState.Active;}
 	}
 	public bool isAnalizing;
-    //private int combinedID;
 
     public void CombineWith(int value) {
-        //combinedID = value;
         SetState(GroupState.Combined);
     }
     
@@ -67,7 +65,7 @@ public class PinsGroups {
 			Debug.Log(string.Format("<color=yellow> Orden de destruir el PinsGroup [{0}]</color>", index));		
         SetState(GroupState.Remove);
 		foreach (Circumference c in members) {
-			c.colisionador.enabled = false;
+      			c.colisionador.enabled = false;
 		}
 		GameManager.instance.StartCoroutine(DestroyMembers());
     }
@@ -78,8 +76,7 @@ public class PinsGroups {
 		}
 		else {
 			Debug.Log(string.Format("<color=yellow> PinsGroup[{0}] : Se ha vuelto a establecer el mismo estado ( {1} ) que ya tenía que sigue activo </color>", index, newState.ToString()));
-		}
-        
+		}        
     }
 
 	public IEnumerator DestroyMembers(bool sumPoints = true) {
@@ -91,7 +88,6 @@ public class PinsGroups {
 		}
 
 		for( int i = members.Count-1; i >=0; i--) {
-			//childPins.Remove(circumferences[i]);
 			if (members[i] != null)
 				members[i].gameObject.GetComponent<Pin>().Autodestroy();
 			yield return new WaitForSeconds(Pin.TIME_TO_DESTROY/members.Count);
