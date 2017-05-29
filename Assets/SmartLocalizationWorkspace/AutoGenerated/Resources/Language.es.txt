@@ -167,6 +167,9 @@
 	<data name="ui.label.loading" xml:space="preserve">
 		<value>Cargando puntuaciones...</value>
 	</data>
+	<data name="ui.label.nameinputhint" xml:space="preserve">
+		<value>Mínimo 3 caracteres</value>
+	</data>
 	<data name="ui.label.nameplaceholder" xml:space="preserve">
 		<value>Escribe tu nombre</value>
 	</data>

@@ -167,6 +167,9 @@
 	<data name="ui.label.loading" xml:space="preserve">
 		<value>Loading...</value>
 	</data>
+	<data name="ui.label.nameinputhint" xml:space="preserve">
+		<value>3 characters minimum</value>
+	</data>
 	<data name="ui.label.nameplaceholder" xml:space="preserve">
 		<value>Enter your name...</value>
 	</data>
