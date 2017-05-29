@@ -149,7 +149,6 @@ public class Rotator : Circumference {
 
 		//foreach (Circumference c in circumferencesCollided)
 		//	Debug.LogFormat ("<color=yellow>Colision aceptada: {0} ({1}) ( distancia: {2})</color>", c.name, c.tag, DistanceBetweenCircumferences (newPin, c));
-
 		switch (circumferencesCollided.Count) {
 			case 1:
 				/*
@@ -158,9 +157,12 @@ public class Rotator : Circumference {
 				//debug posicion new pin en el momento de la collision
 				DrawTheGizmo( new GizmoToDraw( GizmoType.sphere, newPin.GetPosition(), newPin.GetRadius(), Color.yellow ) );
 				*/
+				
 				// Reposición
-				newPin.transform.position = circumferencesCollided[0].GetPosition() + ( ( newPin.GetPosition() - circumferencesCollided[0].GetPosition() ).normalized * ( newPin.GetRadius() + circumferencesCollided[0].GetRadius() ) );
-				//debug posicion new pin en despues de la colocación
+				//newPin.transform.position = circumferencesCollided[0].GetPosition() + ( ( newPin.GetPosition() - circumferencesCollided[0].GetPosition() ).normalized * ( newPin.GetRadius() + circumferencesCollided[0].GetRadius() ) );
+				newPin.transform.position = circumferencesCollided[0].GetPosition() + SnapNormalizedVector(newPin.GetPosition(), circumferencesCollided[0].GetPosition(), 8) * ( newPin.GetRadius() + circumferencesCollided[0].GetRadius() );
+				
+			//debug posicion new pin en despues de la colocación
 				//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, newPin.GetPosition(), newPin.GetRadius(), Color.green ) );
 				if ( circumferencesCollided[0].tag == "Rotator" ) newPin.GetComponent<Pin>().DrawSpear();
 			break;
@@ -261,6 +263,31 @@ public class Rotator : Circumference {
 				});
 			break;
 		}
+	}
+
+
+	Vector3 SnapNormalizedVector(Vector3 A, Vector3 B, float divisions = 8f) {
+		float angleBetween = Vector3.Angle (B, A); // Angulo de nuestra bola respecto de la que ha colisionado
+
+		Vector3 normalized = (A - B).normalized;
+		Vector3 snapedNormal = SnapTo (normalized, 360f / divisions);
+		return snapedNormal;
+
+	}
+
+	Vector3 SnapTo(Vector3 v3, float snapAngle) {
+		float   angle = Vector3.Angle (v3, Vector3.up);
+		if (angle < snapAngle / 2.0f)          // Cannot do cross product 
+			return Vector3.up * v3.magnitude;  //   with angles 0 & 180
+		if (angle > 180.0f - snapAngle / 2.0f)
+			return Vector3.down * v3.magnitude;
+
+		float t = Mathf.Round(angle / snapAngle);
+		float deltaAngle = (t * snapAngle) - angle;
+
+		Vector3 axis = Vector3.Cross(Vector3.up, v3);
+		Quaternion q = Quaternion.AngleAxis (deltaAngle, axis);
+		return q * v3;
 	}
 
 	public void ProcessPin(Circumference newCircumference) {
