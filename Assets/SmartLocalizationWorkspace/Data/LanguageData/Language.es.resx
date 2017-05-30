@@ -140,6 +140,9 @@
 	<data name="ui.button.cancel" xml:space="preserve">
 		<value>Cancelar</value>
 	</data>
+	<data name="ui.button.continue" xml:space="preserve">
+		<value>Continuar</value>
+	</data>
 	<data name="ui.button.exit" xml:space="preserve">
 		<value>Salir</value>
 	</data>
@@ -178,6 +181,15 @@
 	</data>
 	<data name="ui.label.score" xml:space="preserve">
 		<value>Puntos</value>
+	</data>
+	<data name="ui.label.specialthaks" xml:space="preserve">
+		<value>Agradecimiento especial</value>
+	</data>
+	<data name="ui.label.specialthankscontent" xml:space="preserve">
+		<value>GRACIAS #username
+~
+Te mereces esta 
+mencion especial</value>
 	</data>
 	<data name="ui.label.speed" xml:space="preserve">
 		<value>Velocidad</value>

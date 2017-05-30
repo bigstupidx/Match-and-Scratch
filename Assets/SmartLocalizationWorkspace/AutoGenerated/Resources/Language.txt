@@ -179,6 +179,15 @@
 	<data name="ui.label.score" xml:space="preserve">
 		<value>Score</value>
 	</data>
+	<data name="ui.label.specialthaks" xml:space="preserve">
+		<value>Special Thanks</value>
+	</data>
+	<data name="ui.label.specialthankscontent" xml:space="preserve">
+		<value>GRACIAS #username
+~
+You deserve  
+this special mention</value>
+	</data>
 	<data name="ui.label.speed" xml:space="preserve">
 		<value>Speed</value>
 	</data>
@@ -193,5 +202,8 @@
 	</data>
 	<data name="ui.tabitem.weekly" xml:space="preserve">
 		<value>Weekly</value>
+	</data>
+	<data name="ui.button.continue" xml:space="preserve">
+		<value>Continue</value>
 	</data>
 </root>
