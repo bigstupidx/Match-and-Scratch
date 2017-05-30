@@ -9,7 +9,8 @@ namespace ReveloLibrary {
 		class ClipInfo
 		{
 			public AudioSource Source { get; set; }
-			public float Volume { get; set; }
+			public float OriginalVolume { get; set; }
+			public float currentVolume { get; set; }
 			public SoundDefinitions Definition { get; set; }
 			public bool StopFading { get; set; }
 		}
@@ -70,6 +71,9 @@ namespace ReveloLibrary {
 
 		public void Mute(bool isMuted) {
 			masterVolume = isMuted ? 0 : OriginalVolume;
+			foreach (ClipInfo clip in mActiveAudio) {
+				clip.currentVolume = clip.OriginalVolume * masterVolume;
+			}
 		}
 
 		public void PlayUniqueSoundDefinitionType(SoundDefinitions soundDef)
@@ -120,7 +124,7 @@ namespace ReveloLibrary {
 					//Set the source as active
 					if (mActiveAudio != null && GameSounds != null && GameSounds.Count >= (int)soundDef)
 					{
-						mActiveAudio.Add(new ClipInfo { Source = source, Volume = gs.Volume /* * masterVolume */, Definition = soundDef });
+						mActiveAudio.Add(new ClipInfo { Source = source, OriginalVolume = gs.Volume, currentVolume = gs.Volume  * masterVolume , Definition = soundDef });
 					}
 				}
 			}
@@ -156,7 +160,7 @@ namespace ReveloLibrary {
 				//Drstroy it when stop
 				Destroy(soundLoc, gs.TheSound.length);			
 				//Set the source as active
-				mActiveAudio.Add(new ClipInfo{Source = source, Volume = GameSounds[(int)soundDef].Volume /* * masterVolume*/, Definition = soundDef});
+				mActiveAudio.Add(new ClipInfo{Source = source, OriginalVolume = gs.Volume, currentVolume = gs.Volume  * masterVolume, Definition = soundDef});
 			}
 			return source;
 		}
@@ -207,7 +211,7 @@ namespace ReveloLibrary {
 			source.Play();
 			
 			//Set the source as active
-			mActiveAudio.Add(new ClipInfo{Source = source, Volume = gs.Volume /* * masterVolume */, Definition = soundDef});
+			mActiveAudio.Add(new ClipInfo{Source = source, OriginalVolume = gs.Volume, currentVolume = gs.Volume  * masterVolume, Definition = soundDef});
 			return source;
 		}
 		
@@ -230,7 +234,7 @@ namespace ReveloLibrary {
 			foreach ( ClipInfo ci in mActiveAudio)
 			{
 				if (ci.Definition == defToStop) {
-					if (ci.Volume > 0)
+					if (ci.currentVolume > 0)
 						ci.StopFading = true;
 					else
 						sound = ci.Source.gameObject;
@@ -260,7 +264,7 @@ namespace ReveloLibrary {
 			{
 				foreach (ClipInfo audioClip in mActiveAudio) 
 				{
-					if(audioClip.Volume > 0)
+					if(audioClip.currentVolume > 0)
 						if(!audioClip.Source.loop)
 							audioClip.StopFading = true;
 				}
@@ -273,7 +277,7 @@ namespace ReveloLibrary {
 		{
 			foreach (ClipInfo audioClip in mActiveAudio) 
 			{
-				if( audioClip.Volume > 0 )
+				if( audioClip.currentVolume > 0 )
 					if( audioClip.Definition != soundDef )
 						audioClip.StopFading = true;
 			}
@@ -284,7 +288,7 @@ namespace ReveloLibrary {
 		{
 			foreach (ClipInfo audioClip in mActiveAudio) 
 			{
-				if(audioClip.Volume > 0)
+				if(audioClip.currentVolume > 0)
 					if(!audioClip.Source.loop && audioClip.Definition != soundDef)
 						audioClip.StopFading = true;
 			}
@@ -313,7 +317,7 @@ namespace ReveloLibrary {
 			{
 				foreach (ClipInfo audioClip in mActiveAudio) 
 				{
-					if(audioClip.Volume > 0)
+					if(audioClip.currentVolume > 0)
 						audioClip.StopFading = true;
 				}
 			}
@@ -379,9 +383,9 @@ namespace ReveloLibrary {
 			{
 				if(audioClip.StopFading)
 				{
-					if (audioClip.Volume > 0.001f) //Si aún tienen volumen, se lo bajamos
+					if (audioClip.currentVolume > 0.001f) //Si aún tienen volumen, se lo bajamos
 					{
-						audioClip.Volume -= audioClip.Volume * Time.deltaTime;
+						audioClip.currentVolume -= audioClip.currentVolume * Time.deltaTime;
 					}
 					else
 						mToRemove.Add(audioClip);
@@ -412,7 +416,7 @@ namespace ReveloLibrary {
 			source.minDistance = 150;
 			source.maxDistance = 1500;
 			source.clip = clip;
-			source.volume = volume /* * masterVolume */;
+			source.volume = volume * masterVolume;
 			source.pitch = 1;
 		}
 		
@@ -456,7 +460,7 @@ namespace ReveloLibrary {
 				} 
 				else if (audioClip.Source != mActiveVoiceOver) 
 				{
-					audioClip.Source.volume = audioClip.Volume * mVolumeMod *  masterVolume;
+					audioClip.Source.volume = audioClip.currentVolume * mVolumeMod *  masterVolume;
 				}
 			}
 
