@@ -275,6 +275,13 @@ public class Rotator : Circumference {
 
 	}
 
+	/// <summary>
+	/// Fija un angulo dado a las divisiones de una circunferencia.
+	/// </summary>
+	/// <returns>The to.</returns>
+	/// <param name="v3">V3.</param>
+	/// <param name="snapAngle">Snap angle.</param>
+	/// <param name="url">http://answers.unity3d.com/questions/493006/snap-a-direction-vector.html</param> 
 	Vector3 SnapTo(Vector3 v3, float snapAngle) {
 		float   angle = Vector3.Angle (v3, Vector3.up);
 		if (angle < snapAngle / 2.0f)          // Cannot do cross product 
