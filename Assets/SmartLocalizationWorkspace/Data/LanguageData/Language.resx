@@ -140,6 +140,9 @@
 	<data name="ui.button.cancel" xml:space="preserve">
 		<value>Cancel</value>
 	</data>
+	<data name="ui.button.continue" xml:space="preserve">
+		<value>Continue</value>
+	</data>
 	<data name="ui.button.exit" xml:space="preserve">
 		<value>Exit</value>
 	</data>
@@ -183,8 +186,8 @@
 		<value>Special Thanks</value>
 	</data>
 	<data name="ui.label.specialthankscontent" xml:space="preserve">
-		<value>GRACIAS #username
-~
+		<value>THANKS #username
+ツ
 You deserve  
 this special mention</value>
 	</data>
@@ -202,8 +205,5 @@ this special mention</value>
 	</data>
 	<data name="ui.tabitem.weekly" xml:space="preserve">
 		<value>Weekly</value>
-	</data>
-	<data name="ui.button.continue" xml:space="preserve">
-		<value>Continue</value>
 	</data>
 </root>

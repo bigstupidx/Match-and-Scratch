@@ -11,14 +11,11 @@ public class MusicControl : MonoBehaviour {
 		Off
 	}
 	SoundState currentState;
+
+	public Image icon;
+
 	public Sprite IconOn;
 	public Sprite IconOff;
-
-	Image icon;
-
-	void Awake() {
-		icon = GetComponent<Image> ();
-	}
 
 	void OnEnable() {
 		SetSoundState(PlayerPrefs.GetInt("soundState", 1) == 1 ? true : false);

@@ -187,7 +187,7 @@
 	</data>
 	<data name="ui.label.specialthankscontent" xml:space="preserve">
 		<value>GRACIAS #username
-~
+ツ
 Te mereces esta 
 mencion especial</value>
 	</data>

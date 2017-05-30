@@ -8,9 +8,11 @@ using UnityEngine.Analytics;
 public class InputNameScreen : UIScreen {
 
 	public static InputNameScreen Instance { get; private set;}
+	public Button sendButton;
+
 	InputField nameField;
 	string lastName;
-	public Button sendButton;
+	bool showSpecialMention;
 
 	public override void Awake() {
 		if(Instance != null && Instance != this) {
@@ -36,11 +38,14 @@ public class InputNameScreen : UIScreen {
 			{ "score", GameManager.instance.Score },
 			{ "nameUsedLastTime", lastName}
 		});
+		showSpecialMention = false;
 		CloseWindow();
 	}
 
 	public override void CloseWindow() {
 		base.CloseWindow ();
+		if (showSpecialMention)
+			SpecialThanksScreen.Instance.OpenWindow ();
 	}
 
 	public void EvaluateNick() {
@@ -72,6 +77,23 @@ public class InputNameScreen : UIScreen {
 			Ventana modal avisando de que viendo videos colaboras a que mas juegos gratuitos como este sean creados.
 		} 
 		*/
+
+		// Si no hemos mostrado la mención especial
+		bool specialMentionShowed = PlayerPrefs.GetInt ("specialMentionShowed", 0) == 1;
+		bool showMention;
+
+		if (!specialMentionShowed) {
+			if (lastName == "Pako")
+				showMention = true;
+			else
+				showMention = Random.Range (0, 10) == 0;
+		} 
+		else {
+			showMention = Random.Range (0, 10) == 0;
+		}
+
+		showSpecialMention = showMention;
+
 		CloseWindow ();
 	}
 	
