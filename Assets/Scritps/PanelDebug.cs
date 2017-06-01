@@ -26,6 +26,10 @@ public class PanelDebug : MonoBehaviour {
 		PlayerPrefs.DeleteKey ("specialMentionShowed");
 	}
 
+	public void changeLanguage(string lang) {
+		LanguageManager.Instance.ChangeLanguage (lang);
+	}
+
 	public void AddOnePoint() {
 		GameManager.instance.AddScore (1);
 	}

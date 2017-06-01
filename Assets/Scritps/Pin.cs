@@ -22,34 +22,37 @@ public class Pin : Circumference {
 		me = this;
 		rot = GameManager.instance.rotator;
 		colisionador.enabled = false;
-		SetupLine();
+		//SetupLine();
 	}
 
 	void OnEnable() {
-		if (line == null)	line = GetComponent<LineRenderer>();
+		//if (line == null)	line = GetComponent<LineRenderer>();
 	}
 
 	void SetupLine() {
+		line = new LineRenderer ();
 		Color parentColor = GetComponent<SpriteRenderer>().color;
 		line = gameObject.AddComponent<LineRenderer>();
 		line.material = new Material(Shader.Find("Sprites/Default"));
-		line.startColor = parentColor;
-		line.endColor = parentColor;
-		line.startWidth = 0.05f;
-		line.endWidth = 0.05f;
+		line.startColor = Color.black;//parentColor;
+		line.endColor = Color.black;//parentColor;
+		line.startWidth = 0.03f;
+		line.endWidth = 0.03f;
 	}
 
 	void DrawTheSpear() {
-		if (drawSpear ) {
+		if (drawSpear) {
 			line.positionCount = 2;
 			line.SetPosition(0, transform.position);
 			line.SetPosition(1, rot.transform.position);
 		}
 		else
+			if (line)
 			line.positionCount = 0;
 	}
 	
 	public void DrawSpear() {
+		SetupLine ();
 		drawSpear = true;
 	}
 
@@ -69,7 +72,7 @@ public class Pin : Circumference {
 			float moveInc = Mathf.Min (smoothSpeed, 2 * GetRadius ());
 			vel = Vector3.up * moveInc;
 
-			Debug.LogFormat("Velocidad del pin {0}: {1} ----- moveInc: {2}, diametro: {3}", name, moveInc, smoothSpeed, 2 * GetRadius());
+			//Debug.LogFormat("Velocidad del pin {0}: {1} ----- moveInc: {2}, diametro: {3}", name, moveInc, smoothSpeed, 2 * GetRadius());
 
 			transform.position += vel;
 

@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 public class Spawner : MonoBehaviour {
 	[SerializeField]
 	public const float MINIMUM_SPAWN_TIME = 0f;
-	public int MAX_COLORS_IN_GAME = 6;
+	public int MAX_COLORS_IN_GAME = 7;
 	 
 	public GameObject PinPrefab;
 	public int nextColor;

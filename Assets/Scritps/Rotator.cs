@@ -29,7 +29,7 @@ public class Rotator : Circumference {
 	public bool canUseCrazySpeed;
 	public float smoothCurrentSpeed;
 
-	private float[] speedIncs = new float[]{ -2.0f, -0.50f, 0, 0.25f, 0.50f };
+	private float[] speedIncs = new float[]{ -2.0f, -1.33f, 0, 0.25f, 0.33f };
 	private float newCrazySpeedInc;
 
 	private float spawnTimeDelay;
@@ -273,14 +273,14 @@ public class Rotator : Circumference {
 		}
 	}
 
-
-	Vector3 SnapNormalizedVector(Vector3 A, Vector3 B, float divisions = 8f) {
+	Vector3 SnapNormalizedVector(Vector3 A, Vector3 B) {
 		//float angleBetween = Vector3.Angle (B, A); // Angulo de nuestra bola respecto de la que ha colisionado
-		Vector3 normalized = (A - B);
-		//Vector3 snapedNormal = SnapTo (normalized, 360f / divisions);
-		return normalized.normalized;
+		Vector3 normalized = (B-A).normalized;
+		Vector3 snapedNormal = SnapToAngle (normalized);
+		return -snapedNormal;
 	}
 
+	float circleDivisions = 360f / 8f;
 	/// <summary>
 	/// Fija un angulo dado a las divisiones de una circunferencia.
 	/// </summary>
@@ -288,19 +288,31 @@ public class Rotator : Circumference {
 	/// <param name="v3">V3.</param>
 	/// <param name="snapAngle">Snap angle.</param>
 	/// <param name="url">http://answers.unity3d.com/questions/493006/snap-a-direction-vector.html</param> 
-	Vector3 SnapTo(Vector3 v3, float snapAngle) {
-		float angle = Vector3.Angle (v3, Vector3.up);
-		if (angle < snapAngle / 2.0f)          // Cannot do cross product 
-			return Vector3.up * v3.magnitude;  //   with angles 0 & 180
-		if (angle > 180.0f - snapAngle / 2.0f)
-			return Vector3.down * v3.magnitude;
+	Vector3 SnapToAngle(Vector3 v3) {
+		float angle = Vector3.Angle(Vector3.down, v3);
+		float badAngle = angle;
 
-		float t = Mathf.Round(angle / snapAngle);
-		float deltaAngle = (t * snapAngle) - angle;
+		angle = angle.RoundToNearest(circleDivisions); // Deja esto calculado de antes si puedes
+		//if (angle) 
 
-		Vector3 axis = Vector3.Cross(Vector3.up, v3);
-		Quaternion q = Quaternion.AngleAxis (deltaAngle, axis);
-		return q * v3;
+		Debug.LogFormat ("Angulo {0} snappedTo {1}", badAngle.ToString(), angle.ToString ());
+
+		return new Vector3(Mathf.Sin(angle * Mathf.Deg2Rad) * Mathf.Sign(v3.x), -Mathf.Cos(angle * Mathf.Deg2Rad)* Mathf.Sign(v3.y), 0);
+
+		/*
+			float angle = Vector3.Angle (v3, Vector3.up);
+			if (angle < snapAngle / 2.0f)          // Cannot do cross product 
+				return Vector3.up * v3.magnitude;  //   with angles 0 & 180
+			if (angle > 180.0f - snapAngle / 2.0f)
+				return Vector3.down * v3.magnitude;
+
+			float t = Mathf.Round(angle / snapAngle);
+			float deltaAngle = (t * snapAngle) - angle;
+
+			Vector3 axis = Vector3.Cross(Vector3.up, v3);
+			Quaternion q = Quaternion.AngleAxis (deltaAngle, axis);
+			return q * v3;
+		*/
 	}
 
 	public void ProcessPin(Circumference newCircumference) {
@@ -494,7 +506,7 @@ public class Rotator : Circumference {
 			newCrazySpeedInc = tmpInc;
 			StartCoroutine(SmoothSpeedIncrement(variableSpeedInc, newCrazySpeedInc, 1f));
 
-			yield return new WaitForSeconds (3f);
+			yield return new WaitForSeconds ( (float)UnityEngine.Random.Range (4,2));
 		}
 	}
 

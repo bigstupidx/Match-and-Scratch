@@ -107,27 +107,45 @@ public class GameManager : MonoBehaviour {
 	private Queue<int> pointsRequiredToLevelUpQueue;
 	private List<int> pointsRequiredToLevelUp = new List<int>() {
 		1,
-		4,
-		8,
-		12,
-		16, 	// 5
+		5,
+		10,
 		20,
-		25,
+		25,	// 5
 		30,
-		31,
-		35,		// 10
+		35,
 		40,
 		45,
-		50,
+		50, // 10
 		55,
-		60,		// 15
-		65,		
-		69,
-		70		// 18
+		65,
+		75,
+		80,
+		85,  // 15
+		90,
+		100
 
 	};
 	private Queue<DifficultType> difficultyStepsQueue;
 	private List<DifficultType> difficultySteps = new List<DifficultType>() {
+		DifficultType.MORE_COLORS,
+		DifficultType.SPEEDUP,
+		DifficultType.SWITCH_REVERSE,
+		DifficultType.SPEEDUP,
+		DifficultType.MORE_COLORS,				// 5
+		DifficultType.SWITCH_REVERSE_CANCEL,
+		DifficultType.MORE_COLORS,
+		DifficultType.SPEEDUP,
+		DifficultType.MORE_COLORS,
+		DifficultType.SPEEDUP,					// 10
+		DifficultType.SWITCH_CRAZY_SPEED,
+		DifficultType.MORE_COLORS,
+		DifficultType.SWITCH_CRAZY_SPEED_CANCEL,
+		DifficultType.MORE_COLORS,
+		DifficultType.SWITCH_REVERSE,			// 15
+		DifficultType.SWITCH_CRAZY_SPEED,
+		DifficultType.SPEEDUP,
+
+		/*
 		DifficultType.MORE_COLORS,
 		DifficultType.SPEEDUP,
 		DifficultType.SWITCH_REVERSE,
@@ -137,15 +155,16 @@ public class GameManager : MonoBehaviour {
 		DifficultType.SWITCH_REVERSE,
 		DifficultType.SPEEDUP,
 		DifficultType.SWITCH_CRAZY_SPEED,
-		DifficultType.MORE_COLORS,		// 10
+		DifficultType.MORE_COLORS,				// 10
 		DifficultType.SWITCH_CRAZY_SPEED_CANCEL,
 		DifficultType.SPEEDUP,		
 		DifficultType.SWITCH_REVERSE_CANCEL,
 		DifficultType.MORE_COLORS,
-		DifficultType.SPEEDUP,			// 15
+		DifficultType.SPEEDUP,					// 15
 		DifficultType.MORE_COLORS,		
-		DifficultType.SPEEDUP,			// 18
-		DifficultType.SWITCH_CRAZY_SPEED
+		DifficultType.SPEEDUP,			
+		DifficultType.SWITCH_CRAZY_SPEED 		//18
+		*/
 	};
 
 	SoundDefinitions[] musics = { SoundDefinitions.LOOP_1, SoundDefinitions.LOOP_2, SoundDefinitions.LOOP_3 };
@@ -159,15 +178,11 @@ public class GameManager : MonoBehaviour {
 			Destroy(gameObject);
 		}
 
-		//TODO: Seleccionar lenguaje del sistema
+		//Seleccionamos lenguaje del sistema. "es" para Epañol, "en" para los demás
 		if (Application.systemLanguage == SystemLanguage.Spanish)
 			LanguageManager.Instance.ChangeLanguage("es");
 		else
 			LanguageManager.Instance.ChangeLanguage("en");
-	}
-
-	public void changeLanguage(string lang) {
-		LanguageManager.Instance.ChangeLanguage (lang);
 	}
 
 	public void Start() {
@@ -347,7 +362,7 @@ public class GameManager : MonoBehaviour {
 				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
 			case DifficultType.SPEEDUP:
-				rotator.RotationSpeed += 15;
+				rotator.RotationSpeed += 14;
 				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_7);
 			break;
 
@@ -357,7 +372,7 @@ public class GameManager : MonoBehaviour {
 				AudioMaster.instance.Play (SoundDefinitions.SFX_REVERSE);
 			break;
 			case DifficultType.SWITCH_REVERSE_CANCEL:
-				rotator.StartInverseDirection ();
+				rotator.StopInverseDirection ();
 				//canInverseDir = false;
 				AudioMaster.instance.Play (SoundDefinitions.SFX_REVERSE);
 			break;			
