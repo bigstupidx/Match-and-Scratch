@@ -9,17 +9,13 @@ using SmartLocalization;
 public class PanelDebug : MonoBehaviour {
 
 	public GameObject highScoresButtonsWrapper;
-	public Text speedLabel;
 	public Text levelLabel;
+	public Text rotatorSpeedLabel;
+	public Text currentRotatorSpeedLabel;
 
 	// Use this for initialization
 	void Start () {
-		//ScreenManager.Instance.OnScreenChange += screenChange;
 	}
-
-	/*void screenChange(ScreenDefinitions def) {
-		highScoresButtonsWrapper.SetActive (def == ScreenDefinitions.HIGHSCORES);
-	}*/
 
 	public void ClearPlayerPrefs() {
 		PlayerPrefs.DeleteKey ("tutorialShowed");
@@ -28,6 +24,10 @@ public class PanelDebug : MonoBehaviour {
 		PlayerPrefs.DeleteKey ("name");
 		PlayerPrefs.DeleteKey ("soundState");
 		PlayerPrefs.DeleteKey ("specialMentionShowed");
+	}
+
+	public void AddOnePoint() {
+		GameManager.instance.AddScore (1);
 	}
 
 	public void AddTestScore() {
@@ -39,8 +39,9 @@ public class PanelDebug : MonoBehaviour {
 		GameManager.instance.SetNewHighScoresSource((HighScoresSource)source);
 	}
 	void Update() {
-		levelLabel.text = LanguageManager.Instance.GetTextValue("ui.label.level") + " " + GameManager.instance.CurrentLevel.ToString();
-		speedLabel.text = LanguageManager.Instance.GetTextValue("ui.label.speed") + " " + (GameManager.instance.rotator.currentSpeed).ToString();
+		levelLabel.text = "Level: " + GameManager.instance.CurrentLevel.ToString();
+		rotatorSpeedLabel.text = "rotator Speed: " + (GameManager.instance.rotator.RotationSpeed).ToString();
+		currentRotatorSpeedLabel.text = "current rotator Speed: " + (GameManager.instance.rotator.currentSpeed).ToString();
 	}
 
 	public void showSpecialMention() {

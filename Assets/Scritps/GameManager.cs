@@ -42,6 +42,9 @@ public class GameManager : MonoBehaviour {
 	public static GameManager instance = null;
 
 	public GameState currentState;
+	public bool EnableDebugAtStart;
+	public GameObject debugMenu;
+
 	public Color[] posibleColors;
 	public Rotator rotator;
 	public Spawner spawner;
@@ -62,9 +65,6 @@ public class GameManager : MonoBehaviour {
 			currentLevel = value;
 		}
 	}
-	public bool canInverseDir;
-	public bool canUseVariableSpeed;
-
 	public bool isGameOver;
 
 	public GamePlayState currentGamePlayState = GamePlayState.Normal;
@@ -171,6 +171,9 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void Start() {
+		if (EnableDebugAtStart)
+			Instantiate(debugMenu, GameObject.FindGameObjectWithTag("UICanvas").transform);
+
 		ShowScreen (ScreenDefinitions.MAIN_MENU);
 		// StartCoroutine(RefreshHighscores());
 		SetGameState(GameState.MainMenu);
@@ -201,9 +204,6 @@ public class GameManager : MonoBehaviour {
 					AudioMaster.instance.Play (SoundDefinitions.END_FX);
 					animator.SetTrigger ("exit");
 					GameOverPoints.text = Score.ToString ();
-					if (Score > 0)
-						InputNameScreen.Instance.OpenWindow ();
-
 				break;
 				case GameState.Highscores:
 					animator.SetBool("highscores", true);
@@ -231,11 +231,16 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void ShowGameOverScreen() {
-		ShowScreen (ScreenDefinitions.GAME_OVER);
+		ShowScreen (ScreenDefinitions.GAME_OVER, ShowSendScoreForm);
 	}
 
 	public void ShowScreen(ScreenDefinitions screenDef, ScreenManager.Callback TheCallback = null) {
 		ScreenManager.Instance.ShowScreen(screenDef, TheCallback);
+	}
+
+	public void ShowSendScoreForm() {
+		if (Score > 0)
+			InputNameScreen.Instance.OpenWindow ();
 	}
 
 	public void StartGame() {		
@@ -268,7 +273,6 @@ public class GameManager : MonoBehaviour {
 		difficultyStepsQueue = new Queue<DifficultType> (difficultySteps);
 		spawner.Reset();
 		rotator.Reset();
-		canInverseDir = false;
 		CurrentLevel = initialLevel;
 		Score = 0;
 		isGameOver = false;		
@@ -327,11 +331,11 @@ public class GameManager : MonoBehaviour {
 
 		if (difficultyStepsQueue.Count == 0) {
 			if (score % 15 == 0)
-				difficult = !canUseVariableSpeed ? DifficultType.SWITCH_CRAZY_SPEED : DifficultType.SWITCH_CRAZY_SPEED_CANCEL;
+				difficult = !rotator.canUseCrazySpeed ? DifficultType.SWITCH_CRAZY_SPEED : DifficultType.SWITCH_CRAZY_SPEED_CANCEL;
 			else if (score % 10 == 0)
 				difficult = DifficultType.SPEEDUP;
 			else if (score % 5 == 0)
-				difficult = !canInverseDir ? DifficultType.SWITCH_REVERSE : DifficultType.SWITCH_REVERSE_CANCEL;
+				difficult = !rotator.canInverseDir ? DifficultType.SWITCH_REVERSE : DifficultType.SWITCH_REVERSE_CANCEL;
 		} else {
 			pointsRequiredToLevelUpQueue.Dequeue ();
 			difficult = difficultyStepsQueue.Dequeue ();
@@ -347,22 +351,22 @@ public class GameManager : MonoBehaviour {
 				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_7);
 			break;
 
-			case DifficultType.SWITCH_REVERSE:				
-				canInverseDir = true;
+			case DifficultType.SWITCH_REVERSE:
+				rotator.StartInverseDirection ();
+				//canInverseDir = true;
 				AudioMaster.instance.Play (SoundDefinitions.SFX_REVERSE);
 			break;
 			case DifficultType.SWITCH_REVERSE_CANCEL:
-				canInverseDir = false;
+				rotator.StartInverseDirection ();
+				//canInverseDir = false;
 				AudioMaster.instance.Play (SoundDefinitions.SFX_REVERSE);
 			break;			
 			case DifficultType.SWITCH_CRAZY_SPEED:
-				canUseVariableSpeed = true;	
-				StartCoroutine(rotator.VariableSpeedDifficult());
+				rotator.StartCrazySpeed();
 				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_10);
 			break;
-			case DifficultType.SWITCH_CRAZY_SPEED_CANCEL:
-				canUseVariableSpeed = false;	
-				StopCoroutine(rotator.VariableSpeedDifficult());
+		case DifficultType.SWITCH_CRAZY_SPEED_CANCEL:
+				rotator.StopCrazySpeed ();
 				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_10);
 			break;
 		}

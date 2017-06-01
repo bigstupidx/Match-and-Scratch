@@ -68,11 +68,15 @@ public class Pin : Circumference {
 			float smoothSpeed = speed * Time.deltaTime;
 			float moveInc = Mathf.Min (smoothSpeed, 2 * GetRadius ());
 			vel = Vector3.up * moveInc;
+
 			Debug.LogFormat("Velocidad del pin {0}: {1} ----- moveInc: {2}, diametro: {3}", name, moveInc, smoothSpeed, 2 * GetRadius());
+
 			transform.position += vel;
+
 			RaycastHit2D hit = Physics2D.CircleCast (transform.position, GetRadius (), vel.normalized, 0);
 			if (hit) {
 				if ((hit.collider.tag == "Pin" && hit.collider.GetComponent<Pin> ().isPinned && hit.collider.GetComponent<Pin> ()) || hit.collider.tag == "Rotator") {
+					speed = 0;
 					rot.AddPin (me, hit.collider.gameObject);
 					#if UNITY_EDITOR
 					DrawTheGizmo (new GizmoToDraw (GizmoType.sphere, transform.position, GetRadius (), RandomColor ()));

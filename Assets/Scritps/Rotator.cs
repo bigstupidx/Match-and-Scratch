@@ -13,28 +13,36 @@ public class Rotator : Circumference {
 		get { return rotationSpeed;}
 		set { rotationSpeed = value;}
 	}
+
+
+	public int rotationDirection = 1;
+
+	public float marginBetweenPins = 0.08f;
 	public float currentSpeed;
+
+
 
 	[SerializeField]
 	private float variableSpeedInc;
 
+	public bool canInverseDir;
+	public bool canUseCrazySpeed;
 	public float smoothCurrentSpeed;
 
 	private float[] speedIncs = new float[]{ -2.0f, -0.50f, 0, 0.25f, 0.50f };
-
-	public int rotationDirection = 1;
-	public float marginBetweenPins = 0.08f;
-
-	public Action OnPinPinned;
-	public Action OnCompleteRotation;
+	private float newCrazySpeedInc;
 
 	private float spawnTimeDelay;
+
 	private Circumference me;
 	private List<Circumference> circumferencesCollided = new List<Circumference>();
 	private Dictionary<int, PinsGroups> pinsGroups = new Dictionary<int, PinsGroups>();
 	private List<int> groupsCollided = new List<int>();
 
 	float angleRotated = 0;
+
+	public Action OnPinPinned;
+	public Action OnCompleteRotation;
 
 	public override void Initialize() {
 		me = this;
@@ -86,7 +94,7 @@ public class Rotator : Circumference {
 			ProcessPin (newPin);
 			spawnTimeDelay = ProcessPinsGroups ();
 			GameManager.instance.spawner.SpawnPin (spawnTimeDelay);
-			if (GameManager.instance.canInverseDir) {
+			if (canInverseDir) {
 				rotationDirection *= -1;
 			}
 		}
@@ -160,9 +168,9 @@ public class Rotator : Circumference {
 				
 				// Reposición
 				//newPin.transform.position = circumferencesCollided[0].GetPosition() + ( ( newPin.GetPosition() - circumferencesCollided[0].GetPosition() ).normalized * ( newPin.GetRadius() + circumferencesCollided[0].GetRadius() ) );
-				newPin.transform.position = circumferencesCollided[0].GetPosition() + SnapNormalizedVector(newPin.GetPosition(), circumferencesCollided[0].GetPosition(), 8) * ( newPin.GetRadius() + circumferencesCollided[0].GetRadius() );
+				newPin.transform.position = circumferencesCollided[0].GetPosition() + SnapNormalizedVector(newPin.GetPosition(), circumferencesCollided[0].GetPosition()) * ( newPin.GetRadius() + circumferencesCollided[0].GetRadius() );
 				
-			//debug posicion new pin en despues de la colocación
+			//debug posicion new pin despues de la colocación
 				//DrawTheGizmo ( new GizmoToDraw( GizmoType.sphere, newPin.GetPosition(), newPin.GetRadius(), Color.green ) );
 				if ( circumferencesCollided[0].tag == "Rotator" ) newPin.GetComponent<Pin>().DrawSpear();
 			break;
@@ -267,12 +275,10 @@ public class Rotator : Circumference {
 
 
 	Vector3 SnapNormalizedVector(Vector3 A, Vector3 B, float divisions = 8f) {
-		float angleBetween = Vector3.Angle (B, A); // Angulo de nuestra bola respecto de la que ha colisionado
-
-		Vector3 normalized = (A - B).normalized;
-		Vector3 snapedNormal = SnapTo (normalized, 360f / divisions);
-		return snapedNormal;
-
+		//float angleBetween = Vector3.Angle (B, A); // Angulo de nuestra bola respecto de la que ha colisionado
+		Vector3 normalized = (A - B);
+		//Vector3 snapedNormal = SnapTo (normalized, 360f / divisions);
+		return normalized.normalized;
 	}
 
 	/// <summary>
@@ -283,7 +289,7 @@ public class Rotator : Circumference {
 	/// <param name="snapAngle">Snap angle.</param>
 	/// <param name="url">http://answers.unity3d.com/questions/493006/snap-a-direction-vector.html</param> 
 	Vector3 SnapTo(Vector3 v3, float snapAngle) {
-		float   angle = Vector3.Angle (v3, Vector3.up);
+		float angle = Vector3.Angle (v3, Vector3.up);
 		if (angle < snapAngle / 2.0f)          // Cannot do cross product 
 			return Vector3.up * v3.magnitude;  //   with angles 0 & 180
 		if (angle > 180.0f - snapAngle / 2.0f)
@@ -414,7 +420,8 @@ public class Rotator : Circumference {
 			Destroy(pins[i]);
 		}
 		pinsGroups.Clear();
-		StopCoroutine (VariableSpeedDifficult());
+		StopInverseDirection ();
+		StopCrazySpeed ();
 		RotationSpeed = INITIAL_SPEED;
 		variableSpeedInc = 0;
 		rotationDirection = 1;
@@ -457,16 +464,35 @@ public class Rotator : Circumference {
 			break;
 		}
 	}
-	float newInc;
-	public IEnumerator VariableSpeedDifficult() {
-		while (GameManager.instance.canUseVariableSpeed && !GameManager.instance.isGameOver) {
+
+	public void StartInverseDirection() {
+		canInverseDir = true;
+	}
+
+	public void StopInverseDirection() {
+		canInverseDir = false;
+	}
+
+	public void StartCrazySpeed() {
+		canUseCrazySpeed = true;
+		StartCoroutine(CrazySpeedDifficult());
+	}
+
+	public void StopCrazySpeed() {
+		StopCoroutine(CrazySpeedDifficult());
+		canUseCrazySpeed = false;
+		variableSpeedInc = 0;
+	}
+
+	public IEnumerator CrazySpeedDifficult() {
+		while (canUseCrazySpeed && !GameManager.instance.isGameOver) {
 			float tmpInc = speedIncs[UnityEngine.Random.Range (0, speedIncs.Length)];
 			// No permitimos que salga dos veces el mismo numero
-			while (newInc == tmpInc) {
+			while (newCrazySpeedInc == tmpInc) {
 				tmpInc = speedIncs [UnityEngine.Random.Range (0, speedIncs.Length)];
 			}
-			newInc = tmpInc;
-			StartCoroutine(SmoothSpeedIncrement(variableSpeedInc, newInc, 1f));
+			newCrazySpeedInc = tmpInc;
+			StartCoroutine(SmoothSpeedIncrement(variableSpeedInc, newCrazySpeedInc, 1f));
 
 			yield return new WaitForSeconds (3f);
 		}
