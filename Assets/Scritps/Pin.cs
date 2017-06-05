@@ -26,7 +26,6 @@ public class Pin : Circumference {
 	}
 
 	void OnEnable() {
-		//if (line == null)	line = GetComponent<LineRenderer>();
 	}
 
 	void SetupLine() {
@@ -82,8 +81,8 @@ public class Pin : Circumference {
 					speed = 0;
 					rot.AddPin (me, hit.collider.gameObject);
 					#if UNITY_EDITOR
-					DrawTheGizmo (new GizmoToDraw (GizmoType.sphere, transform.position, GetRadius (), RandomColor ()));
-					DrawX(hit.point, RandomColor(), GetRadius (), 3, 1);
+						DrawTheGizmo (new GizmoToDraw (GizmoType.sphere, transform.position, GetRadius (), RandomColor ()));
+						DrawX(hit.point, RandomColor(), GetRadius (), 3, 1);
 					#endif
 				}
 			}

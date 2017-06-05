@@ -65,6 +65,8 @@ public class GameManager : MonoBehaviour {
 			currentLevel = value;
 		}
 	}
+
+	public bool isGamePaused;
 	public bool isGameOver;
 
 	public GamePlayState currentGamePlayState = GamePlayState.Normal;
@@ -298,11 +300,13 @@ public class GameManager : MonoBehaviour {
 		levelUp.GetComponent<Animator> ().Play ("Idle");
 		AudioMaster.instance.StopAll(false);
 		AudioMaster.instance.PlayLoop(musics[currentMusic]);
+		isGamePaused = false;
 	}
 
 	public void ShowHighscores() {		
 		SetGameState(GameState.Highscores);
 	}
+
 	/*
 	IEnumerator RefreshHighscores() {
 		while (true) {
@@ -311,8 +315,10 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 	*/
+
 	public void ThrowCurrentPin() {
-		spawner.ThrowCurrentPin();
+		if (!isGamePaused)
+			spawner.ThrowCurrentPin();
 	}
 
 	public void CheckDifficulty() {
@@ -388,5 +394,21 @@ public class GameManager : MonoBehaviour {
 		levelUp.Show (difficult);
 
 		Debug.LogFormat ("<color=green>Level {0} a los {1} puntos -> Dificultad añadida: {2}</color>", currentLevel, score, difficult.ToString ());
+	}
+
+	public void PauseGame(bool pause) {
+		if (pause) {
+			PauseScreen.Instance.OpenWindow ();
+		}
+		else {
+			PauseScreen.Instance.CloseWindow ();	
+		}
+		isGamePaused = pause;
+	}
+
+	public void ExitToMainMenu() {
+		animator.SetTrigger ("exit");
+		BackToMainMenu ();
+		PauseScreen.Instance.CloseWindow ();
 	}
 }

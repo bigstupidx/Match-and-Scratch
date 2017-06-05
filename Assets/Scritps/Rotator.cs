@@ -51,20 +51,21 @@ public class Rotator : Circumference {
 
 
 	void FixedUpdate() {
-		currentSpeed = (RotationSpeed + (RotationSpeed * variableSpeedInc)) * rotationDirection;
-		smoothCurrentSpeed = currentSpeed * Time.fixedDeltaTime;
-
-		transform.Rotate(0f, 0f, smoothCurrentSpeed);
-		angleRotated += smoothCurrentSpeed;
-		if (angleRotated >= 360) {
-			angleRotated = 0;
-			if (OnCompleteRotation != null)
-				OnCompleteRotation ();
+		
+		if (!GameManager.instance.isGamePaused) {
+			currentSpeed = (RotationSpeed + (RotationSpeed * variableSpeedInc)) * rotationDirection;
+			smoothCurrentSpeed = currentSpeed * Time.fixedDeltaTime;
+			transform.Rotate (0f, 0f, smoothCurrentSpeed);
+		
+			if (OnCompleteRotation != null) {
+				angleRotated += smoothCurrentSpeed;
+				if (angleRotated >= 360) {
+					angleRotated = 0;
+					OnCompleteRotation ();
+				}
+			}
 		}
 	}
-
-
-
 
 	public void AddPin(Circumference newPin, GameObject col) {
 		if (OnPinPinned != null)

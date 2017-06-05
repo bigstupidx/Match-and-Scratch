@@ -179,6 +179,12 @@
 	<data name="ui.label.next" xml:space="preserve">
 		<value>Siguiente</value>
 	</data>
+	<data name="ui.label.pause" xml:space="preserve">
+		<value>Pausa</value>
+	</data>
+	<data name="ui.label.resumegame" xml:space="preserve">
+		<value>Reanudar</value>
+	</data>
 	<data name="ui.label.score" xml:space="preserve">
 		<value>Puntos</value>
 	</data>

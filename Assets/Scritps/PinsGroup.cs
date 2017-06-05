@@ -84,7 +84,7 @@ public class PinsGroups {
 			Debug.Log(string.Format("<color=red> Destruyendo grupo {0} que sigue activo </color>", index));
 
 		if (sumPoints) {
-			GameManager.instance.AddScore(members.Count - 2);
+			GameManager.instance.AddScore(members.Count);
 		}
 
 		for( int i = members.Count-1; i >=0; i--) {
