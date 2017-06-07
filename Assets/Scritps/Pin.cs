@@ -11,7 +11,7 @@ public class Pin : Circumference {
 	public bool isPinned = false;
 	public bool drawSpear = false;
 
-	private Circumference me;
+	//private Circumference me;
 
 	private LineRenderer line;
 	private SpriteRenderer sr;
@@ -25,12 +25,10 @@ public class Pin : Circumference {
 
 	public override void Initialize() {
 		sr = GetComponent<SpriteRenderer>();
-		me = this;
 		rot = GameManager.instance.rotator;
 		colisionador.enabled = false;
 		GameScreenParent = GameObject.Find ("Game Screen").transform;
 		pointsValue = 0;
-		//SetupLine();
 	}
 
 	void OnEnable() {
@@ -41,8 +39,8 @@ public class Pin : Circumference {
 		Color parentColor = GetComponent<SpriteRenderer>().color;
 		line = gameObject.AddComponent<LineRenderer>();
 		line.material = new Material(Shader.Find("Sprites/Default"));
-		line.startColor = Color.black;//parentColor;
-		line.endColor = Color.black;//parentColor;
+		line.startColor = parentColor;
+		line.endColor = parentColor;
 		line.startWidth = 0.03f;
 		line.endWidth = 0.03f;
 	}
@@ -54,8 +52,7 @@ public class Pin : Circumference {
 			line.SetPosition(1, rot.transform.position);
 		}
 		else
-			if (line)
-			line.positionCount = 0;
+			if (line) line.positionCount = 0;
 	}
 	
 	public void DrawSpear() {
@@ -101,21 +98,22 @@ public class Pin : Circumference {
 		DrawTheSpear();
 	}
 
-	public override void Disable() {
+	public void Autodestroy() {
 		drawSpear = false;
 		colisionador.enabled = false;
-		StartCoroutine(AnimToDead());
-	}
-
-	public IEnumerator AnimToDead() {
 		if (pointsValue > 0) {
 			GameObject point = Instantiate (pointsGameObject, GameScreenParent) as GameObject;
 			point.GetComponent<PointsSumsUp> ().SetTargetObject (transform);
 			UnityEngine.UI.Text txtPoint = point.GetComponentInChildren<UnityEngine.UI.Text> ();
 			txtPoint.text = pointsValue.ToString ();
 			txtPoint.color = sr.color;
+			GameManager.instance.AddScore(pointsValue);
 		}
+		StartCoroutine(AnimToDead());
+	}
 
+	public IEnumerator AnimToDead() {
+		
 		float t = TIME_TO_DESTROY;
 
 		while (t > 0f) {

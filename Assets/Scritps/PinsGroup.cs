@@ -82,16 +82,14 @@ public class PinsGroups {
 	public IEnumerator DestroyMembers(bool sumPoints = true) {
 		if (isActive)
 			Debug.Log(string.Format("<color=red> Destruyendo grupo {0} que sigue activo </color>", index));
-
-		if (sumPoints) {
-			GameManager.instance.AddScore(members.Count);
-		}
-
+		
 		for( int i = members.Count-1; i >=0; i--) {
 			if (members [i] != null) {
 				Pin pin = members [i].gameObject.GetComponent<Pin> ();
-				if (sumPoints) pin.pointsValue = 1;
-				pin.Autodestroy ();
+				if (sumPoints) {
+					pin.pointsValue = 1;
+					pin.Autodestroy ();
+				}
 			}
 			yield return new WaitForSeconds(Pin.TIME_TO_DESTROY/members.Count);
 		}

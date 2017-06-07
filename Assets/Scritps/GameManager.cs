@@ -51,8 +51,9 @@ public class GameManager : MonoBehaviour {
 	public Animator animator;
 
 	public LevelUp levelUp;
-	public Text newScore;
-	//public Text scoreLabel;
+	public Text scoreLabel;
+	Animator scoreLabel_Animator;
+
 	public Text GameOverPoints;
 
 	public int initialLevel;
@@ -71,14 +72,13 @@ public class GameManager : MonoBehaviour {
 
 	public GamePlayState currentGamePlayState = GamePlayState.Normal;
 
-	//private int lastScore;
 	[SerializeField]
 	private int score;
 	public int Score {
 		get { return score;}
 		private set {
 			score = value;
-			//scoreLabel.text = LanguageManager.Instance.GetTextValue("ui.label.score") + " " + score.ToString();
+			scoreLabel.text = score.ToString();
 		}
 	}
 
@@ -94,16 +94,11 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void AddScore(int pts) {
-		for (int i = 1; i <= pts; i++) {
-			score++;
-			CheckDifficulty();
-		}
-
-		//scoreLabel.text = LanguageManager.Instance.GetTextValue("ui.label.score") + " " + score.ToString();
-
-		newScore.text = "+" + pts.ToString();
-		if ( !newScore.GetComponent<Animator>().GetCurrentAnimatorStateInfo (0).IsName ("start") )
-			newScore.GetComponent<Animator> ().SetTrigger ("start");
+		score += pts;
+		CheckDifficulty();
+		scoreLabel.text = score.ToString();
+		if(!scoreLabel_Animator.IsInTransition(0))// GetCurrentAnimatorStateInfo(0).IsName("Score_Label_Action"))
+			scoreLabel_Animator.SetTrigger ("Action");
 	}
 
 	private Queue<int> pointsRequiredToLevelUpQueue;
@@ -160,6 +155,8 @@ public class GameManager : MonoBehaviour {
 			LanguageManager.Instance.ChangeLanguage("es");
 		else
 			LanguageManager.Instance.ChangeLanguage("en");
+
+		scoreLabel_Animator = scoreLabel.GetComponent<Animator> ();
 	}
 
 	public void Start() {
@@ -343,7 +340,7 @@ public class GameManager : MonoBehaviour {
 				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
 			case DifficultType.SPEEDUP:
-				rotator.RotationSpeed += 14;
+				rotator.RotationSpeed += 25;
 				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_7);
 			break;
 

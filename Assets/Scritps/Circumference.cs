@@ -66,10 +66,11 @@ public class Circumference : MonoBehaviour {
 	}
 
 	public virtual void Initialize(){}
-
+	/*
 	public virtual void Disable(){}
 
 	public void Autodestroy() {
 		Disable();
 	}
+	*/
 }
