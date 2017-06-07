@@ -32,9 +32,6 @@ public struct GizmoToDraw {
 	}
 }
 
-
-
-
 [RequireComponent (typeof (CircleCollider2D))]
 public class Circumference : MonoBehaviour {
 	/// <debug>
@@ -47,22 +44,22 @@ public class Circumference : MonoBehaviour {
  	public Vector3 GetPosition() { return transform.position; }
 	public float GetRadius() { return radius * transform.lossyScale.x; }
 
-	public TextMesh colorGroupText;
+	//public TextMesh colorGroupText;
 	int _colorGroup;
 	public int colorGroup {
 		get { return _colorGroup;}
 		set {
 			_colorGroup = value;	
-			if (colorGroupText != null) {
+			//if (colorGroupText != null) {
 				#if VISUAL_DEBUG
 				colorGroupText.text = value.toString();
 				#endif
-			}
+			//}
 		}
 	}
 
 	public void Awake () {
-		if (colorGroupText == null) colorGroupText = transform.GetChild(0).GetComponent<TextMesh>();
+		//if (colorGroupText == null) colorGroupText = transform.GetChild(0).GetComponent<TextMesh>();
 		if (colisionador == null) colisionador = GetComponent<CircleCollider2D>();
 		radius = colisionador.radius;		
 		Initialize();

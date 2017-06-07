@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour {
 
 	public LevelUp levelUp;
 	public Text newScore;
-	public Text scoreLabel;
+	//public Text scoreLabel;
 	public Text GameOverPoints;
 
 	public int initialLevel;
@@ -78,7 +78,7 @@ public class GameManager : MonoBehaviour {
 		get { return score;}
 		private set {
 			score = value;
-			scoreLabel.text = LanguageManager.Instance.GetTextValue("ui.label.score") + " " + score.ToString();
+			//scoreLabel.text = LanguageManager.Instance.GetTextValue("ui.label.score") + " " + score.ToString();
 		}
 	}
 
@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviour {
 			CheckDifficulty();
 		}
 
-		scoreLabel.text = LanguageManager.Instance.GetTextValue("ui.label.score") + " " + score.ToString();
+		//scoreLabel.text = LanguageManager.Instance.GetTextValue("ui.label.score") + " " + score.ToString();
 
 		newScore.text = "+" + pts.ToString();
 		if ( !newScore.GetComponent<Animator>().GetCurrentAnimatorStateInfo (0).IsName ("start") )
@@ -109,64 +109,39 @@ public class GameManager : MonoBehaviour {
 	private Queue<int> pointsRequiredToLevelUpQueue;
 	private List<int> pointsRequiredToLevelUp = new List<int>() {
 		1,
-		5,
 		10,
 		20,
-		25,	// 5
 		30,
-		35,
-		40,
-		45,
-		50, // 10
-		55,
-		65,
-		75,
+		40,		//5
+		50,
+		60,
+		70,
 		80,
-		85,  // 15
-		90,
-		100
+		90,		// 10
+		100,
+		110,	
+		120,
+		130,
+		150,	// 15
 
 	};
 	private Queue<DifficultType> difficultyStepsQueue;
 	private List<DifficultType> difficultySteps = new List<DifficultType>() {
 		DifficultType.MORE_COLORS,
 		DifficultType.SPEEDUP,
+		DifficultType.MORE_COLORS,
+		DifficultType.SPEEDUP,
+		DifficultType.MORE_COLORS,			// 5
+		DifficultType.SPEEDUP,
+		DifficultType.MORE_COLORS,
 		DifficultType.SWITCH_REVERSE,
-		DifficultType.SPEEDUP,
-		DifficultType.MORE_COLORS,				// 5
-		DifficultType.SWITCH_REVERSE_CANCEL,
 		DifficultType.MORE_COLORS,
+		DifficultType.SPEEDUP,		// 10
 		DifficultType.SPEEDUP,
 		DifficultType.MORE_COLORS,
-		DifficultType.SPEEDUP,					// 10
-		DifficultType.SWITCH_CRAZY_SPEED,
-		DifficultType.MORE_COLORS,
-		DifficultType.SWITCH_CRAZY_SPEED_CANCEL,
-		DifficultType.MORE_COLORS,
-		DifficultType.SWITCH_REVERSE,			// 15
-		DifficultType.SWITCH_CRAZY_SPEED,
 		DifficultType.SPEEDUP,
-
-		/*
-		DifficultType.MORE_COLORS,
 		DifficultType.SPEEDUP,
-		DifficultType.SWITCH_REVERSE,
-		DifficultType.MORE_COLORS, 
-		DifficultType.SWITCH_REVERSE_CANCEL,	// 5
-		DifficultType.SPEEDUP,	
-		DifficultType.SWITCH_REVERSE,
-		DifficultType.SPEEDUP,
-		DifficultType.SWITCH_CRAZY_SPEED,
-		DifficultType.MORE_COLORS,				// 10
-		DifficultType.SWITCH_CRAZY_SPEED_CANCEL,
-		DifficultType.SPEEDUP,		
-		DifficultType.SWITCH_REVERSE_CANCEL,
-		DifficultType.MORE_COLORS,
-		DifficultType.SPEEDUP,					// 15
-		DifficultType.MORE_COLORS,		
-		DifficultType.SPEEDUP,			
-		DifficultType.SWITCH_CRAZY_SPEED 		//18
-		*/
+		DifficultType.SWITCH_CRAZY_SPEED,	// 15
 	};
 
 	SoundDefinitions[] musics = { SoundDefinitions.LOOP_1, SoundDefinitions.LOOP_2, SoundDefinitions.LOOP_3 };

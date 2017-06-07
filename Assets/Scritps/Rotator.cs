@@ -14,12 +14,10 @@ public class Rotator : Circumference {
 		set { rotationSpeed = value;}
 	}
 
-
 	public int rotationDirection = 1;
 
 	public float marginBetweenPins = 0.08f;
 	public float currentSpeed;
-
 
 
 	[SerializeField]
@@ -48,10 +46,7 @@ public class Rotator : Circumference {
 		me = this;
 	}
 
-
-
-	void FixedUpdate() {
-		
+	void FixedUpdate() {		
 		if (!GameManager.instance.isGamePaused) {
 			currentSpeed = (RotationSpeed + (RotationSpeed * variableSpeedInc)) * rotationDirection;
 			smoothCurrentSpeed = currentSpeed * Time.fixedDeltaTime;
@@ -67,30 +62,31 @@ public class Rotator : Circumference {
 		}
 	}
 
-	public void AddPin(Circumference newPin, GameObject col) {
+	public void AddPin(Pin newPin, GameObject col) {
 		if (OnPinPinned != null)
 			OnPinPinned ();
 		
 		newPin.colisionador.isTrigger = false;
-		Pin cn = newPin.GetComponent<Pin>();
-		cn.isPinned = true;
+		newPin.isPinned = true;
 		newPin.colisionador.enabled = true;
-		Circumference collis = col.GetComponent<Circumference> ();
 
+
+		//#if UNITY_EDITOR && VISUAL_DEBUG
 		if (col.name == "Rotator")
 			Debug.Log (string.Format ("{0} collisiona con {1}", newPin.name, col.name));
 		else {
-			Debug.Log (string.Format ("{0} collisiona con {1} que pertenece al grupo {2} y su estado es {3} y contiene {4} miembros.", newPin.name, col.name, collis.colorGroup.ToString (), pinsGroups [collis.colorGroup].currentState.ToString (), pinsGroups [collis.colorGroup].Count.ToString ()));
+			Debug.Log (string.Format ("{0} collisiona con {1} que pertenece al grupo {2} y su estado es {3} y contiene {4} miembros.", newPin.name, col.name, newPin.colorGroup.ToString (), pinsGroups [newPin.colorGroup].currentState.ToString (), pinsGroups [newPin.colorGroup].Count.ToString ()));
 		}
+		//#endif
 
 		AddToParent (newPin); 		// Metemos el Pin en el rotator
-		SearchNearestPins(newPin);	// Bucamos cercanos
+		SearchNearestPins (newPin);	// Bucamos cercanos
 		Reposition (newPin); 		// Recolocamos
-		SearchNearestPins(newPin, false);	// Volvemos a buscar por si al recolocar se generan nuevas colisiones
+		SearchNearestPins (newPin, false);	// Volvemos a buscar por si al recolocar se generan nuevas colisiones
 
 		if (IsGameOver(newPin)) {
 			GameManager.instance.GameOver ();
-			pinsGroups[pinsGroups.Count-1].AddMember(newPin); // Metemos el pin en el ultimo grupo para que se elimine al terminar 
+			pinsGroups[pinsGroups.Count-1].AddMember (newPin); // Metemos el pin en el ultimo grupo para que se elimine al terminar 
 		} else {
 			ProcessPin (newPin);
 			spawnTimeDelay = ProcessPinsGroups ();

@@ -17,11 +17,19 @@ public class Pin : Circumference {
 	private SpriteRenderer sr;
 	Rotator rot;
 
+	public int pointsValue { get; set;}
+
+	public GameObject pointsGameObject;
+	Transform GameScreenParent;
+
+
 	public override void Initialize() {
 		sr = GetComponent<SpriteRenderer>();
 		me = this;
 		rot = GameManager.instance.rotator;
 		colisionador.enabled = false;
+		GameScreenParent = GameObject.Find ("Game Screen").transform;
+		pointsValue = 0;
 		//SetupLine();
 	}
 
@@ -79,7 +87,7 @@ public class Pin : Circumference {
 			if (hit) {
 				if ((hit.collider.tag == "Pin" && hit.collider.GetComponent<Pin> ().isPinned && hit.collider.GetComponent<Pin> ()) || hit.collider.tag == "Rotator") {
 					speed = 0;
-					rot.AddPin (me, hit.collider.gameObject);
+					rot.AddPin (this, hit.collider.gameObject);
 					#if UNITY_EDITOR
 						DrawTheGizmo (new GizmoToDraw (GizmoType.sphere, transform.position, GetRadius (), RandomColor ()));
 						DrawX(hit.point, RandomColor(), GetRadius (), 3, 1);
@@ -100,16 +108,26 @@ public class Pin : Circumference {
 	}
 
 	public IEnumerator AnimToDead() {
+		if (pointsValue > 0) {
+			GameObject point = Instantiate (pointsGameObject, GameScreenParent) as GameObject;
+			point.GetComponent<PointsSumsUp> ().SetTargetObject (transform);
+			UnityEngine.UI.Text txtPoint = point.GetComponentInChildren<UnityEngine.UI.Text> ();
+			txtPoint.text = pointsValue.ToString ();
+			txtPoint.color = sr.color;
+		}
 
 		float t = TIME_TO_DESTROY;
+
 		while (t > 0f) {
 			t -= Time.deltaTime;
 			transform.localScale *= 1.13f;
 			sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, t);
 			yield return null;
 		}		
+
 		Destroy(gameObject);
 	}
+
 
 
 	////////////// DEBUG //////////////
