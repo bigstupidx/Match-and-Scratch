@@ -3,6 +3,7 @@
   <string name="firebase_database_url" translatable="false">https://match-and-scratch-92345929.firebaseio.com</string>
   <string name="gcm_defaultSenderId" translatable="false">307954089793</string>
   <string name="google_storage_bucket" translatable="false">match-and-scratch-92345929.appspot.com</string>
+  <string name="project_id" translatable="false">match-and-scratch-92345929</string>
   <string name="google_api_key" translatable="false">AIzaSyCkliP3jWOwjdS-HBKANN6ZpCxmIUyXee8</string>
   <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCkliP3jWOwjdS-HBKANN6ZpCxmIUyXee8</string>
   <string name="google_app_id" translatable="false">1:307954089793:android:1077daf9aae15652</string>

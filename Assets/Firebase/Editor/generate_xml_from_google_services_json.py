@@ -92,6 +92,7 @@ def main():
     gen_string(root, 'gcm_defaultSenderId', project_info.get('project_number'))
     gen_string(root, 'google_storage_bucket',
                project_info.get('storage_bucket'))
+    gen_string(root, 'project_id', project_info.get('project_id'))
 
   if args.f:
     if not project_info:
