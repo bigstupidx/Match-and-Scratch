@@ -88,8 +88,8 @@ public class ColorPinsGroup {
 				Pin pin = members [i].gameObject.GetComponent<Pin> ();
 				if (sumPoints) {
 					pin.pointsValue = 1;
-					pin.Autodestroy ();
 				}
+				pin.Autodestroy ();
 			}
 			yield return new WaitForSeconds(Pin.TIME_TO_DESTROY/members.Count);
 		}

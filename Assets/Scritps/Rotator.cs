@@ -303,7 +303,6 @@ public class Rotator : Circumference {
 
 		//angle = angle.RoundToNearest(circleDivisions); // Deja esto calculado de antes si puedes
 
-
 		//angulo entre rotor y bola puesta respecto de V3.down
 		//angulo entre bola lanzada y bola puesta respecto del angulo anterior
 		// Calculamos el angulo al que se debería pegar la bola lanzada a la bola puesta
