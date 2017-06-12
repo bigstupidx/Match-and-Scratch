@@ -78,7 +78,7 @@ public class GameManager : MonoBehaviour {
 		get { return score;}
 		private set {
 			score = value;
-			scoreLabel.text = score.ToString();
+			scoreLabel.text = (score > 0) ? score.ToString() : "";
 		}
 	}
 
@@ -94,7 +94,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void AddScore(int pts) {
-		score += pts;
+		Score += pts;
 		CheckDifficulty();
 		scoreLabel.text = score.ToString();
 		if(!scoreLabel_Animator.IsInTransition(0))// GetCurrentAnimatorStateInfo(0).IsName("Score_Label_Action"))
@@ -117,7 +117,7 @@ public class GameManager : MonoBehaviour {
 		110,	
 		120,
 		130,
-		150,	// 15
+		140,	// 15
 
 	};
 	private Queue<DifficultType> difficultyStepsQueue;
@@ -294,11 +294,11 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void CheckDifficulty() {
-		if (CanLevelUp(score)) {
+		if (CanLevelUp(Score)) {
 			LevelUp ();
 		}
 		// hacemos cambios de musica
-		if (score % 30 == 0) {
+		if (Score % 70 == 0) {
 			AudioMaster.instance.StopSound (musics[currentMusic], true);
 			currentMusic++;
 			if (currentMusic > musics.Length -1) {

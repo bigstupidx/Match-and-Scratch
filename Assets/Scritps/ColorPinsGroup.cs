@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public class PinsGroups {
+public class ColorPinsGroup {
     public enum GroupState
     {
         Off,
@@ -25,7 +25,7 @@ public class PinsGroups {
     
     public GroupState currentState = GroupState.Off;
 
-    public PinsGroups(int id, Circumference member = null) {
+    public ColorPinsGroup(int id, Circumference member = null) {
         SetState(GroupState.Active);
         index = id;
 		//combinedID = -1;
