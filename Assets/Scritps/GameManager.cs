@@ -172,27 +172,29 @@ public class GameManager : MonoBehaviour {
 		if (currentState != newState) {
 			switch(newState) {
 				case GameState.MainMenu:
+					TappxManagerUnity.instance.show ();
 					if (ScreenManager.Instance.currentGUIScreen.screenDefinition  == ScreenDefinitions.HIGHSCORES)
 						animator.SetBool("highscores", false);
 					ShowScreen (ScreenDefinitions.MAIN_MENU);
 					AudioMaster.instance.StopAll (false);
 					AudioMaster.instance.PlayLoop (SoundDefinitions.THEME_MAINMENU);
 					rotator.EraseAllPins ();
-				if(currentState != GameState.Highscores && currentState != GameState.None)
+					if(currentState != GameState.Highscores && currentState != GameState.None)
 						animator.SetTrigger ("menu");
 				break;
 				case GameState.GoToPlay:
 					animator.SetTrigger ("start");
 					SetGameState (GameState.Playing);
 				break;
-			case GameState.Playing:
-				ScreenManager.Instance.HideScreen ();
+				case GameState.Playing:
+					ScreenManager.Instance.HideScreen ();
 					StartCoroutine (WaitUntilPlayingState ());			
 				break;
 				case GameState.GameOver:
 					AudioMaster.instance.Play (SoundDefinitions.END_FX);
 					animator.SetTrigger ("exit");
 					GameOverPoints.text = Score.ToString ();
+					TappxManagerUnity.instance.show ();
 				break;
 				case GameState.Highscores:
 					animator.SetBool("highscores", true);
