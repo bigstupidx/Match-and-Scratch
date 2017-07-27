@@ -41,8 +41,6 @@ public class GameManager : MonoBehaviour {
 
 	public static GameManager instance = null;
 
-	public bool ServicesConfigurationInitialized;
-
 	public GameState currentState;
 	public bool EnableDebugAtStart;
 	public GameObject debugMenu;
@@ -54,7 +52,7 @@ public class GameManager : MonoBehaviour {
 
 	public LevelUp levelUp;
 	public Text scoreLabel;
-	Animator scoreLabel_Animator;
+	private Animator scoreLabel_Animator;
 
 	public Text GameOverPoints;
 
@@ -84,24 +82,12 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	public bool ServicesConfigurationInitialized { get; set;}
+
 	public HighScoresSource currentSource;
 	public Action<HighScoresSource> OnChangeHighScoresSource;
 
 	public Action OnBeginGame;
-
-	public void SetNewHighScoresSource(HighScoresSource newSource) {
-		currentSource = newSource;
-		if(OnChangeHighScoresSource != null)
-			OnChangeHighScoresSource (currentSource);
-	}
-
-	public void AddScore(int pts) {
-		Score += pts;
-		CheckDifficulty();
-		scoreLabel.text = score.ToString();
-		if(!scoreLabel_Animator.IsInTransition(0))// GetCurrentAnimatorStateInfo(0).IsName("Score_Label_Action"))
-			scoreLabel_Animator.SetTrigger ("Action");
-	}
 
 	private Queue<int> pointsRequiredToLevelUpQueue;
 	private List<int> pointsRequiredToLevelUp = new List<int>() {
@@ -141,8 +127,8 @@ public class GameManager : MonoBehaviour {
 		DifficultType.SWITCH_CRAZY_SPEED,	// 15
 	};
 
-	SoundDefinitions[] musics = { SoundDefinitions.LOOP_1, SoundDefinitions.LOOP_2, SoundDefinitions.LOOP_3 };
-	int currentMusic = 0;
+	private SoundDefinitions[] musics = { SoundDefinitions.LOOP_1, SoundDefinitions.LOOP_2, SoundDefinitions.LOOP_3 };
+	private int currentMusic = 0;
 
 	void Awake() {
 		if (instance == null) {
@@ -170,23 +156,44 @@ public class GameManager : MonoBehaviour {
 		SetGameState(GameState.MainMenu);
 	}
 
-	public void SetServicesConfiguration() {
-		ServicesConfigurationInitialized = true;
+	public void SetNewHighScoresSource(HighScoresSource newSource) {
+		currentSource = newSource;
+		if(OnChangeHighScoresSource != null)
+			OnChangeHighScoresSource (currentSource);
+	}
+
+	public void AddScore(int pts) {
+		Score += pts;
+		CheckDifficulty();
+		scoreLabel.text = score.ToString();
+		if(!scoreLabel_Animator.IsInTransition(0))// GetCurrentAnimatorStateInfo(0).IsName("Score_Label_Action"))
+			scoreLabel_Animator.SetTrigger ("Action");
+	}
+
+	public void SetServicesConfiguration(bool value) {
+		ServicesConfigurationInitialized = value;
+		if (ServicesConfigurationInitialized  && ServicesConfiguration.enable_tappx && currentState == GameState.MainMenu) {
+			TappxManagerUnity.instance.show ();
+		}
 	}
 
 	public void SetGameState(GameState newState) {
 		if (currentState != newState) {
 			switch(newState) {
 				case GameState.MainMenu:
-					if (ServicesConfiguration.enable_tappx) TappxManagerUnity.instance.show ();
-					if (ScreenManager.Instance.currentGUIScreen.screenDefinition  == ScreenDefinitions.HIGHSCORES)
-						animator.SetBool("highscores", false);
+					if (ServicesConfigurationInitialized && ServicesConfiguration.enable_tappx) {
+						TappxManagerUnity.instance.show ();
+					}
+					if (ScreenManager.Instance.currentGUIScreen.screenDefinition == ScreenDefinitions.HIGHSCORES) {
+						animator.SetBool ("highscores", false);
+					}
 					ShowScreen (ScreenDefinitions.MAIN_MENU);
 					AudioMaster.instance.StopAll (false);
 					AudioMaster.instance.PlayLoop (SoundDefinitions.THEME_MAINMENU);
 					rotator.EraseAllPins ();
-					if(currentState != GameState.Highscores && currentState != GameState.None)
+					if (currentState != GameState.Highscores && currentState != GameState.None) {
 						animator.SetTrigger ("menu");
+					}
 				break;
 				case GameState.GoToPlay:
 					animator.SetTrigger ("start");
@@ -200,7 +207,9 @@ public class GameManager : MonoBehaviour {
 					AudioMaster.instance.Play (SoundDefinitions.END_FX);
 					animator.SetTrigger ("exit");
 					GameOverPoints.text = Score.ToString ();
-					if (ServicesConfiguration.enable_tappx) TappxManagerUnity.instance.show ();
+					if (ServicesConfigurationInitialized && ServicesConfiguration.enable_tappx) {
+						TappxManagerUnity.instance.show ();
+					}
 				break;
 				case GameState.Highscores:
 					animator.SetBool("highscores", true);

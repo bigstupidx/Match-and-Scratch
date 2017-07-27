@@ -51,7 +51,7 @@ public class FirebaseDBManager : MonoBehaviour {
 				task => {
 					dependencyStatus = FirebaseApp.CheckDependencies();
 					if (dependencyStatus == DependencyStatus.Available) {
-						InitializeFirebaseScores();
+						InitializeFirebase();
 					} else {
 						Debug.LogError ("Could not resolve all Firebase dependencies: " + dependencyStatus);
 					}
@@ -59,8 +59,6 @@ public class FirebaseDBManager : MonoBehaviour {
 			);
 		} else {
 			InitializeFirebase ();
-			InitializeFirebaseConfig ();
-			InitializeFirebaseScores ();
 		}
 	}
 	void Destroy() {
@@ -74,6 +72,9 @@ public class FirebaseDBManager : MonoBehaviour {
 		app.SetEditorDatabaseUrl("https://match-and-scratch-92345929.firebaseio.com/");
 
 		if (app.Options.DatabaseUrl != null) app.SetEditorDatabaseUrl(app.Options.DatabaseUrl);
+
+		InitializeFirebaseConfig ();
+		InitializeFirebaseScores ();
 	}
 
 	void InitializeFirebaseConfig() {
@@ -142,13 +143,16 @@ public class FirebaseDBManager : MonoBehaviour {
 				foreach (var childSnapshot in args.Snapshot.Children.Reverse()) {
 					if (childSnapshot.Child("enable_tappx") == null || childSnapshot.Child("enable_tappx").Value == null) {
 						Debug.Log("<color=red>Bad data in sample. No Data or Did you forget to call SetEditorDatabaseUrl with your project id?</color>");
+						GameManager.instance.SetServicesConfiguration (false);
 						break;
 					} else {
-						ServicesConfiguration.enable_tappx = bool.Parse (childSnapshot.Child ("enable_tappx").Value.ToString ());
+						#if !UNITY_EDITOR
+							ServicesConfiguration.enable_tappx = bool.Parse (childSnapshot.Child ("enable_tappx").Value.ToString ());
+						#endif
 						ServicesConfiguration.mainscreen_video_rewarded =  bool.Parse (childSnapshot.Child ("mainscreen_video_rewarded").Value.ToString ());
 						ServicesConfiguration.sendscore_video_rewarded =  bool.Parse (childSnapshot.Child ("sendscore_video_rewarded").Value.ToString ());
 						Debug.Log (ServicesConfiguration.DataToString ());
-						GameManager.instance.SetServicesConfiguration ();
+						GameManager.instance.SetServicesConfiguration (true);
 					}
 				}
 			}
