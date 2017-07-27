@@ -7,17 +7,31 @@ using Firebase;
 using Firebase.Unity.Editor;
 using Firebase.Database;
 
-public class Firebase_HighScores : MonoBehaviour {
+public static class ServicesConfiguration {
+	public static bool enable_tappx = false;
+	public static bool mainscreen_video_rewarded = false;
+	public static bool sendscore_video_rewarded = false;
 
-	public const string DATABASE_REFERENCE = "scores";
+	public static string DataToString () {
+		return "enabled_tappx [" + enable_tappx.ToString () +
+		"] - mainscreen_video_rewarded [" + mainscreen_video_rewarded.ToString () +
+		"] - sendscore_video_rewarded [" + sendscore_video_rewarded.ToString () + "]"; 
+	}
+}
 
-	public static Firebase_HighScores instance;
+public class FirebaseDBManager : MonoBehaviour {
+
+	public const string DATABASE_REFERENCE_SCORES = "scores";
+	public const string DATABASE_REFERENCE_CONFIG = "config";
+
+	public static FirebaseDBManager instance;
 	public List<ScoreEntry> highscoreList = new List<ScoreEntry> ();
 
 	public Action<List<ScoreEntry>> Firebase_OnHighscoresUpdate;
 
 	private const int MaxScores = 5;
 
+	FirebaseApp app;
 	DependencyStatus dependencyStatus = DependencyStatus.UnavailableOther;
 	DatabaseReference dbReference;
 
@@ -30,43 +44,51 @@ public class Firebase_HighScores : MonoBehaviour {
 		}
 	}
 
-	void Start() {
-		dependencyStatus = FirebaseApp.CheckDependencies();
+	void Start () {
+		dependencyStatus = FirebaseApp.CheckDependencies ();
 		if (dependencyStatus != DependencyStatus.Available) {
-			FirebaseApp.FixDependenciesAsync().ContinueWith ( 
+			FirebaseApp.FixDependenciesAsync ().ContinueWith ( 
 				task => {
 					dependencyStatus = FirebaseApp.CheckDependencies();
 					if (dependencyStatus == DependencyStatus.Available) {
-						InitializeFirebase();
+						InitializeFirebaseScores();
 					} else {
 						Debug.LogError ("Could not resolve all Firebase dependencies: " + dependencyStatus);
 					}
 				}
 			);
 		} else {
-			InitializeFirebase();
+			InitializeFirebase ();
+			InitializeFirebaseConfig ();
+			InitializeFirebaseScores ();
 		}
 	}
 	void Destroy() {
 		FirebaseDatabase.DefaultInstance
 			.GetReference("scores")
-			.ValueChanged -= HandleValueChange; // unsubscribe from ValueChanged.
+			.ValueChanged -= HandleHighscoresValueChange; // unsubscribe from ValueChanged.
 	}
 		
-
-	void InitializeFirebase() {
-		FirebaseApp app = FirebaseApp.DefaultInstance;
+	void InitializeFirebase () {
+		app = FirebaseApp.DefaultInstance;
 		app.SetEditorDatabaseUrl("https://match-and-scratch-92345929.firebaseio.com/");
 
 		if (app.Options.DatabaseUrl != null) app.SetEditorDatabaseUrl(app.Options.DatabaseUrl);
+	}
 
-		FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE)
+	void InitializeFirebaseConfig() {
+		FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE_CONFIG)
+			.ValueChanged += HandleConfigValues;
+	}
+
+	void InitializeFirebaseScores() {		
+		FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE_SCORES)
 			.OrderByChild ("score")
-			.ValueChanged += HandleValueChange;
+			.ValueChanged += HandleHighscoresValueChange;
 	}
 
 	public void AddNewHighscore(ScoreEntry scoreEntry) {
-		string key = FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE).Push().Key;
+		string key = FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE_SCORES).Push().Key;
 
 		DateTime utcTime = DateTime.UtcNow;
 		if (scoreEntry.date == 0)
@@ -77,7 +99,7 @@ public class Firebase_HighScores : MonoBehaviour {
 		Dictionary<string, object> childUpdates = new Dictionary<string, object>();
 		childUpdates[key] = entryValues;
 
-		FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE).UpdateChildrenAsync (childUpdates).ContinueWith (task => {
+		FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE_SCORES).UpdateChildrenAsync (childUpdates).ContinueWith (task => {
 			if(task.Exception != null)
 				Debug.Log("Error al insertar Score: " + task.Exception.ToString());
 			else if (task.IsCompleted) {
@@ -86,7 +108,7 @@ public class Firebase_HighScores : MonoBehaviour {
 		});
 	}
 
-	void HandleValueChange (object sender, ValueChangedEventArgs args) {
+	void HandleHighscoresValueChange (object sender, ValueChangedEventArgs args) {
 		if (args.DatabaseError != null) {
 			Debug.LogError (args.DatabaseError.Message);
 		} else {
@@ -112,6 +134,27 @@ public class Firebase_HighScores : MonoBehaviour {
 		}
 	}
 
+	void HandleConfigValues(object sender, ValueChangedEventArgs args) {
+		if (args.DatabaseError != null) {
+			Debug.LogError (args.DatabaseError.Message);
+		} else {
+			if (args.Snapshot != null && args.Snapshot.ChildrenCount > 0) {
+				foreach (var childSnapshot in args.Snapshot.Children.Reverse()) {
+					if (childSnapshot.Child("enable_tappx") == null || childSnapshot.Child("enable_tappx").Value == null) {
+						Debug.Log("<color=red>Bad data in sample. No Data or Did you forget to call SetEditorDatabaseUrl with your project id?</color>");
+						break;
+					} else {
+						ServicesConfiguration.enable_tappx = bool.Parse (childSnapshot.Child ("enable_tappx").Value.ToString ());
+						ServicesConfiguration.mainscreen_video_rewarded =  bool.Parse (childSnapshot.Child ("mainscreen_video_rewarded").Value.ToString ());
+						ServicesConfiguration.sendscore_video_rewarded =  bool.Parse (childSnapshot.Child ("sendscore_video_rewarded").Value.ToString ());
+						Debug.Log (ServicesConfiguration.DataToString ());
+						GameManager.instance.SetServicesConfiguration ();
+					}
+				}
+			}
+		}
+	}
+	/*
 	public void DreamloToFireBase() {
 		if (Dreamlo_HighScores.instance != null) {
 			if (Dreamlo_HighScores.instance.highscoreList != null && Dreamlo_HighScores.instance.highscoreList.Count > 0) {
@@ -123,7 +166,7 @@ public class Firebase_HighScores : MonoBehaviour {
 			}
 		}
 	}
-	/*
+	
 	public void CleanDataBase() {
 		DatabaseReference reference = FirebaseDatabase.DefaultInstance.GetReference (DATABASE_REFERENCE);
 

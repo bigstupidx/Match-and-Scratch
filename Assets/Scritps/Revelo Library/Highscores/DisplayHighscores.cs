@@ -75,8 +75,8 @@ public class DisplayHighscores : MonoBehaviour {
 			UpdateHighscores (Dreamlo_HighScores.instance.highscoreList);
 			Dreamlo_HighScores.instance.Dreamlo_OnHighscoresUpdate += UpdateHighscores;
 		} else if (GameManager.instance.currentSource == HighScoresSource.FIREBASE) {*/
-			UpdateHighscores (Firebase_HighScores.instance.highscoreList);
-			Firebase_HighScores.instance.Firebase_OnHighscoresUpdate += UpdateHighscores;
+			UpdateHighscores (FirebaseDBManager.instance.highscoreList);
+			FirebaseDBManager.instance.Firebase_OnHighscoresUpdate += UpdateHighscores;
 		//}
 	}
 
@@ -90,8 +90,8 @@ public class DisplayHighscores : MonoBehaviour {
 		if (Dreamlo_HighScores.instance.Dreamlo_OnHighscoresUpdate != null)
 			Dreamlo_HighScores.instance.Dreamlo_OnHighscoresUpdate -= UpdateHighscores;
 		*/
-		if (Firebase_HighScores.instance.Firebase_OnHighscoresUpdate != null)
-			Firebase_HighScores.instance.Firebase_OnHighscoresUpdate -= UpdateHighscores;
+		if (FirebaseDBManager.instance.Firebase_OnHighscoresUpdate != null)
+			FirebaseDBManager.instance.Firebase_OnHighscoresUpdate -= UpdateHighscores;
 	}
 
 	/// <summary>

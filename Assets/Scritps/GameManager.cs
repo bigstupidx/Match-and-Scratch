@@ -41,6 +41,8 @@ public class GameManager : MonoBehaviour {
 
 	public static GameManager instance = null;
 
+	public bool ServicesConfigurationInitialized;
+
 	public GameState currentState;
 	public bool EnableDebugAtStart;
 	public GameObject debugMenu;
@@ -168,11 +170,15 @@ public class GameManager : MonoBehaviour {
 		SetGameState(GameState.MainMenu);
 	}
 
+	public void SetServicesConfiguration() {
+		ServicesConfigurationInitialized = true;
+	}
+
 	public void SetGameState(GameState newState) {
 		if (currentState != newState) {
 			switch(newState) {
 				case GameState.MainMenu:
-					TappxManagerUnity.instance.show ();
+					if (ServicesConfiguration.enable_tappx) TappxManagerUnity.instance.show ();
 					if (ScreenManager.Instance.currentGUIScreen.screenDefinition  == ScreenDefinitions.HIGHSCORES)
 						animator.SetBool("highscores", false);
 					ShowScreen (ScreenDefinitions.MAIN_MENU);
@@ -194,7 +200,7 @@ public class GameManager : MonoBehaviour {
 					AudioMaster.instance.Play (SoundDefinitions.END_FX);
 					animator.SetTrigger ("exit");
 					GameOverPoints.text = Score.ToString ();
-					TappxManagerUnity.instance.show ();
+					if (ServicesConfiguration.enable_tappx) TappxManagerUnity.instance.show ();
 				break;
 				case GameState.Highscores:
 					animator.SetBool("highscores", true);
@@ -279,6 +285,10 @@ public class GameManager : MonoBehaviour {
 
 	public void ShowHighscores() {		
 		SetGameState(GameState.Highscores);
+	}
+
+	public void ShowMainScreenVideoService() {
+		UnityAds.Instance.ShowAds (ServicesConfiguration.mainscreen_video_rewarded);
 	}
 
 	/*

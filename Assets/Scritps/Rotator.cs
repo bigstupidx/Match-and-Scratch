@@ -316,7 +316,7 @@ public class Rotator : Circumference {
 		*/
 		float finalAng = (angle + deltaAngle).RoundToNearest (circleDivisions);
 
-		Debug.LogFormat ("Angulo {0} -> snappedTo {1}  ==> angulo final ({1} + {2}) = {3} -> snappedTo {4}", badAngle.ToString(), angle.ToString (),  deltaAngle.ToString(), (angle + deltaAngle).ToString(), finalAng.ToString());
+		//Debug.LogFormat ("Angulo {0} -> snappedTo {1}  ==> angulo final ({1} + {2}) = {3} -> snappedTo {4}", badAngle.ToString(), angle.ToString (),  deltaAngle.ToString(), (angle + deltaAngle).ToString(), finalAng.ToString());
 
 		return new Vector3(Mathf.Sin(finalAng * Mathf.Deg2Rad) * Mathf.Sign(dir.x), -Mathf.Cos(finalAng * Mathf.Deg2Rad)* Mathf.Sign(dir.y), 0);
 	}
@@ -380,7 +380,7 @@ public class Rotator : Circumference {
 				int origin = groupsCollided[i];
 				groupsDictionary[destiny].AddMembers(groupsDictionary[origin].members);
 				groupsDictionary[origin].CombineWith(destiny);
-				Debug.Log(string.Format("<color=yellow>Combinados Grupo {0} en {1} </color>", destiny, origin));
+				//Debug.Log(string.Format("<color=yellow>Combinados Grupo {0} en {1} </color>", destiny, origin));
 			}
 		}
 	}
@@ -429,7 +429,7 @@ public class Rotator : Circumference {
 	public void Reset() {
 		circumferencesCollided.Clear();
 		GameObject[] pins = GameObject.FindGameObjectsWithTag("Pin");
-		Debug.Log(string.Format("Encontrados {0} Pins", pins.Length));
+		//Debug.Log(string.Format("Encontrados {0} Pins", pins.Length));
 		for (int i = 0; i < pins.Length; i++) {
 			Destroy(pins[i]);
 		}
@@ -519,7 +519,7 @@ public class Rotator : Circumference {
 			variableSpeedInc = Mathf.Lerp(from, to, elapsedTime / time);
 			yield return null;
 		}
-		Debug.LogFormat ("<color=blue>From: {0} \n to: {1} \n variableSpeedInc: {2}</color>", from, to, variableSpeedInc);
+		//Debug.LogFormat ("<color=blue>From: {0} \n to: {1} \n variableSpeedInc: {2}</color>", from, to, variableSpeedInc);
 	}
 
 	/*   

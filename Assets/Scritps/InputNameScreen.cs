@@ -53,7 +53,7 @@ public class InputNameScreen : UIScreen {
 	}
 
 	public void SendScore() {
-		UnityAds.Instance.ShowAds (true, SendScoreToBBDD);
+		UnityAds.Instance.ShowAds (ServicesConfiguration.sendscore_video_rewarded, SendScoreToBBDD);
 	}
 	
 	void SendScoreToBBDD(int result) {
@@ -64,7 +64,7 @@ public class InputNameScreen : UIScreen {
 			Dreamlo_HighScores.instance.AddNewHighscore ( new ScoreEntry ( lastName, GameManager.instance.Score ) );
 		} 
 		else if (GameManager.instance.currentSource == HighScoresSource.FIREBASE) {
-			Firebase_HighScores.instance.AddNewHighscore( new ScoreEntry ( lastName, GameManager.instance.Score ) );
+			FirebaseDBManager.instance.AddNewHighscore( new ScoreEntry ( lastName, GameManager.instance.Score ) );
 		}
 
 		Analytics.CustomEvent("scoreSended", new Dictionary<string, object> {
