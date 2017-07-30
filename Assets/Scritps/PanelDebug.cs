@@ -48,7 +48,7 @@ public class PanelDebug : MonoBehaviour {
 		currentRotatorSpeedLabel.text = "current rotator Speed: " + (GameManager.instance.rotator.currentSpeed).ToString();
 	}
 
-	public void showSpecialMention() {
+	public void ShowSpecialMention() {
 		// Si no hemos mostrado la mención especial
 		bool specialMentionShowed = PlayerPrefs.GetInt ("specialMentionShowed", 0) == 1;
 		bool showMention;
@@ -67,7 +67,13 @@ public class PanelDebug : MonoBehaviour {
 		Debug.Log ("showinMention : " + showMention.ToString ());
 
 		if (showMention)
-			SpecialThanksScreen.Instance.OpenWindow ();
+			SpecialThanksScreen.Instance.ShowSpecialMention ();
+	}
+
+	public void ShowRememberSendScore() {
+		if (UnityEngine.Random.Range (0, 2) == 0) {
+			SpecialThanksScreen.Instance.ShowRememberSendScore ();
+		}
 	}
 
 	public void ImPako() {

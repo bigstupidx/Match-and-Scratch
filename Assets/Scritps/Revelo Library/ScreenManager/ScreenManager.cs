@@ -70,9 +70,11 @@ namespace ReveloLibrary {
 			if (currentGUIScreen != null) {
 				currentGUIScreen.OpenWindow();
 			}
+			#if UNITY_EDITOR
 			else {
 				Debug.LogError("[CanvasManager in " + name +"]: La guiScreen es null. Quizás no has establecido la primera desde el inspector.");
 			}
+			#endif
 
 			StartCoroutine (AnimationEndProcess ());
 		}

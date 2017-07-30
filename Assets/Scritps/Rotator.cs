@@ -27,7 +27,7 @@ public class Rotator : Circumference {
 	public bool canUseCrazySpeed;
 	public float smoothCurrentSpeed;
 
-	private float[] speedIncs = new float[]{ -2.0f, -1.33f, 0, 0.25f, 0.33f };
+	private float[] speedIncs = new float[]{ -2.0f, -1.5f, 0, 0.5f};
 	private float newCrazySpeedInc;
 
 	private float spawnTimeDelay;
@@ -126,7 +126,7 @@ public class Rotator : Circumference {
 		}
 		
 		if (circumferencesCollided.Count == 0) {
-			Debug.Log ("<color=red>Error WTF (0001): No se ha encontrado ninguna colision</color>");
+			//Debug.Log ("<color=red>Error WTF (0001): No se ha encontrado ninguna colision</color>");
 			Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
 				{"type", "0001"},
 				{"message", "No se ha encontrado ninguna colision"}
@@ -175,7 +175,7 @@ public class Rotator : Circumference {
 				Circumference A = circumferencesCollided [0];
 				Circumference B = circumferencesCollided [1];
 				if (A == B) {
-					Debug.Log ("Error WTF 0002: Hemos colisionador dos veces con el mismo Pin");
+					//Debug.Log ("Error WTF 0002: Hemos colisionador dos veces con el mismo Pin");
 					Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
 						{"type", "0002"},
 						{"message", "Hemos colisionador dos veces con el mismo Pin"}
@@ -198,7 +198,7 @@ public class Rotator : Circumference {
 				Vector3 Solution2 = A.GetPosition () + rot * ab * Lb;
 
 				#region "Otra solución - Solo funciona con circulos con igual radio"	
-				/*/
+				/*
 				//Solución para el ajuste de posición. http://stackoverflow.com/questions/18558487/tangent-circles-for-two-other-circles
 				// 1 Calculate distance from A to B -> |AB|:
 				float AB = Vector3.Distance(A.GetPosition(), B.GetPosition());
@@ -221,7 +221,7 @@ public class Rotator : Circumference {
 			                  DistanceBetweenPoints(Solution2, GameManager.instance.spawner.transform.position) ? Solution1 : Solution2;
 
 				if ( float.IsNaN( sol.x) ) {
-					Debug.Log ("<color=red>Error WTF 0003: Naaaaaaan</color>");
+					//Debug.Log ("<color=red>Error WTF 0003: Naaaaaaan</color>");
 					Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
 						{"type", "0003"},
 						{"message", "La reposición contiene numero inválidos: (" + sol.ToString() + "). Cambio NaN -> cero"}
@@ -260,7 +260,7 @@ public class Rotator : Circumference {
 				*/
 			break;
 			default:				
-				Debug.Log(string.Format("<color=red> ERROR WTF 0004: número de colisiones incorrectas: {0}</color>", circumferencesCollided.Count.ToString()));
+				//Debug.Log(string.Format("<color=red> ERROR WTF 0004: número de colisiones incorrectas: {0}</color>", circumferencesCollided.Count.ToString()));
 
 				Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
 					{"type", "0004"},
@@ -363,7 +363,7 @@ public class Rotator : Circumference {
 				{
 					log += "\n - " + item.name;
 				}
-				Debug.Log ("<color=red>Error WTF 0005: Los pins colisionados no están en ningún grupo. Esto no debería suceder</color> \n - Pin Evaluado: " + newCircumference.name + "\n - Pins Colisionados:" + log);
+				//Debug.Log ("<color=red>Error WTF 0005: Los pins colisionados no están en ningún grupo. Esto no debería suceder</color> \n - Pin Evaluado: " + newCircumference.name + "\n - Pins Colisionados:" + log);
 				Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
 					{"type", "0005"},
 					{"message", string.Format("Los pins colisionados no están en ningún grupo. \nPin Evaluado: {0} - \nPin Colisionados: {1}", newCircumference.name, log)}
@@ -480,6 +480,7 @@ public class Rotator : Circumference {
 	}
 
 	public void StartInverseDirection() {
+		canUseCrazySpeed = false;
 		canInverseDir = true;
 	}
 
@@ -488,6 +489,7 @@ public class Rotator : Circumference {
 	}
 
 	public void StartCrazySpeed() {
+		canInverseDir = false;
 		canUseCrazySpeed = true;
 		StartCoroutine(CrazySpeedDifficult());
 	}
@@ -506,6 +508,7 @@ public class Rotator : Circumference {
 				tmpInc = speedIncs [UnityEngine.Random.Range (0, speedIncs.Length)];
 			}
 			newCrazySpeedInc = tmpInc;
+			//Debug.Log ("newCrazySpeedInc: " + newCrazySpeedInc);
 			StartCoroutine(SmoothSpeedIncrement(variableSpeedInc, newCrazySpeedInc, 1f));
 
 			yield return new WaitForSeconds ( (float)UnityEngine.Random.Range (4,2));

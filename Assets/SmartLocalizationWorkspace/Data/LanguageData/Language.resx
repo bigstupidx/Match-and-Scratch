@@ -182,6 +182,19 @@
 	<data name="ui.label.pause" xml:space="preserve">
 		<value>Pause</value>
 	</data>
+	<data name="ui.label.remember" xml:space="preserve">
+		<value>Attention!</value>
+	</data>
+	<data name="ui.label.remembersendscore" xml:space="preserve">
+		<value>You have not sent your score
+ (╯°□°）╯︵ ┻━┻
+You're missing the opportunity
+to let everyone know 
+who is the best</value>
+	</data>
+	<data name="ui.label.resumegame" xml:space="preserve">
+		<value>Resume</value>
+	</data>
 	<data name="ui.label.score" xml:space="preserve">
 		<value>Score</value>
 	</data>
@@ -208,8 +221,5 @@ this special mention</value>
 	</data>
 	<data name="ui.tabitem.weekly" xml:space="preserve">
 		<value>Weekly</value>
-	</data>
-	<data name="ui.label.resumegame" xml:space="preserve">
-		<value>Resume</value>
 	</data>
 </root>

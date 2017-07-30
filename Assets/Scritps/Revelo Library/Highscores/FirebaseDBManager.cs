@@ -9,13 +9,13 @@ using Firebase.Database;
 
 public static class ServicesConfiguration {
 	public static bool enable_tappx = false;
-	public static bool mainscreen_video_rewarded = false;
-	public static bool sendscore_video_rewarded = false;
+	public static bool mainscreen_video_is_rewarded = false;
+	public static bool sendscore_video_is_rewarded = false;
 
 	public static string DataToString () {
 		return "enabled_tappx [" + enable_tappx.ToString () +
-		"] - mainscreen_video_rewarded [" + mainscreen_video_rewarded.ToString () +
-		"] - sendscore_video_rewarded [" + sendscore_video_rewarded.ToString () + "]"; 
+		"] - mainscreen_video_is_rewarded [" + mainscreen_video_is_rewarded.ToString () +
+		"] - sendscore_video_is_rewarded [" + sendscore_video_is_rewarded.ToString () + "]"; 
 	}
 }
 
@@ -131,7 +131,6 @@ public class FirebaseDBManager : MonoBehaviour {
 				if (Firebase_OnHighscoresUpdate != null)
 					Firebase_OnHighscoresUpdate (highscoreList);
 			}
-
 		}
 	}
 
@@ -149,8 +148,8 @@ public class FirebaseDBManager : MonoBehaviour {
 						#if !UNITY_EDITOR
 							ServicesConfiguration.enable_tappx = bool.Parse (childSnapshot.Child ("enable_tappx").Value.ToString ());
 						#endif
-						ServicesConfiguration.mainscreen_video_rewarded =  bool.Parse (childSnapshot.Child ("mainscreen_video_rewarded").Value.ToString ());
-						ServicesConfiguration.sendscore_video_rewarded =  bool.Parse (childSnapshot.Child ("sendscore_video_rewarded").Value.ToString ());
+						ServicesConfiguration.mainscreen_video_is_rewarded =  bool.Parse (childSnapshot.Child ("mainscreen_video_is_rewarded").Value.ToString ());
+						ServicesConfiguration.sendscore_video_is_rewarded =  bool.Parse (childSnapshot.Child ("sendscore_video_is_rewarded").Value.ToString ());
 						Debug.Log (ServicesConfiguration.DataToString ());
 						GameManager.instance.SetServicesConfiguration (true);
 					}

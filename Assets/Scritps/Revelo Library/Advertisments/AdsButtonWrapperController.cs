@@ -25,8 +25,9 @@ public class AdsButtonWrapperController : MonoBehaviour {
 	public void Awake() {
 		buttonComp = AdsButton.GetComponent<Button> ();
 
-		if (internalIcon == null)
-			Debug.LogFormat ("No se ha establecido imagenInterna en boton {0}>{1}", transform.parent.name, transform.name);
+		#if UNITY_EDITOR
+		if (internalIcon == null) Debug.LogFormat ("No se ha establecido imagenInterna en boton {0}>{1}", transform.parent.name, transform.name);
+		#endif
 	}
 		
 	public void OnEnable ()

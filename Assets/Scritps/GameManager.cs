@@ -103,9 +103,9 @@ public class GameManager : MonoBehaviour {
 		90,		// 10
 		100,
 		110,	
-		120,
-		130,
-		140,	// 15
+		125,
+		140,
+		150,	// 15
 
 	};
 	private Queue<DifficultType> difficultyStepsQueue;
@@ -115,16 +115,16 @@ public class GameManager : MonoBehaviour {
 		DifficultType.MORE_COLORS,
 		DifficultType.SPEEDUP,
 		DifficultType.MORE_COLORS,			// 5
-		DifficultType.SPEEDUP,
-		DifficultType.MORE_COLORS,
 		DifficultType.SWITCH_REVERSE,
 		DifficultType.MORE_COLORS,
-		DifficultType.SPEEDUP,		// 10
 		DifficultType.SPEEDUP,
+		DifficultType.SPEEDUP,	
+		DifficultType.MORE_COLORS,			//10
+		DifficultType.SWITCH_CRAZY_SPEED,
 		DifficultType.MORE_COLORS,
 		DifficultType.SPEEDUP,
 		DifficultType.SPEEDUP,
-		DifficultType.SWITCH_CRAZY_SPEED,	// 15
+		DifficultType.SPEEDUP,	// 15
 	};
 
 	private SoundDefinitions[] musics = { SoundDefinitions.LOOP_1, SoundDefinitions.LOOP_2, SoundDefinitions.LOOP_3 };
@@ -297,7 +297,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void ShowMainScreenVideoService() {
-		UnityAds.Instance.ShowAds (ServicesConfiguration.mainscreen_video_rewarded);
+		UnityAds.Instance.ShowAds (ServicesConfiguration.mainscreen_video_is_rewarded);
 	}
 
 	/*
@@ -386,7 +386,7 @@ public class GameManager : MonoBehaviour {
 		}
 		levelUp.Show (difficult);
 
-		Debug.LogFormat ("<color=green>Level {0} a los {1} puntos -> Dificultad añadida: {2}</color>", currentLevel, score, difficult.ToString ());
+		//Debug.LogFormat ("<color=green>Level {0} a los {1} puntos -> Dificultad añadida: {2}</color>", currentLevel, score, difficult.ToString ());
 	}
 
 	public void PauseGame(bool pause) {

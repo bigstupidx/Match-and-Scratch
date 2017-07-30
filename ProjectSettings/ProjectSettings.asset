@@ -20,7 +20,7 @@ PlayerSettings:
   m_SplashScreenOverlayOpacity: 1
   m_SplashScreenAnimation: 2
   m_SplashScreenLogoStyle: 0
-  m_SplashScreenDrawMode: 1
+  m_SplashScreenDrawMode: 0
   m_SplashScreenBackgroundAnimationZoom: 1
   m_SplashScreenLogoAnimationZoom: 1
   m_SplashScreenBackgroundLandscapeAspect: 1
@@ -38,8 +38,6 @@ PlayerSettings:
     width: 1
     height: 1
   m_SplashScreenLogos:
-  - logo: {fileID: 10404, guid: 0000000000000000e000000000000000, type: 0}
-    duration: 2
   - logo: {fileID: 21300000, guid: 4d046d85872fa4948b0e5a011d213142, type: 3}
     duration: 3
   m_SplashScreenBackgroundLandscape: {fileID: 0}
@@ -123,7 +121,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 0.9.9
+  bundleVersion: 0.9.9.1
   preloadedAssets: []
   metroInputSource: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -149,7 +147,7 @@ PlayerSettings:
   buildNumber:
     Standalone: 1
     iOS: 0
-  AndroidBundleVersionCode: 10
+  AndroidBundleVersionCode: 11
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 0
@@ -515,14 +513,14 @@ PlayerSettings:
   scriptingDefineSymbols:
     1: CROSS_PLATFORM_INPUT
     4: CROSS_PLATFORM_INPUT;MOBILE_INPUT
-    7: _DEBUG_;_VERBOSE_;_VISUAL_DEBUG_;CROSS_PLATFORM_INPUT;MOBILE_INPUT
+    7: _VISUAL_DEBUG_
     14: MOBILE_INPUT
     17: MOBILE_INPUT
     20: MOBILE_INPUT
     22: MOBILE_INPUT
   platformArchitecture: {}
   scriptingBackend:
-    Android: 0
+    Android: 1
     WebPlayer: 0
   incrementalIl2cppBuild: {}
   additionalIl2CppArgs: 

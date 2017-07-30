@@ -105,13 +105,7 @@ namespace ReveloLibrary {
 				//Sets the main clip
 				gs.SetMainClip();
 				//Si no hay asignado un audioclip, hay que evitar que pete y avisamos por la consola
-				if (gs.TheSound == null)
-				{
-					Debug.Log(string.Format("No hay un Clip de audio asignado al GameSound definido como: {0}.\n" +
-										"Revisa el listado de definiciones en el prefab '", soundDef));
-				}
-				else
-				{
+				if (gs.TheSound != null) {
 					//Configure the AudioSource
 					SetSource(ref source, soundDef, gs.TheSound, gs.Volume);
 					if (source != null && source.clip != null)
@@ -127,6 +121,12 @@ namespace ReveloLibrary {
 						mActiveAudio.Add(new ClipInfo { Source = source, OriginalVolume = gs.Volume, currentVolume = gs.Volume  * masterVolume , Definition = soundDef });
 					}
 				}
+				#if UNITY_EDITOR
+				else {
+					Debug.Log(string.Format("No hay un Clip de audio asignado al GameSound definido como: {0}.\n" +
+						"Revisa el listado de definiciones en el prefab '", soundDef));
+				}
+				#endif
 			}
 			return source;
 		}
@@ -144,13 +144,7 @@ namespace ReveloLibrary {
 			//Sets the main clip
 			gs.SetMainClip();
 			//Si no hay asignado un audioclip, hay que evitar que pete y avisamos por la consola
-			if(gs.TheSound == null)
-			{
-				Debug.Log(string.Format("No hay un Clip de audio asignado al GameSound definido como: {0}.\n" +
-										"Revisa el listado de definiciones en el prefab '", soundDef));
-			}
-			else
-			{
+			if(gs.TheSound == null) {
 				//Configure the AudioSource
 				SetSource(ref source, soundDef, gs.TheSound, gs.Volume);
 				source.pitch = (pitch < 0) ? 1 : pitch;
@@ -162,6 +156,12 @@ namespace ReveloLibrary {
 				//Set the source as active
 				mActiveAudio.Add(new ClipInfo{Source = source, OriginalVolume = gs.Volume, currentVolume = gs.Volume  * masterVolume, Definition = soundDef});
 			}
+			#if UNITY_EDITOR
+			else {
+				Debug.Log(string.Format("No hay un Clip de audio asignado al GameSound definido como: {0}.\n" +
+					"Revisa el listado de definiciones en el prefab '", soundDef));
+			}
+			#endif
 			return source;
 		}
 		

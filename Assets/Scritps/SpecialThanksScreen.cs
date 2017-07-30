@@ -9,6 +9,7 @@ using UnityEngine.Analytics;
 public class SpecialThanksScreen : UIScreen {
 
 	public static SpecialThanksScreen Instance { get; private set;}
+	public Text titleText;
 	public Text specialThanksContentText;
 	string lastName;
 
@@ -19,17 +20,35 @@ public class SpecialThanksScreen : UIScreen {
 		}
 		Instance = this;
 
-		lastName = PlayerPrefs.GetString ("name", "");
+
 		IsOpen = false;
 		base.Awake ();
 	}
 
-	public override void OpenWindow() {
+	public void ShowSpecialMention() {
+		titleText.text = LanguageManager.Instance.GetTextValue ("ui.label.specialthaks");
+		lastName = PlayerPrefs.GetString ("name", "");
 		specialThanksContentText.text = LanguageManager.Instance.GetTextValue ("ui.label.specialthankscontent").Replace ("#username", lastName);
-	
+
 		Analytics.CustomEvent("mentionShowed", new Dictionary<string, object> {
 			{ "name", lastName}
 		});
+		OpenWindow ();
+	}
+
+	public void ShowRememberSendScore() {
+		titleText.text = LanguageManager.Instance.GetTextValue ("ui.label.remember");
+		lastName = PlayerPrefs.GetString ("name", "");
+		specialThanksContentText.text = LanguageManager.Instance.GetTextValue ("ui.label.remembersendscore");
+
+		Analytics.CustomEvent("rememberSendScore", new Dictionary<string, object> {
+			{ "name", lastName}
+		});
+		OpenWindow ();
+	}
+
+	public override void OpenWindow() {
+		
 		base.OpenWindow();
 	}
 

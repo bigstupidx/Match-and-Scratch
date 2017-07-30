@@ -40,12 +40,16 @@ public class InputNameScreen : UIScreen {
 		});
 		showSpecialMention = false;
 		CloseWindow();
+
+		if (UnityEngine.Random.Range(0,2) == 0) {
+			SpecialThanksScreen.Instance.ShowRememberSendScore ();
+		}
 	}
 
 	public override void CloseWindow() {
 		base.CloseWindow ();
 		if (showSpecialMention)
-			SpecialThanksScreen.Instance.OpenWindow ();
+			SpecialThanksScreen.Instance.ShowSpecialMention ();
 	}
 
 	public void EvaluateNick() {
@@ -53,7 +57,7 @@ public class InputNameScreen : UIScreen {
 	}
 
 	public void SendScore() {
-		UnityAds.Instance.ShowAds (ServicesConfiguration.sendscore_video_rewarded, SendScoreToBBDD);
+		UnityAds.Instance.ShowAds (ServicesConfiguration.sendscore_video_is_rewarded, SendScoreToBBDD);
 	}
 	
 	void SendScoreToBBDD(int result) {
@@ -83,13 +87,13 @@ public class InputNameScreen : UIScreen {
 		bool showMention;
 
 		if (!specialMentionShowed) {
-			if (lastName == "Pako")
-				showMention = true;
-			else
-				showMention = Random.Range (0, 10) == 0;
+			//if (lastName == "Pako")
+			//	showMention = true;
+			//else
+			showMention = UnityEngine.Random.Range (0, 10) == 0;
 		} 
 		else {
-			showMention = Random.Range (0, 10) == 0;
+			showMention = UnityEngine.Random.Range (0, 10) == 0;
 		}
 
 		showSpecialMention = showMention;

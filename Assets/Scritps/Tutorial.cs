@@ -53,7 +53,7 @@ public class Tutorial : MonoBehaviour {
 			}
 
 			tutorialWrapper.SetActive(true);
-			Debug.Log ("Tutoral Start");
+			//Debug.Log ("Tutoral Start");
 
 
 			EnableClick (true);
@@ -66,7 +66,7 @@ public class Tutorial : MonoBehaviour {
 					ContinueTurorial();
 				yield return null;
 			}
-			Debug.Log ("Tutoral First Throw");
+			//Debug.Log ("Tutoral First Throw");
 
 			// · Second Throw: Iniciamos la rotación del rotor
 			GameManager.instance.rotator.RotationSpeed = Rotator.INITIAL_SPEED;
@@ -85,7 +85,7 @@ public class Tutorial : MonoBehaviour {
 					ContinueTurorial();
 				yield return null;
 			}
-			Debug.Log ("Tutoral Second Throw");
+			//Debug.Log ("Tutoral Second Throw");
 
 			// · Third Throw: Iniciamos la rotación del rotor
 			GameManager.instance.rotator.RotationSpeed = Rotator.INITIAL_SPEED;
@@ -104,7 +104,7 @@ public class Tutorial : MonoBehaviour {
 					ContinueTurorial();
 				yield return null;
 			}
-			Debug.Log ("Tutoral Third Throw");
+			//Debug.Log ("Tutoral Third Throw");
 			// Terminamos el tutorial
 			EndTutorial();
 		}
@@ -149,6 +149,6 @@ public class Tutorial : MonoBehaviour {
 
 		tutorialWrapper.SetActive(false);
 		Analytics.CustomEvent("tutorialEnd", new Dictionary<string, object>());
-		Debug.Log ("Tutoral End");
+		//Debug.Log ("Tutoral End");
 	}
 }

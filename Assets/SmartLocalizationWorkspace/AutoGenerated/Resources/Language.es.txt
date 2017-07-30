@@ -153,7 +153,7 @@
 		<value>Enviar</value>
 	</data>
 	<data name="ui.button.start" xml:space="preserve">
-		<value>Empezar</value>
+		<value>Jugar	</value>
 	</data>
 	<data name="ui.button.support" xml:space="preserve">
 		<value>Colaborar</value>
@@ -181,6 +181,16 @@
 	</data>
 	<data name="ui.label.pause" xml:space="preserve">
 		<value>Pausa</value>
+	</data>
+	<data name="ui.label.remember" xml:space="preserve">
+		<value>ATENCIÓN!</value>
+	</data>
+	<data name="ui.label.remembersendscore" xml:space="preserve">
+		<value>No has enviado tu puntuación
+ (╯°□°）╯︵ ┻━┻
+Estas perdiendo la oportunidad 
+de que todos sepan 
+quien es el mejor</value>
 	</data>
 	<data name="ui.label.resumegame" xml:space="preserve">
 		<value>Reanudar</value>

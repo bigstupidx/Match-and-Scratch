@@ -48,7 +48,7 @@ public class UnityAds : MonoBehaviour {
 				return false;
 			}
 			if (lastVideoType != currentVideoType) {
-				Debug.Log("videos disponibles unityAds: " + currentVideoType.ToString());
+				//Debug.Log("videos disponibles unityAds: " + currentVideoType.ToString());
 				lastVideoType = currentVideoType;
 			}
 			return true;
@@ -64,11 +64,11 @@ public class UnityAds : MonoBehaviour {
 
 	IEnumerator AssertInitialization() {
 		while (!Advertisement.isInitialized) {
-			Debug.Log ("Servicio  UnityAds  Iniciando manualmente...");
+			//Debug.Log ("Servicio  UnityAds  Iniciando manualmente...");
 			Advertisement.Initialize (Advertisement.gameId);
 			yield return new WaitForSeconds (2f);
 		}
-		Debug.Log ("Servicio  UnityAds inicializados.");
+		//Debug.Log ("Servicio  UnityAds inicializados.");
 	}
 
 	public void ShowAds(bool rewarded) {
@@ -92,19 +92,20 @@ public class UnityAds : MonoBehaviour {
 					Advertisement.Show (videotypeString, options);
 				} else {
 					HandleShowResult (ShowResult.Failed);
-					Debug.Log ("Ads not Ready");
+					//Debug.Log ("Ads not Ready");
 				}
 			} else {
 				HandleShowResult (ShowResult.Failed);
-				Debug.Log ("Ads no soportados");
+				//Debug.Log ("Ads no soportados");
 			}
 		} else {
 			HandleShowResult (ShowResult.Failed);
-			Debug.Log ("Ads no iniciados");
+			//Debug.Log ("Ads no iniciados");
 		}
 	}
 
 	private void HandleShowResult(ShowResult result) {
+		/*
 		switch (result) {
 			case ShowResult.Finished:
 				Debug.Log ("Video Visto");
@@ -116,7 +117,7 @@ public class UnityAds : MonoBehaviour {
 				Debug.Log ("Video Failed");
 			break;
 		}
-
+		*/
 		if (resultCallback != null) {
 			
 			resultCallback ((int)result);

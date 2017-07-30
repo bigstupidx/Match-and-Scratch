@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using UnityEngine.Analytics;
 
 public class ColorPinsGroup {
     public enum GroupState
@@ -34,8 +34,14 @@ public class ColorPinsGroup {
     }
 
     public void AddMember(Circumference c) {
-        if (c.tag == "Rotator")
-            Debug.Log("<color=red>Error WTF 102: Rotator metido en un grupo O_o </color>");
+		if (c.tag == "Rotator") {
+			//Debug.Log("<color=red>Error WTF 102: Rotator metido en un grupo O_o </color>");
+			Analytics.CustomEvent ("wtfError", new Dictionary<string, object> () {
+				{ "type", "0006" },
+				{ "message", "Rotator metido en un grupo" }
+			});
+		}
+            
 		
         if (!members.Contains(c)) {
             members.Add(c);
@@ -61,8 +67,9 @@ public class ColorPinsGroup {
     }
 
 	public void Erase() {
-		if (currentState == GroupState.Remove)
-			Debug.Log(string.Format("<color=yellow> Orden de destruir el PinsGroup [{0}]</color>", index));		
+		//if (currentState == GroupState.Remove)
+		//	Debug.Log(string.Format("<color=yellow> Orden de destruir el PinsGroup [{0}]</color>", index));		
+		
         SetState(GroupState.Remove);
 		foreach (Circumference c in members) {
       			c.colisionador.enabled = false;
@@ -74,14 +81,14 @@ public class ColorPinsGroup {
 		if (currentState != newState) {
 			currentState = newState;
 		}
-		else {
-			Debug.Log(string.Format("<color=yellow> PinsGroup[{0}] : Se ha vuelto a establecer el mismo estado ( {1} ) que ya tenía que sigue activo </color>", index, newState.ToString()));
-		}        
+		//else {
+		//	Debug.Log(string.Format("<color=yellow> PinsGroup[{0}] : Se ha vuelto a establecer el mismo estado ( {1} ) que ya tenía que sigue activo </color>", index, newState.ToString()));
+		//}        
     }
 
 	public IEnumerator DestroyMembers(bool sumPoints = true) {
-		if (isActive)
-			Debug.Log(string.Format("<color=red> Destruyendo grupo {0} que sigue activo </color>", index));
+		//if (isActive)
+		//	Debug.Log(string.Format("<color=red> Destruyendo grupo {0} que sigue activo </color>", index));
 		
 		for( int i = members.Count-1; i >=0; i--) {
 			if (members [i] != null) {
