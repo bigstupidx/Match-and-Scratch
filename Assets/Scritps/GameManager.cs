@@ -172,7 +172,7 @@ public class GameManager : MonoBehaviour {
 
 	public void SetServicesConfiguration(bool value) {
 		ServicesConfigurationInitialized = value;
-		if (ServicesConfigurationInitialized  && ServicesConfiguration.enable_tappx && currentState == GameState.MainMenu) {
+		if (ServicesConfigurationInitialized  && ServicesConfiguration.enable_tappx && currentState == GameState.MainMenu && !TappxManagerUnity.instance.isBannerVisible()) {
 			TappxManagerUnity.instance.show ();
 		}
 	}
@@ -181,7 +181,7 @@ public class GameManager : MonoBehaviour {
 		if (currentState != newState) {
 			switch(newState) {
 				case GameState.MainMenu:
-					if (ServicesConfigurationInitialized && ServicesConfiguration.enable_tappx) {
+					if (ServicesConfigurationInitialized && ServicesConfiguration.enable_tappx && !TappxManagerUnity.instance.isBannerVisible()) {
 						TappxManagerUnity.instance.show ();
 					}
 					if (ScreenManager.Instance.currentGUIScreen.screenDefinition == ScreenDefinitions.HIGHSCORES) {
@@ -210,7 +210,7 @@ public class GameManager : MonoBehaviour {
 					AudioMaster.instance.Play (SoundDefinitions.END_FX);
 					animator.SetTrigger ("exit");
 					GameOverPoints.text = Score.ToString ();
-					if (ServicesConfigurationInitialized && ServicesConfiguration.enable_tappx) {
+					if (ServicesConfigurationInitialized && ServicesConfiguration.enable_tappx && !TappxManagerUnity.instance.isBannerVisible()) {
 						TappxManagerUnity.instance.show ();
 					}
 				break;

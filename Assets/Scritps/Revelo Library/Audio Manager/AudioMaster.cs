@@ -297,15 +297,14 @@ namespace ReveloLibrary {
 		// Para y elimina todos los FX y Musicas que haya en la lista de sonidos activos
 		public void StopAll() 
 		{
-			foreach (ClipInfo ci in mActiveAudio) 
-			{
-				try { 
+			try { 
+				foreach (ClipInfo ci in mActiveAudio) {
 					Destroy(ci.Source.gameObject);
 				}
-				catch (NullReferenceException e) {
-					Debug.LogErrorFormat ("El audio:{0} y no existe \n - NullreferenceException: \n {1} \n ] == [ {2}", ci.Source.name, e.Message, e.Data);
-				} 
 			}
+			catch (NullReferenceException e) {
+				Debug.LogErrorFormat (/*El audio:{0} y no existe \n -*/ "NullreferenceException: \n {0} \n ] == [ {1}", /*ci.Source.name,*/ e.Message, e.Data);
+			} 
 		}
 		
 		// Para y elimina un sonido activo
