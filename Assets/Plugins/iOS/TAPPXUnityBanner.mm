@@ -10,11 +10,17 @@ extern UIView* UnityGetGLView();
 
 static TAPPXUnityBanner *instance = nil;
 
-+ (void) trackInstall:(NSString *)tappxID{
-    [TappxFramework addTappxKey:tappxID fromNonNative:@"unity_ios"];
++ (void) trackInstall:(NSString *)tappxID withTestMode:(BOOL)isTest{
+
+    if ( isTest )
+        [TappxFramework addTappxKey:tappxID testMode:YES];
+    else
+        [TappxFramework addTappxKey:tappxID fromNonNative:@"unity_ios"];
+    
+    
 }
 
-+ (void) createBanner:(int)position{
++ (void) createBanner:(int)position isMrec:(BOOL)mrec {
     if(instance != nil) return;
     
     // Init
@@ -26,7 +32,14 @@ static TAPPXUnityBanner *instance = nil;
     }else{
         instance.position = false;
     }
-    TappxBannerViewController *bannerView = [[ TappxBannerViewController alloc] initWithDelegate:instance andSize:TappxBannerSmartBanner andPosition:(position == 0) ? TappxBannerPositionTop : TappxBannerPositionBottom];
+    
+    TappxBannerViewController *bannerView = nil;
+    if ( mrec ) {
+        bannerView = [[ TappxBannerViewController alloc] initWithDelegate:instance andSize:TappxBannerSize300x250 andPosition:(position == 0) ? TappxBannerPositionTop : TappxBannerPositionBottom];
+    } else {
+        bannerView = [[ TappxBannerViewController alloc] initWithDelegate:instance andSize:TappxBannerSmartBanner andPosition:(position == 0) ? TappxBannerPositionTop : TappxBannerPositionBottom];
+    }
+    
     tappxUnityBanner.bannerView = bannerView;
     [tappxUnityBanner.bannerView load];
 }
@@ -92,19 +105,19 @@ static TAPPXUnityBanner *instance = nil;
 @end
 
 extern "C" {
-    void trackInstallIOS_(char *tappxID);
-    void createBannerIOS_(int positionBanner);
+    void trackInstallIOS_(char *tappxID, bool isTest);
+    void createBannerIOS_(int positionBanner, bool mrec);
     void hideAdIOS_();
     void showAdIOS_(int positionBanner);
     void releaseTappxIOS_();
 }
 
-void trackInstallIOS_(char *tappxID){
-    [TAPPXUnityBanner trackInstall:[NSString stringWithCString:tappxID encoding:NSASCIIStringEncoding]];
+void trackInstallIOS_(char *tappxID, bool isTest){
+    [TAPPXUnityBanner trackInstall:[NSString stringWithCString:tappxID encoding:NSASCIIStringEncoding] withTestMode:isTest];
 }
 
-void createBannerIOS_(int positionBanner){
-    [TAPPXUnityBanner createBanner:positionBanner];
+void createBannerIOS_(int positionBanner, bool mrec){
+    [TAPPXUnityBanner createBanner:positionBanner isMrec:mrec];
 }
 
 void hideAdIOS_(){
@@ -117,7 +130,7 @@ void showAdIOS_(int positionBanner){
     if(instance != nil){
         [instance showAd];
     }else{
-        [TAPPXUnityBanner createBanner:positionBanner];
+        [TAPPXUnityBanner createBanner:positionBanner isMrec:NO];
     }
 }
 

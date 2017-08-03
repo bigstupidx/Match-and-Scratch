@@ -196,6 +196,9 @@ public class GameManager : MonoBehaviour {
 					}
 				break;
 				case GameState.GoToPlay:
+					if (ServicesConfigurationInitialized && ServicesConfiguration.enable_tappx) {
+						TappxManagerUnity.instance.hide ();
+					}
 					animator.SetTrigger ("start");
 					SetGameState (GameState.Playing);
 				break;

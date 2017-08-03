@@ -153,7 +153,7 @@
 		<value>Enviar</value>
 	</data>
 	<data name="ui.button.start" xml:space="preserve">
-		<value>Jugar	</value>
+		<value>Jugar</value>
 	</data>
 	<data name="ui.button.support" xml:space="preserve">
 		<value>Colaborar</value>

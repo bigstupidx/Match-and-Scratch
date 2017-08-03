@@ -8,8 +8,8 @@ extern "C" {
     BOOL isBannerVisible;
 }
 
-+ (void) trackInstall:(NSString *) tappxID;
-+ (void) createBanner:(int)position;
++ (void) trackInstall:(NSString *) tappxID withTestMode:(BOOL)isTest;
++ (void) createBanner:(int)position isMrec:(BOOL)mrec;
 - (void) hideAd;
 - (void) showAd;
 

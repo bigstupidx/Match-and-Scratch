@@ -18,7 +18,7 @@ namespace TappxSDK {
 
 		// minimum version of the Google Play Services library project
 		private long MinGmsCoreVersionCode = 4030530;
-		private string googlePlayServicesVersion = "9.0.0";
+		private string googlePlayServicesVersion = "11.0.0";
 
 		private string sError = "Error";
 	    private string sOk = "OK";
@@ -68,10 +68,11 @@ namespace TappxSDK {
 	        if (instance && instance.sceneIndex.Length <= 0)
 	        {
 	            int numScenes = EditorSceneManager.sceneCountInBuildSettings;
-	            instance.bannerSceneIndex = new bool[numScenes];
+		        instance.bannerSceneIndex = new bool[numScenes];
 	            instance.interstitialSceneIndex = new bool[numScenes];
 	            instance.sceneIndex = new bool[numScenes];
 	            instance.interstitialAutoShow = new bool[numScenes];
+		        instance.mrecSceneIndex = new bool[numScenes];
 
 	            instance.positionSceneIndex = new TappxSettings.POSITION_BANNER[numScenes];
 	            for (int i = 0; i < instance.positionSceneIndex.Length; i++)
@@ -111,14 +112,21 @@ namespace TappxSDK {
 			EditorGUILayout.Space();
 			EditorGUILayout.Space();
 
+		    EditorGUILayout.BeginHorizontal();
+		    if (GUILayout.Button("Add Google Play Services (Android)"))
+		    {
+			    AddGooglePlayServices();
+		    }
+		    EditorGUILayout.EndHorizontal();
+		    
 		    EditorGUILayout.Space();
 		    EditorGUILayout.Space();
 		    EditorGUILayout.Space();
 		    EditorGUILayout.Space();
 		    EditorGUILayout.Space();
 		    EditorGUILayout.Space();
-
-
+		    
+			instance.testEnabled = EditorGUILayout.Toggle( "Test Mode", instance.testEnabled );	    
 		    instance.sceneListEnabled = EditorGUILayout.Toggle( "Select Scenes", instance.sceneListEnabled );
 
 		    if (instance.sceneListEnabled)
@@ -140,6 +148,12 @@ namespace TappxSDK {
 				        instance.interstitialSceneIndex = new bool[scenes.Length];
 				        instance.positionSceneIndex = new TappxSettings.POSITION_BANNER[scenes.Length];
 				        instance.interstitialAutoShow = new bool[scenes.Length];
+				        instance.mrecSceneIndex = new bool[scenes.Length];
+				        				        
+				        for (int j = 0; j < instance.positionSceneIndex.Length; j++)
+                        {
+                            instance.positionSceneIndex[j] = TappxSettings.POSITION_BANNER.BOTTOM;
+                        }
 			        }
 			        
 			        instance.sceneIndex[i] = EditorGUILayout.Foldout(instance.sceneIndex[i], scenes[i].path, EditorStyles.foldoutPreDrop );
@@ -157,6 +171,9 @@ namespace TappxSDK {
 
 		                    GUILayout.EndVertical();
 		                    GUILayout.EndHorizontal();
+			                
+			                instance.mrecSceneIndex[i] = EditorGUILayout.Toggle("---> Mrec Size", instance.mrecSceneIndex[i]);
+
 		                }
 
 		                instance.interstitialSceneIndex[i] = EditorGUILayout.Toggle("Interstitial", instance.interstitialSceneIndex[i]);
@@ -165,6 +182,9 @@ namespace TappxSDK {
 		                    instance.interstitialAutoShow[i] = EditorGUILayout.Toggle("---> Auto Show", instance.interstitialAutoShow[i]);
 		                }
 
+			            
+			            			            
+			      
 		            }
 
 		        }
@@ -174,7 +194,136 @@ namespace TappxSDK {
 
 		}
 		
-    
+		private void AddGooglePlayServices() {
+			string sdkPath = GetAndroidSdkPath();
+			string libProjPath = sdkPath +
+			                     FixSlashes("/extras/google/google_play_services/libproject/google-play-services_lib");
+			string libProjPathv30 = sdkPath + 
+			                        FixSlashes("/extras/google/m2repository/com/google/android/gms/play-services-ads/"
+			                                   + googlePlayServicesVersion
+			                                   + "/play-services-ads-" + googlePlayServicesVersion + ".aar");
+			string libProjPathv30_basement = sdkPath + 
+			                        FixSlashes("/extras/google/m2repository/com/google/android/gms/play-services-basement/"
+			                                   + googlePlayServicesVersion
+			                                   + "/play-services-basement-" + googlePlayServicesVersion + ".aar");
+
+			string libProjPathv30_base = sdkPath + 
+			                                 FixSlashes("/extras/google/m2repository/com/google/android/gms/play-services-base/"
+			                                            + googlePlayServicesVersion
+			                                            + "/play-services-base-" + googlePlayServicesVersion + ".aar");
+
+			string libProjPathv30_ads_lite = sdkPath + 
+			                             FixSlashes("/extras/google/m2repository/com/google/android/gms/play-services-ads-lite/"
+			                                        + googlePlayServicesVersion
+			                                        + "/play-services-ads-lite-" + googlePlayServicesVersion + ".aar");
+
+			
+			string libProjAM = libProjPath + FixSlashes("/AndroidManifest.xml");
+			string libProjDestDir = FixSlashes("Assets/Plugins/Android/google-play-services_lib");
+			string libProjDestDirv30 = FixSlashes ("Assets/Plugins/Android" 
+			                                       + "/play-services-ads-" + googlePlayServicesVersion + ".aar");;
+
+			string libProjDestDirv30_basement = FixSlashes ("Assets/Plugins/Android" 
+			                                       + "/play-services-basement-" + googlePlayServicesVersion + ".aar");;
+
+			string libProjDestDirv30_base = FixSlashes ("Assets/Plugins/Android" 
+			                                                + "/play-services-base-" + googlePlayServicesVersion + ".aar");;
+
+			
+			string libProjDestDirv30_ads_lite = FixSlashes ("Assets/Plugins/Android" 
+			                                            + "/play-services-ads-lite-" + googlePlayServicesVersion + ".aar");;
+			
+			
+			
+			// check that Android SDK is there
+			if (!HasAndroidSdk()) {
+				Debug.LogError("Android SDK not found.");
+				EditorUtility.DisplayDialog(sSdkNotFound,
+					sSdkNotFoundBlurb, sOk);
+				return;
+			}
+
+			// create needed directories
+			EnsureDirExists("Assets/Plugins");
+			EnsureDirExists("Assets/Plugins/Android");
+
+			// Delete old libraries, to avoid duplicate symbols
+			DeleteDirIfExists(libProjDestDir);
+			DeleteFileIfExists(libProjDestDirv30);
+			DeleteFileIfExists(libProjDestDirv30_basement);
+			DeleteFileIfExists(libProjDestDirv30_base);
+			DeleteFileIfExists(libProjDestDirv30_ads_lite);
+
+			// check that the Google Play Services lib project is there
+			if (System.IO.Directory.Exists (libProjPath) || System.IO.File.Exists (libProjAM)) {
+				// Old Google Play Services directory structure
+				// Copy the full jar into the project 
+
+				// Check lib project version
+				if (!CheckAndWarnAboutGmsCoreVersion(libProjAM)) {
+					return;
+				}
+
+				// Clear out the destination library project
+				DeleteDirIfExists(libProjDestDir);
+
+				// Copy Google Play Services library
+				FileUtil.CopyFileOrDirectory(libProjPath, libProjDestDir);
+			} else {
+				if (System.IO.File.Exists (libProjPathv30)) {
+					// New Google Play Services directory structure
+					// Copy the .aar file that contains the needed classes
+					FileInfo libProjFile = new FileInfo(libProjPathv30);
+					libProjFile.CopyTo(libProjDestDirv30,true);
+					
+					libProjFile = new FileInfo(libProjPathv30_basement);
+					libProjFile.CopyTo(libProjDestDirv30_basement,true);
+
+					libProjFile = new FileInfo(libProjPathv30_base);
+					libProjFile.CopyTo(libProjDestDirv30_base,true);
+					
+					libProjFile = new FileInfo(libProjPathv30_ads_lite);
+					libProjFile.CopyTo(libProjDestDirv30_ads_lite,true);
+
+					
+				} else {
+					Debug.LogError ("Google Play Services lib project not found at: " + libProjPath);
+					EditorUtility.DisplayDialog (sLibProjNotFound,
+						sLibProjNotFoundBlurb, sOk);
+					return;
+				}
+			}
+	
+			// refresh assets, and we're done
+			AssetDatabase.Refresh();
+			EditorUtility.DisplayDialog(sSuccess,
+				sSetupComplete, sOk);
+		}
+	    
+		private bool CheckAndWarnAboutGmsCoreVersion(string libProjAMFile) {
+			string manifestContents = ReadFile(libProjAMFile);
+			string[] fields = manifestContents.Split('\"');
+			int i;
+			long vercode = 0;
+			for (i = 0; i < fields.Length; i++) {
+				if (fields[i].Contains("android:versionCode") && i + 1 < fields.Length) {
+					vercode = System.Convert.ToInt64(fields[i + 1]);
+				}
+			}
+			if (vercode == 0) {
+				return EditorUtility.DisplayDialog(sWarning, string.Format(
+						sLibProjVerNotFound,
+						MinGmsCoreVersionCode),
+					sOk, sCancel);
+			} else if (vercode < MinGmsCoreVersionCode) {
+				return EditorUtility.DisplayDialog(sWarning, string.Format(
+						sLibProjVerTooOld, vercode,
+						MinGmsCoreVersionCode),
+					sOk, sCancel);
+			}
+			return true;
+		}
+
 	
 	    private void EnsureDirExists(string dir) {
 	        dir = dir.Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());

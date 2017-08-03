@@ -27,13 +27,17 @@ namespace TappxSDK {
 	        BOTTOM
 	    }
 
+		[SerializeField]
+		public bool testEnabled;
 	    [SerializeField]
 	    public bool sceneListEnabled;
 	    [SerializeField]
 	    public bool[] bannerSceneIndex;
 	    [SerializeField]
 	    public bool[] interstitialSceneIndex;
-	    [SerializeField]
+		[SerializeField]
+		public bool[] mrecSceneIndex;
+	    [SerializeField] 
 	    public bool[] sceneIndex = new bool[0];
 	    [SerializeField]
 	    public bool[] interstitialAutoShow;
@@ -138,7 +142,7 @@ namespace TappxSDK {
 			return Instance.androidTappxID;
 		}
 
-
+ 
 	    public static void DirtyEditor()
 	    {
 	#if UNITY_EDITOR

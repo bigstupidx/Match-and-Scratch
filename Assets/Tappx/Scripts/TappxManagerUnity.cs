@@ -17,10 +17,10 @@ public class TappxManagerUnity : MonoBehaviour
 
 #if UNITY_IPHONE
     [DllImport("__Internal")]
-    private static extern void trackInstallIOS_(string tappxID);
+    private static extern void trackInstallIOS_(string tappxID, bool testMode);
     //Banner
     [DllImport("__Internal")]
-	private static extern void createBannerIOS_(Position positionBanner);
+	private static extern void createBannerIOS_(Position positionBanner, bool mrec);
 	[DllImport("__Internal")]
     private static extern void hideAdIOS_();
     [DllImport("__Internal")]
@@ -104,37 +104,31 @@ public class TappxManagerUnity : MonoBehaviour
             {
                 bool Banner = TappxSettings.Instance.bannerSceneIndex[sceneIndexLoaded];
                 bool Interstitial = TappxSettings.Instance.interstitialSceneIndex[sceneIndexLoaded];
-                bool AutoShowInterstitial = TappxSettings.Instance.interstitialAutoShow[sceneIndexLoaded];
-                TappxSettings.POSITION_BANNER positionBanner = TappxSettings.Instance.positionSceneIndex[sceneIndexLoaded];
 
-                if (Banner ^ Interstitial)
-                {
-                    if (Banner)
-                    {
-                        show();
-                    }
-                    else
-                    {
-                        interstitialShow();
-                    }
+                if (Banner)
+                {	                    
+                    show();
                 }
+                if ( Interstitial )
+                {
+                    interstitialShow();
+                }
+                
             }
         }
     }
+
 
 #if UNITY_5_4_OR_NEWER
 
 	private void OnEnable()
     {
         SceneManager.sceneLoaded += OnLevelFinishedLoading;
-
     }
 
     private void OnDisable()
     {
-
         SceneManager.sceneLoaded -= OnLevelFinishedLoading;
-
     }
 
 #endif
@@ -172,11 +166,12 @@ public class TappxManagerUnity : MonoBehaviour
 
 		hide();
 
-		trackInstallIOS_( TappxSettings.getIOSAppId()  );
+		trackInstallIOS_( TappxSettings.getIOSAppId(),  TappxSettings.Instance.testEnabled  );
 
         if (TappxSettings.Instance.sceneIndex[sceneIndexLoaded] == true && TappxSettings.Instance.sceneListEnabled )
         {
             bool Banner = TappxSettings.Instance.bannerSceneIndex[sceneIndexLoaded];
+	        bool mrec = TappxSettings.Instance.mrecSceneIndex[sceneIndexLoaded];
             bool Interstitial = TappxSettings.Instance.interstitialSceneIndex[sceneIndexLoaded];
             bool AutoShowInterstitial = TappxSettings.Instance.interstitialAutoShow[sceneIndexLoaded];
 
@@ -184,7 +179,7 @@ public class TappxManagerUnity : MonoBehaviour
 
                 if(Banner){
                     TappxSettings.POSITION_BANNER posBanner = TappxSettings.Instance.positionSceneIndex[sceneIndexLoaded];
-					createBannerIOS_( (posBanner == TappxSettings.POSITION_BANNER.TOP ) ? Position.TOP : Position.BOTTOM );
+					createBannerIOS_( (posBanner == TappxSettings.POSITION_BANNER.TOP ) ? Position.TOP : Position.BOTTOM, mrec );
 
                 }else{
 		    		loadInterstitialIOS_(AutoShowInterstitial);
@@ -200,22 +195,23 @@ public class TappxManagerUnity : MonoBehaviour
         if (TappxSettings.Instance.sceneIndex[sceneIndexLoaded] == true && TappxSettings.Instance.sceneListEnabled )
         {
             bool Banner = TappxSettings.Instance.bannerSceneIndex[sceneIndexLoaded];
+	        bool mrec = TappxSettings.Instance.mrecSceneIndex[sceneIndexLoaded];
             bool Interstitial = TappxSettings.Instance.interstitialSceneIndex[sceneIndexLoaded];
             bool AutoShowInterstitial = TappxSettings.Instance.interstitialAutoShow[sceneIndexLoaded];
             TappxSettings.POSITION_BANNER positionBanner = TappxSettings.Instance.positionSceneIndex[sceneIndexLoaded];
 
-            if(Banner ^ Interstitial){
 
                 if(Banner){
                     bool posit = true;
                     if(positionBanner == TappxSettings.POSITION_BANNER.BOTTOM)
                         posit = false;
-                    bannerControl = new AndroidJavaObject ("com.tappx.unity.bannerTappx",TappxSettings.getAndroidAppId(),posit,"TappxManagerUnity");
+                    bannerControl = new AndroidJavaObject ("com.tappx.unity.bannerTappx", TappxSettings.getAndroidAppId(), mrec, posit, TappxSettings.Instance.testEnabled, "TappxManagerUnity");
 
-                }else{
-                    interstitialControl = new AndroidJavaObject ("com.tappx.unity.interstitialTappx",TappxSettings.getAndroidAppId(),AutoShowInterstitial,"TappxManagerUnity");
                 }
-            }
+	        	
+	        	if ( Interstitial ){
+                    interstitialControl = new AndroidJavaObject ("com.tappx.unity.interstitialTappx",TappxSettings.getAndroidAppId(),AutoShowInterstitial, TappxSettings.Instance.testEnabled ,"TappxManagerUnity");
+                }
         }
 
 #endif
@@ -235,18 +231,45 @@ public class TappxManagerUnity : MonoBehaviour
 		#endif
     }
 
+
+	public void show( TappxSettings.POSITION_BANNER pos, bool mrec )
+	{
+		
+#if UNITY_IPHONE
+			TappxSettings.POSITION_BANNER positionBanner = TappxSettings.Instance.positionSceneIndex[sceneIndexLoaded];
+			showAdIOS_( positionBanner == pos ? Position.TOP : Position.BOTTOM);
+#elif UNITY_ANDROID
+		
+		if (bannerControl != null)
+		{
+			bannerControl.Call("hideBannerGONE");
+			bannerControl = null;
+		}
+		
+		bool posit = true;
+		if (pos == TappxSettings.POSITION_BANNER.BOTTOM)
+			posit = false;
+		bannerControl = new AndroidJavaObject("com.tappx.unity.bannerTappx", TappxSettings.getAndroidAppId(), mrec, posit, TappxSettings.Instance.testEnabled,
+			"TappxManagerUnity");
+#endif	
+		
+		
+	}
+	
     public void show()
     {
-		#if UNITY_IPHONE
-            TappxSettings.POSITION_BANNER positionBanner = TappxSettings.Instance.positionSceneIndex[sceneIndexLoaded];
-			showAdIOS_( positionBanner == TappxSettings.POSITION_BANNER.TOP ? Position.TOP : Position.BOTTOM);
-		#elif UNITY_ANDROID
-			bool posit = true;
-            TappxSettings.POSITION_BANNER positionBanner = TappxSettings.Instance.positionSceneIndex[sceneIndexLoaded];
-			if(positionBanner == TappxSettings.POSITION_BANNER.BOTTOM)
-				posit = false;
-			bannerControl = new AndroidJavaObject ("com.tappx.unity.bannerTappx",TappxSettings.getAndroidAppId(),posit,"TappxManagerUnity");
-		#endif
+
+	    if (TappxSettings.Instance.sceneListEnabled)
+	    {
+		   	TappxSettings.POSITION_BANNER positionBanner = TappxSettings.Instance.positionSceneIndex[sceneIndexLoaded];
+		    bool mrec = TappxSettings.Instance.mrecSceneIndex[sceneIndexLoaded];
+			show( positionBanner, mrec );
+	    }
+	    else
+	    {
+		    Debug.LogWarning("Tappx: You should use show( TappxSettings.POSITION_BANNER pos, bool mrec ) instead if you are not using Scene Manager");
+		    
+	    }
     }
 
     public bool isBannerVisible()
@@ -259,6 +282,24 @@ public class TappxManagerUnity : MonoBehaviour
         return false;
     }
 
+	public bool isInterstitialReady()
+	{
+		
+#if UNITY_IPHONE
+
+	return isInterstitialReady_(); 
+
+#endif
+
+#if UNITY_ANDROID
+	if (  interstitialControl != null )
+		return interstitialControl.Call<bool>("isReady");
+	else
+		return false;
+#endif
+				
+	}
+
 	public void loadInterstitial(bool _autoShow)
 	{
 		#if UNITY_IPHONE
@@ -267,9 +308,10 @@ public class TappxManagerUnity : MonoBehaviour
 		if(interstitialControl!=null){
 			interstitialControl = null;
 		}
-		interstitialControl = new AndroidJavaObject ("com.tappx.unity.interstitialTappx",TappxSettings.getAndroidAppId(), _autoShow,"TappxManagerUnity");
-		
-		
+		interstitialControl = new AndroidJavaObject ("com.tappx.unity.interstitialTappx",TappxSettings.getAndroidAppId(), _autoShow, TappxSettings.Instance.testEnabled ,"TappxManagerUnity");
+
+		#endif
+
 	}
 	
 	public void loadInterstitial(){
@@ -277,7 +319,6 @@ public class TappxManagerUnity : MonoBehaviour
 	    bool AutoShowInterstitial = TappxSettings.Instance.interstitialAutoShow[sceneIndexLoaded];
 		loadInterstitial( AutoShowInterstitial );
 
-		#endif
 	}
 
 	public void interstitialShow(){

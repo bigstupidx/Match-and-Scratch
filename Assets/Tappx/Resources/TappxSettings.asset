@@ -11,9 +11,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b43ac219f463b4d8da8a093b4135b37d, type: 3}
   m_Name: TappxSettings
   m_EditorClassIdentifier: 
+  testEnabled: 0
   sceneListEnabled: 1
   bannerSceneIndex: 01
   interstitialSceneIndex: 00
+  mrecSceneIndex: 00
   sceneIndex: 01
   interstitialAutoShow: 00
   positionSceneIndex: 01000000
