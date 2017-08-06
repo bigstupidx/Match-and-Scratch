@@ -35,7 +35,6 @@ public class PanelDebug : MonoBehaviour {
 	}
 
 	public void AddTestScore() {
-		Dreamlo_HighScores.instance.AddNewHighscore ( new ScoreEntry ( "user_" + UnityEngine.Random.Range(100,999), UnityEngine.Random.Range(-10, 0), DateTime.UtcNow.AddDays(UnityEngine.Random.Range(-10,10)).ToOADate() ) );
 		FirebaseDBManager.instance.AddNewHighscore( new ScoreEntry ( "user_" + UnityEngine.Random.Range(100,999), UnityEngine.Random.Range(-10, 0), DateTime.UtcNow.AddDays(UnityEngine.Random.Range(-10,10)).ToOADate() ) );
 	}
 

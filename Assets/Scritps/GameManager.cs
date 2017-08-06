@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using ReveloLibrary;
 using SmartLocalization;
 using System;
-using UnityEngine.Analytics;
 
 public enum GameState {
 	None,
@@ -232,7 +231,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void BeginGame() {
-		Analytics.CustomEvent("gameStart", new Dictionary<string, object>());
+		AnalyticsSender.SendCustomAnalitycs ("gameStart", new Dictionary<string, object>());
 		ResetGame ();
 		spawner.SpawnPin();
 		if (OnBeginGame != null)
@@ -265,7 +264,7 @@ public class GameManager : MonoBehaviour {
 		isGameOver = true;
 		
 		SetGameState(GameState.GameOver);
-		Analytics.CustomEvent("gameOver", new Dictionary<string, object> 
+		AnalyticsSender.SendCustomAnalitycs ("gameOver", new Dictionary<string, object> 
 		{
 				{ "score", Score },
 				{ "pinsCount", spawner.pinsCount}

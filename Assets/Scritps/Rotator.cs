@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using ReveloLibrary;
 using System;
-using UnityEngine.Analytics;
 
 public class Rotator : Circumference {
 	public const float INITIAL_SPEED = 100f;
@@ -127,7 +126,7 @@ public class Rotator : Circumference {
 		
 		if (circumferencesCollided.Count == 0) {
 			//Debug.Log ("<color=red>Error WTF (0001): No se ha encontrado ninguna colision</color>");
-			Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
+			AnalyticsSender.SendCustomAnalitycs ("wtfError", new Dictionary<string, object>() {
 				{"type", "0001"},
 				{"message", "No se ha encontrado ninguna colision"}
 			});
@@ -176,7 +175,7 @@ public class Rotator : Circumference {
 				Circumference B = circumferencesCollided [1];
 				if (A == B) {
 					//Debug.Log ("Error WTF 0002: Hemos colisionador dos veces con el mismo Pin");
-					Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
+				AnalyticsSender.SendCustomAnalitycs ("wtfError", new Dictionary<string, object>() {
 						{"type", "0002"},
 						{"message", "Hemos colisionador dos veces con el mismo Pin"}
 					});
@@ -222,7 +221,7 @@ public class Rotator : Circumference {
 
 				if ( float.IsNaN( sol.x) ) {
 					//Debug.Log ("<color=red>Error WTF 0003: Naaaaaaan</color>");
-					Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
+					AnalyticsSender.SendCustomAnalitycs ("wtfError", new Dictionary<string, object>() {
 						{"type", "0003"},
 						{"message", "La reposición contiene numero inválidos: (" + sol.ToString() + "). Cambio NaN -> cero"}
 					});
@@ -262,7 +261,7 @@ public class Rotator : Circumference {
 			default:				
 				//Debug.Log(string.Format("<color=red> ERROR WTF 0004: número de colisiones incorrectas: {0}</color>", circumferencesCollided.Count.ToString()));
 
-				Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
+				AnalyticsSender.SendCustomAnalitycs ("wtfError", new Dictionary<string, object>() {
 					{"type", "0004"},
 					{"message", "número de colisiones incorrectas: (" + circumferencesCollided.Count.ToString() + ")"}
 				});
@@ -364,7 +363,7 @@ public class Rotator : Circumference {
 					log += "\n - " + item.name;
 				}
 				//Debug.Log ("<color=red>Error WTF 0005: Los pins colisionados no están en ningún grupo. Esto no debería suceder</color> \n - Pin Evaluado: " + newCircumference.name + "\n - Pins Colisionados:" + log);
-				Analytics.CustomEvent("wtfError", new Dictionary<string, object>() {
+				AnalyticsSender.SendCustomAnalitycs ("wtfError", new Dictionary<string, object>() {
 					{"type", "0005"},
 					{"message", string.Format("Los pins colisionados no están en ningún grupo. \nPin Evaluado: {0} - \nPin Colisionados: {1}", newCircumference.name, log)}
 				});

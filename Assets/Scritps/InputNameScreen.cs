@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using ReveloLibrary;
-using UnityEngine.Analytics;
 
 public class InputNameScreen : UIScreen {
 
@@ -34,7 +33,7 @@ public class InputNameScreen : UIScreen {
 	}
 
 	public void CancelSendScore() {
-		Analytics.CustomEvent("scoreNotSend", new Dictionary<string, object> {
+		AnalyticsSender.SendCustomAnalitycs("scoreNotSend", new Dictionary<string, object> {
 			{ "score", GameManager.instance.Score },
 			{ "nameUsedLastTime", lastName}
 		});
@@ -64,14 +63,9 @@ public class InputNameScreen : UIScreen {
 		lastName = nameField.text;
 		PlayerPrefs.SetString ("name", lastName);
 
-		if (GameManager.instance.currentSource == HighScoresSource.DREAMLO) {			
-			Dreamlo_HighScores.instance.AddNewHighscore ( new ScoreEntry ( lastName, GameManager.instance.Score ) );
-		} 
-		else if (GameManager.instance.currentSource == HighScoresSource.FIREBASE) {
-			FirebaseDBManager.instance.AddNewHighscore( new ScoreEntry ( lastName, GameManager.instance.Score ) );
-		}
+		FirebaseDBManager.instance.AddNewHighscore( new ScoreEntry ( lastName, GameManager.instance.Score ) );
 
-		Analytics.CustomEvent("scoreSended", new Dictionary<string, object> {
+		AnalyticsSender.SendCustomAnalitycs("scoreSended", new Dictionary<string, object> {
 			{ "score", GameManager.instance.Score },
 			{ "name", lastName}
 		});

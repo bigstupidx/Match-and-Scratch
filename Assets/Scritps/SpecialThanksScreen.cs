@@ -4,7 +4,6 @@ using UnityEngine;
 using ReveloLibrary;
 using UnityEngine.UI;
 using SmartLocalization;
-using UnityEngine.Analytics;
 
 public class SpecialThanksScreen : UIScreen {
 
@@ -30,7 +29,7 @@ public class SpecialThanksScreen : UIScreen {
 		lastName = PlayerPrefs.GetString ("name", "");
 		specialThanksContentText.text = LanguageManager.Instance.GetTextValue ("ui.label.specialthankscontent").Replace ("#username", lastName);
 
-		Analytics.CustomEvent("mentionShowed", new Dictionary<string, object> {
+		AnalyticsSender.SendCustomAnalitycs ("mentionShowed", new Dictionary<string, object> {
 			{ "name", lastName}
 		});
 		OpenWindow ();
@@ -41,7 +40,7 @@ public class SpecialThanksScreen : UIScreen {
 		lastName = PlayerPrefs.GetString ("name", "");
 		specialThanksContentText.text = LanguageManager.Instance.GetTextValue ("ui.label.remembersendscore");
 
-		Analytics.CustomEvent("rememberSendScore", new Dictionary<string, object> {
+		AnalyticsSender.SendCustomAnalitycs ("rememberSendScore", new Dictionary<string, object> {
 			{ "name", lastName}
 		});
 		OpenWindow ();

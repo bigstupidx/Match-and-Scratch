@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.Analytics;
 
 public class ColorPinsGroup {
     public enum GroupState
@@ -36,7 +35,7 @@ public class ColorPinsGroup {
     public void AddMember(Circumference c) {
 		if (c.tag == "Rotator") {
 			//Debug.Log("<color=red>Error WTF 102: Rotator metido en un grupo O_o </color>");
-			Analytics.CustomEvent ("wtfError", new Dictionary<string, object> () {
+			AnalyticsSender.SendCustomAnalitycs ("wtfError", new Dictionary<string, object> () {
 				{ "type", "0006" },
 				{ "message", "Rotator metido en un grupo" }
 			});
