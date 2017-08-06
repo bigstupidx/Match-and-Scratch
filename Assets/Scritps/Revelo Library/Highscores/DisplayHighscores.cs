@@ -64,25 +64,13 @@ public class DisplayHighscores : MonoBehaviour {
 
 	// Use this for initialization
 	void OnEnable () {
-		HandleChangeHighScoresSource (GameManager.instance.currentSource);
-		GameManager.instance.OnChangeHighScoresSource += HandleChangeHighScoresSource;
+		UpdateHighscores (FirebaseDBManager.instance.highscoreList);
+		FirebaseDBManager.instance.Firebase_OnHighscoresUpdate += UpdateHighscores;
 	}
 
-	public void HandleChangeHighScoresSource (HighScoresSource source) {				
-		RemoveHandles ();
-
-		/*if (GameManager.instance.currentSource == HighScoresSource.DREAMLO) {
-			UpdateHighscores (Dreamlo_HighScores.instance.highscoreList);
-			Dreamlo_HighScores.instance.Dreamlo_OnHighscoresUpdate += UpdateHighscores;
-		} else if (GameManager.instance.currentSource == HighScoresSource.FIREBASE) {*/
-			UpdateHighscores (FirebaseDBManager.instance.highscoreList);
-			FirebaseDBManager.instance.Firebase_OnHighscoresUpdate += UpdateHighscores;
-		//}
-	}
 
 	void OnDisable (){
-		GameManager.instance.OnChangeHighScoresSource -= HandleChangeHighScoresSource;
-		RemoveHandles ();
+		FirebaseDBManager.instance.Firebase_OnHighscoresUpdate -= UpdateHighscores;
 	}
 
 	void RemoveHandles() {
@@ -130,10 +118,7 @@ public class DisplayHighscores : MonoBehaviour {
 	void UpdateHighscoreList(List<ScoreEntry> elements, List<GameObject> goList, Transform parent) {
 		for (int i = 0; i < elements.GetRange( 0, Mathf.Min( elements.Count, 10 ) ).Count; i++) {
 			GameObject g = Instantiate (scoreElement, parent, false);
-			if (GameManager.instance.currentSource == HighScoresSource.DREAMLO)
-				g.GetComponent<ScoreElement> ().SetScore (elements [i].username.Split(new char[] {'-'})[0], elements [i].score.ToString());
-			else if (GameManager.instance.currentSource == HighScoresSource.FIREBASE)
-				g.GetComponent<ScoreElement> ().SetScore (elements [i].username, elements [i].score.ToString());	
+			g.GetComponent<ScoreElement> ().SetScore (elements [i].username, elements [i].score.ToString());	
 			goList.Add (g);
 		}
 	}

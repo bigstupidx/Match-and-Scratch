@@ -31,11 +31,6 @@ public enum DifficultType {
 	SWITCH_CRAZY_SPEED_CANCEL
 }
 
-public enum HighScoresSource {
-	DREAMLO,
-	FIREBASE
-}
-
 public class GameManager : MonoBehaviour {
 
 	public static GameManager instance = null;
@@ -82,9 +77,6 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public bool ServicesConfigurationInitialized { get; set;}
-
-	public HighScoresSource currentSource;
-	public Action<HighScoresSource> OnChangeHighScoresSource;
 
 	public Action OnBeginGame;
 
@@ -153,12 +145,6 @@ public class GameManager : MonoBehaviour {
 		ShowScreen (ScreenDefinitions.MAIN_MENU);
 		// StartCoroutine(RefreshHighscores());
 		SetGameState(GameState.MainMenu);
-	}
-
-	public void SetNewHighScoresSource(HighScoresSource newSource) {
-		currentSource = newSource;
-		if(OnChangeHighScoresSource != null)
-			OnChangeHighScoresSource (currentSource);
 	}
 
 	public void AddScore(int pts) {

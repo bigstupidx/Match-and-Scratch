@@ -38,9 +38,6 @@ public class PanelDebug : MonoBehaviour {
 		FirebaseDBManager.instance.AddNewHighscore( new ScoreEntry ( "user_" + UnityEngine.Random.Range(100,999), UnityEngine.Random.Range(-10, 0), DateTime.UtcNow.AddDays(UnityEngine.Random.Range(-10,10)).ToOADate() ) );
 	}
 
-	public void SetHighscoresSource (int source) {
-		GameManager.instance.SetNewHighScoresSource((HighScoresSource)source);
-	}
 	void Update() {
 		levelLabel.text = "Level: " + GameManager.instance.CurrentLevel.ToString();
 		rotatorSpeedLabel.text = "rotator Speed: " + (GameManager.instance.rotator.RotationSpeed).ToString();
