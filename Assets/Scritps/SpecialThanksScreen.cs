@@ -32,7 +32,7 @@ public class SpecialThanksScreen : UIScreen {
 		AnalyticsSender.SendCustomAnalitycs ("mentionShowed", new Dictionary<string, object> {
 			{ "name", lastName}
 		});
-		OpenWindow ();
+		OpenWindow (GameManager.instance.EnableInput);
 	}
 
 	public void ShowRememberSendScore() {
@@ -43,16 +43,19 @@ public class SpecialThanksScreen : UIScreen {
 		AnalyticsSender.SendCustomAnalitycs ("rememberSendScore", new Dictionary<string, object> {
 			{ "name", lastName}
 		});
-		OpenWindow ();
+		OpenWindow (GameManager.instance.EnableInput);
 	}
 
-	public override void OpenWindow() {
+	public override void OpenWindow(Callback openCallback = null) {
 		
-		base.OpenWindow();
+		base.OpenWindow(openCallback);
 	}
 
-	public override void CloseWindow() {
+	public override void CloseWindow (Callback closeCallback = null) {
 		PlayerPrefs.SetInt ("specialMentionShowed", 1);
-		base.CloseWindow ();
+		GameManager.instance.DisableInput ();
+		if (closeCallback == null)
+			closeCallback = GameManager.instance.EnableInput;
+		base.CloseWindow (closeCallback);
 	}
 }

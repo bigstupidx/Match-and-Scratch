@@ -60,6 +60,7 @@ public class GameManager : MonoBehaviour {
 			currentLevel = value;
 		}
 	}
+	GameState nextGameState = GameState.None;
 
 	public bool isGamePaused;
 	public bool isGameOver;
@@ -121,6 +122,9 @@ public class GameManager : MonoBehaviour {
 	private SoundDefinitions[] musics = { SoundDefinitions.LOOP_1, SoundDefinitions.LOOP_2, SoundDefinitions.LOOP_3 };
 	private int currentMusic = 0;
 
+	public bool isTappxBannerVisible { get; set; }
+	public bool isInputEnabled;
+
 	void Awake() {
 		if (instance == null) {
 			instance = this;
@@ -143,31 +147,82 @@ public class GameManager : MonoBehaviour {
 			Instantiate(debugMenu, GameObject.FindGameObjectWithTag("UICanvas").transform);
 
 		ShowScreen (ScreenDefinitions.MAIN_MENU);
-		// StartCoroutine(RefreshHighscores());
 		SetGameState(GameState.MainMenu);
+	}
+
+	public void Update() {
+		if (Input.GetKeyDown (KeyCode.Escape) && isInputEnabled) {
+			Debug.Log ("Escape key down when in gamestate: " + currentState.ToString ());
+			switch (currentState) {
+				case GameState.MainMenu:
+					if (QuitScreen.Instance.IsOpen) {
+						QuitScreen.Instance.ButtonNo ();
+					}
+					else {
+						DisableInput();
+						QuitScreen.Instance.OpenWindow(EnableInput);
+					}
+				break;
+				case GameState.Highscores:
+					animator.SetBool ("highscores", false);
+					BackToMainMenu ();
+				break;
+				case GameState.Playing:
+					if (isGamePaused) {
+						//ExitToMainMenu ();
+						PauseGame (false);
+					}
+					else {
+						PauseGame (true);
+					}
+				break;
+				case GameState.GameOver:
+					if (InputNameScreen.Instance.IsOpen)
+						InputNameScreen.Instance.CancelSendScore ();
+					else if (SpecialThanksScreen.Instance.IsOpen)
+						SpecialThanksScreen.Instance.CloseWindow ();
+					else
+						BackToMainMenu ();
+				break;
+			}
+		}
 	}
 
 	public void AddScore(int pts) {
 		Score += pts;
 		CheckDifficulty();
 		scoreLabel.text = score.ToString();
-		if(!scoreLabel_Animator.IsInTransition(0))// GetCurrentAnimatorStateInfo(0).IsName("Score_Label_Action"))
+		if (!scoreLabel_Animator.IsInTransition(0))// GetCurrentAnimatorStateInfo(0).IsName("Score_Label_Action"))
 			scoreLabel_Animator.SetTrigger ("Action");
 	}
 
 	public void SetServicesConfiguration(bool value) {
 		ServicesConfigurationInitialized = value;
-		if (ServicesConfigurationInitialized  && ServicesConfiguration.enable_tappx && currentState == GameState.MainMenu && !TappxManagerUnity.instance.isBannerVisible()) {
-			TappxManagerUnity.instance.show ();
+		if (ServicesConfigurationInitialized && ServicesConfiguration.enable_tappx && currentState == GameState.MainMenu && !isTappxBannerVisible) {
+			ShowTappxBanner (true);
 		}
+	}
+	private void ShowTappxBanner (bool value) {
+		if (value) {
+			TappxManagerUnity.instance.show (TappxSDK.TappxSettings.POSITION_BANNER.BOTTOM,false);
+		}
+		else { 
+			TappxManagerUnity.instance.hide ();
+		}
+		isTappxBannerVisible = value;
+		Debug.Log ("Tappx banner visibility status: " + value.ToString ());
 	}
 
 	public void SetGameState(GameState newState) {
-		if (currentState != newState) {
+		if (currentState == newState) {
+			Debug.Log ("Error: no se va a mostrar el " + newState.ToString());
+		}
+		else {
+			DisableInput ();
 			switch(newState) {
 				case GameState.MainMenu:
-					if (ServicesConfigurationInitialized && ServicesConfiguration.enable_tappx && !TappxManagerUnity.instance.isBannerVisible()) {
-						TappxManagerUnity.instance.show ();
+					if (ServicesConfigurationInitialized && ServicesConfiguration.enable_tappx && !isTappxBannerVisible) {
+						ShowTappxBanner (true);
 					}
 					if (ScreenManager.Instance.currentGUIScreen.screenDefinition == ScreenDefinitions.HIGHSCORES) {
 						animator.SetBool ("highscores", false);
@@ -182,10 +237,10 @@ public class GameManager : MonoBehaviour {
 				break;
 				case GameState.GoToPlay:
 					if (ServicesConfigurationInitialized && ServicesConfiguration.enable_tappx) {
-						TappxManagerUnity.instance.hide ();
+						ShowTappxBanner (false);
 					}
 					animator.SetTrigger ("start");
-					SetGameState (GameState.Playing);
+					nextGameState = GameState.Playing;
 				break;
 				case GameState.Playing:
 					ScreenManager.Instance.HideScreen ();
@@ -195,8 +250,8 @@ public class GameManager : MonoBehaviour {
 					AudioMaster.instance.Play (SoundDefinitions.END_FX);
 					animator.SetTrigger ("exit");
 					GameOverPoints.text = Score.ToString ();
-					if (ServicesConfigurationInitialized && ServicesConfiguration.enable_tappx && !TappxManagerUnity.instance.isBannerVisible()) {
-						TappxManagerUnity.instance.show ();
+					if (ServicesConfigurationInitialized && ServicesConfiguration.enable_tappx && !isTappxBannerVisible) {
+						ShowTappxBanner (true);
 					}
 				break;
 				case GameState.Highscores:
@@ -205,6 +260,11 @@ public class GameManager : MonoBehaviour {
 				break;
 			}
 			currentState = newState;
+			if (nextGameState != GameState.None) {
+				GameState theNextState = nextGameState;
+				nextGameState = GameState.None;	
+				SetGameState (theNextState);
+			}
 		}
 	}
 
@@ -212,8 +272,7 @@ public class GameManager : MonoBehaviour {
 		while ( !animator.GetCurrentAnimatorStateInfo (0).IsName("PlayingGame") ){
 			yield return null;
 		}
-
-		ShowScreen (ScreenDefinitions.GAME, BeginGame);		
+		ShowScreen (ScreenDefinitions.GAME, BeginGame);
 	}
 
 	void BeginGame() {
@@ -228,13 +287,24 @@ public class GameManager : MonoBehaviour {
 		ShowScreen (ScreenDefinitions.GAME_OVER, ShowSendScoreForm);
 	}
 
-	public void ShowScreen(ScreenDefinitions screenDef, ScreenManager.Callback TheCallback = null) {
+	public void ShowScreen(ScreenDefinitions screenDef, UIScreen.Callback TheCallback = null) {
+		DisableInput ();
+		if (TheCallback == null)
+			TheCallback = EnableInput;
 		ScreenManager.Instance.ShowScreen(screenDef, TheCallback);
 	}
 
 	public void ShowSendScoreForm() {
 		if (Score > 0)
-			InputNameScreen.Instance.OpenWindow ();
+			InputNameScreen.Instance.OpenWindow (EnableInput);
+	}
+
+	public void EnableInput () {
+		isInputEnabled = true;
+	}
+
+	public void DisableInput () {
+		isInputEnabled = false;
 	}
 
 	public void StartGame() {		
@@ -278,6 +348,7 @@ public class GameManager : MonoBehaviour {
 		AudioMaster.instance.StopAll(false);
 		AudioMaster.instance.PlayLoop(musics[currentMusic]);
 		isGamePaused = false;
+		EnableInput ();
 	}
 
 	public void ShowHighscores() {		
@@ -287,15 +358,6 @@ public class GameManager : MonoBehaviour {
 	public void ShowMainScreenVideoService() {
 		UnityAds.Instance.ShowAds (ServicesConfiguration.mainscreen_video_is_rewarded);
 	}
-
-	/*
-	IEnumerator RefreshHighscores() {
-		while (true) {
-			Dreamlo_HighScores.instance.DownloadHighscores ();
-			yield return new WaitForSeconds (20);
-		}
-	}
-	*/
 
 	public void ThrowCurrentPin() {
 		if (!isGamePaused)
@@ -307,7 +369,7 @@ public class GameManager : MonoBehaviour {
 			LevelUp ();
 		}
 		// hacemos cambios de musica
-		if (Score % 70 == 0) {
+		if (Score % 50 == 0) {
 			AudioMaster.instance.StopSound (musics[currentMusic], true);
 			currentMusic++;
 			if (currentMusic > musics.Length -1) {
@@ -378,11 +440,12 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void PauseGame(bool pause) {
+		DisableInput ();
 		if (pause) {
-			PauseScreen.Instance.OpenWindow ();
+			PauseScreen.Instance.OpenWindow (EnableInput);
 		}
 		else {
-			PauseScreen.Instance.CloseWindow ();	
+			PauseScreen.Instance.CloseWindow (EnableInput);	
 		}
 		isGamePaused = pause;
 	}

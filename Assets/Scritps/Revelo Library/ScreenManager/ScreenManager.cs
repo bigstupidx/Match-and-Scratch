@@ -11,9 +11,6 @@ namespace ReveloLibrary {
 		public List<UIScreen> screens;
 		public UIScreen currentGUIScreen;
 
-		public delegate void Callback();
-		Callback resultCallback;
-
 		private UIScreen _newScreen;
 
 		private GameObject ProfilePlayerInstance;
@@ -55,9 +52,9 @@ namespace ReveloLibrary {
 	    /// Shows the screen.
 	    /// </summary>
 	    /// <param name="guiScreen">GUI screen.</param>
-		public void ShowScreen(ScreenDefinitions definition, Callback theCallback= null) {
+		public void ShowScreen(ScreenDefinitions definition, UIScreen.Callback theCallback= null) {
 
-			resultCallback = theCallback;
+			//resultCallback = theCallback;
 			UIScreen uiScreen = screens.Find (s => s.screenDefinition == definition);
 
 			if (currentGUIScreen != null && uiScreen != currentGUIScreen) {
@@ -68,7 +65,7 @@ namespace ReveloLibrary {
 			currentGUIScreen = uiScreen;
 			
 			if (currentGUIScreen != null) {
-				currentGUIScreen.OpenWindow();
+				currentGUIScreen.OpenWindow(theCallback);
 			}
 			#if UNITY_EDITOR
 			else {
@@ -76,7 +73,7 @@ namespace ReveloLibrary {
 			}
 			#endif
 
-			StartCoroutine (AnimationEndProcess ());
+			//StartCoroutine (AnimationEndProcess ());
 		}
 	
 		public void HideScreen() {
@@ -84,7 +81,7 @@ namespace ReveloLibrary {
 				currentGUIScreen.CloseWindow();
 			}
 		}
-
+		/*
 		IEnumerator AnimationEndProcess() {
 			while (currentGUIScreen.Animator.IsInTransition(0))
 				yield return null;
@@ -92,8 +89,9 @@ namespace ReveloLibrary {
 			if (OnScreenChange != null)
 				OnScreenChange (currentGUIScreen.screenDefinition);
 			
-			if (resultCallback != null) 
-				resultCallback();
+			//if (resultCallback != null) 
+			//	resultCallback();
 		}
+		*/
 	}
 }

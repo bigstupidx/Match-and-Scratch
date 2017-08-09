@@ -146,6 +146,9 @@
 	<data name="ui.button.exit" xml:space="preserve">
 		<value>Exit</value>
 	</data>
+	<data name="ui.button.no" xml:space="preserve">
+		<value>No</value>
+	</data>
 	<data name="ui.button.retry" xml:space="preserve">
 		<value>Retry</value>
 	</data>
@@ -157,6 +160,9 @@
 	</data>
 	<data name="ui.button.support" xml:space="preserve">
 		<value>Support Me</value>
+	</data>
+	<data name="ui.button.yes" xml:space="preserve">
+		<value>Yes</value>
 	</data>
 	<data name="ui.label.highscores" xml:space="preserve">
 		<value>Highscores</value>
@@ -181,6 +187,9 @@
 	</data>
 	<data name="ui.label.pause" xml:space="preserve">
 		<value>Pause</value>
+	</data>
+	<data name="ui.label.quitapplication" xml:space="preserve">
+		<value>Are you sure you want to quit?</value>
 	</data>
 	<data name="ui.label.remember" xml:space="preserve">
 		<value>Attention</value>

@@ -11,7 +11,6 @@ public class InputNameScreen : UIScreen {
 
 	InputField nameField;
 	string lastName;
-	bool showSpecialMention;
 
 	public override void Awake() {
 		if(Instance != null && Instance != this) {
@@ -25,11 +24,11 @@ public class InputNameScreen : UIScreen {
 		base.Awake ();
 	}
 
-	public override void OpenWindow() {
+	public override void OpenWindow(Callback openCallback = null) {
 		if (!string.IsNullOrEmpty (lastName))
 			nameField.text = lastName;
 		EvaluateNick ();
-		base.OpenWindow();
+		base.OpenWindow(openCallback);
 	}
 
 	public void CancelSendScore() {
@@ -37,18 +36,17 @@ public class InputNameScreen : UIScreen {
 			{ "score", GameManager.instance.Score },
 			{ "nameUsedLastTime", lastName}
 		});
-		showSpecialMention = false;
-		CloseWindow();
-
-		if (UnityEngine.Random.Range(0,2) == 0) {
-			SpecialThanksScreen.Instance.ShowRememberSendScore ();
-		}
+		if (UnityEngine.Random.Range (0, 2) == 0) {
+			CloseWindow (SpecialThanksScreen.Instance.ShowRememberSendScore);
+		} else
+			CloseWindow ();
 	}
 
-	public override void CloseWindow() {
-		base.CloseWindow ();
-		if (showSpecialMention)
-			SpecialThanksScreen.Instance.ShowSpecialMention ();
+	public override void CloseWindow(Callback closeCallback = null) {
+		GameManager.instance.DisableInput ();
+		if (closeCallback == null)
+			closeCallback = GameManager.instance.EnableInput;
+		base.CloseWindow (closeCallback);
 	}
 
 	public void EvaluateNick() {
@@ -90,9 +88,10 @@ public class InputNameScreen : UIScreen {
 			showMention = UnityEngine.Random.Range (0, 10) == 0;
 		}
 
-		showSpecialMention = showMention;
-
-		CloseWindow ();
+		if (showMention)
+			CloseWindow (SpecialThanksScreen.Instance.ShowSpecialMention);
+		else
+			CloseWindow ();
 	}
 	
 

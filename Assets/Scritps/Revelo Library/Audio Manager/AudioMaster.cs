@@ -299,7 +299,8 @@ namespace ReveloLibrary {
 		{
 			try { 
 				foreach (ClipInfo ci in mActiveAudio) {
-					Destroy(ci.Source.gameObject);
+					if(ci.Source != null)
+						Destroy(ci.Source.gameObject);
 				}
 			}
 			catch (NullReferenceException e) {

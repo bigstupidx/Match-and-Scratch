@@ -13,6 +13,13 @@ namespace ReveloLibrary {
 
 		GameObject ScreenWrapper;
 
+		public delegate void Callback();
+		Callback callbackOnOpen;
+		Callback callbackOnClose;
+
+		bool ScreenOpened;
+		bool ScreenClosed;
+
 		public virtual void Awake()
 		{
 			_animator = GetComponent<Animator>();
@@ -36,12 +43,19 @@ namespace ReveloLibrary {
 			}
 		}
 			
-		public virtual void OpenWindow() {
-			if (!AlwaysActive) ScreenWrapper.SetActive (true);
+		public virtual void OpenWindow(Callback openCallback = null) {
+			callbackOnOpen = openCallback;
+
+			if (!AlwaysActive) 
+				ScreenWrapper.SetActive (true);
+
+			//StartCoroutine(WaitForScreenOpen());
 			IsOpen = true;
 		}
 
-		public virtual void CloseWindow() {
+		public virtual void CloseWindow(Callback closeCallback = null) {
+			callbackOnClose = closeCallback;
+			//StartCoroutine (WaitForScreenClose ());
 			IsOpen = false;
 		}
 
@@ -51,6 +65,8 @@ namespace ReveloLibrary {
 			set {
 				if (Animator != null) {
 					Animator.SetBool("IsOpen", value);
+					ScreenOpened = false;
+					ScreenClosed = false;
 				}
 			}
 		}
@@ -66,20 +82,55 @@ namespace ReveloLibrary {
 
 		public bool InOpenState {
 			get {
-				return !Animator.GetCurrentAnimatorStateInfo(0).IsName("Close") && Animator.GetCurrentAnimatorStateInfo(0).IsName("Open") && !Animator.IsInTransition(0);
+				return ScreenOpened;
 			}
+		}
+
+		void OnEndAnimationOpen() {
+			if (callbackOnOpen != null) 
+				callbackOnOpen();
+
+			ScreenOpened = true;
 		}
 
 		public bool InCloseState {
 			get {
-				return !Animator.GetCurrentAnimatorStateInfo(0).IsName("Open") && Animator.GetCurrentAnimatorStateInfo(0).IsName("Close") &&  !Animator.IsInTransition(0);
+				return ScreenClosed;
 			}
 		}
 
-		void DesactivateOnClose() {
+		void OnEndAnimationClose() {
 			if (!AlwaysActive)
 				ScreenWrapper.SetActive (false);
+
+			if (callbackOnClose != null) 
+				callbackOnClose();
+			
+			ScreenClosed = true;
 		}
 
+
+
+		/*
+		IEnumerator WaitForScreenOpen() {
+			while (!InOpenState)
+				yield return null;
+			
+			if (callbackOnOpen != null) 
+				callbackOnOpen();
+
+			Debug.Log ("Ventana " + name + " Abierta por completo");
+		}
+
+		IEnumerator WaitForScreenClose() {
+			while (!InCloseState)
+				yield return null;
+				
+			if (callbackOnClose != null) 
+				callbackOnClose();
+
+			Debug.Log ("Ventana " + name + " Cerrada por completo");
+		}
+		*/
 	}
 }
