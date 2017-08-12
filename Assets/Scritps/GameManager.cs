@@ -73,7 +73,7 @@ public class GameManager : MonoBehaviour {
 		get { return score;}
 		private set {
 			score = value;
-			scoreLabel.text = (score > 0) ? score.ToString() : "";
+			scoreLabel.text = score.ToString();// (score > 0) ? score.ToString() : "";
 		}
 	}
 
@@ -272,12 +272,13 @@ public class GameManager : MonoBehaviour {
 		while ( !animator.GetCurrentAnimatorStateInfo (0).IsName("PlayingGame") ){
 			yield return null;
 		}
+		ResetGame ();
 		ShowScreen (ScreenDefinitions.GAME, BeginGame);
 	}
 
 	void BeginGame() {
 		AnalyticsSender.SendCustomAnalitycs ("gameStart", new Dictionary<string, object>());
-		ResetGame ();
+		//ResetGame ();
 		spawner.SpawnPin();
 		if (OnBeginGame != null)
 			OnBeginGame ();
@@ -338,6 +339,7 @@ public class GameManager : MonoBehaviour {
 		spawner.Reset();
 		rotator.Reset();
 		CurrentLevel = initialLevel;
+		scoreLabel.text = "0";
 		Score = 0;
 		isGameOver = false;		
 		spawner.enabled = true;

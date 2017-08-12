@@ -51,6 +51,11 @@ public class SpecialThanksScreen : UIScreen {
 		base.OpenWindow(openCallback);
 	}
 
+	public void ButtonContinue() {
+		GameManager.instance.DisableInput ();
+		CloseWindow (GameManager.instance.EnableInput);
+	}
+
 	public override void CloseWindow (Callback closeCallback = null) {
 		PlayerPrefs.SetInt ("specialMentionShowed", 1);
 		GameManager.instance.DisableInput ();
