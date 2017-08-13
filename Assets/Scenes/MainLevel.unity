@@ -6236,7 +6236,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: 0
-  EnableDebugAtStart: 1
+  EnableDebugAtStart: 0
   debugMenu: {fileID: 1261817554769554, guid: db891dea2de3c407194f254285be97f6, type: 2}
   posibleColors:
   - {r: 1, g: 0.350227, b: 0.27205884, a: 1}
