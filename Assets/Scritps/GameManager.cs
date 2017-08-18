@@ -146,6 +146,14 @@ public class GameManager : MonoBehaviour {
 		if (EnableDebugAtStart)
 			Instantiate(debugMenu, GameObject.FindGameObjectWithTag("UICanvas").transform);
 
+		int firstRun = PlayerPrefs.GetInt ("firstRun", 0);
+		if (firstRun == 0)
+			TermsOfUseScreen.Instance.Show (StartTheGame);
+		else
+			StartTheGame ();
+	}
+
+	public void StartTheGame() {
 		ShowScreen (ScreenDefinitions.MAIN_MENU);
 		SetGameState(GameState.MainMenu);
 	}
@@ -282,6 +290,8 @@ public class GameManager : MonoBehaviour {
 		spawner.SpawnPin();
 		if (OnBeginGame != null)
 			OnBeginGame ();
+		
+		EnableInput ();
 	}
 
 	public void ShowGameOverScreen() {

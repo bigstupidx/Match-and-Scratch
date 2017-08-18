@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Name: TappxSettings
   m_EditorClassIdentifier: 
   testEnabled: 0
-  sceneListEnabled: 1
-  bannerSceneIndex: 01
+  sceneListEnabled: 0
+  bannerSceneIndex: 00
   interstitialSceneIndex: 00
   mrecSceneIndex: 00
   sceneIndex: 01

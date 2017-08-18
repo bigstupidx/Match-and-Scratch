@@ -134,6 +134,9 @@
 	<data name="game.difficulty.speedup" xml:space="preserve">
 		<value>Faster!</value>
 	</data>
+	<data name="ui.button.accept" xml:space="preserve">
+		<value>Aceptar</value>
+	</data>
 	<data name="ui.button.back" xml:space="preserve">
 		<value>Back</value>
 	</data>
@@ -148,6 +151,9 @@
 	</data>
 	<data name="ui.button.no" xml:space="preserve">
 		<value>No</value>
+	</data>
+	<data name="ui.button.reject" xml:space="preserve">
+		<value>Reject</value>
 	</data>
 	<data name="ui.button.retry" xml:space="preserve">
 		<value>Retry</value>
@@ -188,6 +194,9 @@
 	<data name="ui.label.pause" xml:space="preserve">
 		<value>Pause</value>
 	</data>
+	<data name="ui.label.privacypolicylink" xml:space="preserve">
+		<value>See Privacy Policy for Match and Scratch</value>
+	</data>
 	<data name="ui.label.quitapplication" xml:space="preserve">
 		<value>Are you sure you want to quit?</value>
 	</data>
@@ -221,6 +230,12 @@ this special mention</value>
 	</data>
 	<data name="ui.label.submitscore" xml:space="preserve">
 		<value>Submit your score</value>
+	</data>
+	<data name="ui.label.termscontent" xml:space="preserve">
+		<value>Before start playing, you must agree with the privacy policy exposed in the following link:</value>
+	</data>
+	<data name="ui.label.termstitle" xml:space="preserve">
+		<value>Terms of use</value>
 	</data>
 	<data name="ui.tabitem.alltimes" xml:space="preserve">
 		<value>Best
