@@ -30,18 +30,6 @@ namespace ReveloLibrary {
 			ScreenWrapper = transform.Find ("Wrapper").gameObject;
 			if (!AlwaysActive) ScreenWrapper.SetActive (false);
 		}
-
-		public virtual void Start()	{
-		}
-
-		public virtual void Update()
-		{
-			// Aseguramos que si una pantalla no está activada, no es interactuable.
-			if (Animator != null) {
-				_canvasGroup.blocksRaycasts = Animator.GetCurrentAnimatorStateInfo (0).IsName ("Open");
-				_canvasGroup.interactable = Animator.GetCurrentAnimatorStateInfo (0).IsName ("Open");
-			}
-		}
 			
 		public virtual void OpenWindow(Callback openCallback = null) {
 			callbackOnOpen = openCallback;
@@ -57,6 +45,8 @@ namespace ReveloLibrary {
 			callbackOnClose = closeCallback;
 			//StartCoroutine (WaitForScreenClose ());
 			IsOpen = false;
+			_canvasGroup.blocksRaycasts = false;
+			_canvasGroup.interactable = false;
 		}
 
 		public bool IsOpen
@@ -91,6 +81,8 @@ namespace ReveloLibrary {
 				callbackOnOpen();
 
 			ScreenOpened = true;
+			_canvasGroup.blocksRaycasts = true;
+			_canvasGroup.interactable = true;
 		}
 
 		public bool InCloseState {

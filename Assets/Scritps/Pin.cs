@@ -14,6 +14,7 @@ public class Pin : Circumference {
 	//private Circumference me;
 
 	private LineRenderer line;
+	//private TrailRenderer trail;
 	private SpriteRenderer sr;
 	Rotator rot;
 
@@ -24,11 +25,19 @@ public class Pin : Circumference {
 
 
 	public override void Initialize() {
-		sr = GetComponent<SpriteRenderer>();
+		sr = GetComponent<SpriteRenderer> ();
 		rot = GameManager.instance.rotator;
 		colisionador.enabled = false;
 		GameScreenParent = GameObject.Find ("Game Screen").transform;
 		pointsValue = 0;
+		//trail = GetComponent<TrailRenderer> ();
+		//trail.widthMultiplier = 4 * GetRadius ();
+		//trail.enabled = false;
+	}
+
+	public void SetColor(Color32 color) {
+		sr.color = color;
+		//trail.startColor = sr.color;
 	}
 
 	void OnEnable() {
@@ -36,7 +45,7 @@ public class Pin : Circumference {
 
 	void SetupLine() {
 		line = new LineRenderer ();
-		Color parentColor = GetComponent<SpriteRenderer>().color;
+		Color parentColor = sr.color;
 		line = gameObject.AddComponent<LineRenderer>();
 		line.material = new Material(Shader.Find("Sprites/Default"));
 		line.startColor = parentColor;
@@ -61,6 +70,12 @@ public class Pin : Circumference {
 	}
 
 	Vector3 vel;
+
+	public void SetPinned() {
+		isPinned = true;
+		//trail.enabled = true;
+
+	}
 
 	void Update() {
 		#if UNITY_EDITOR
@@ -99,6 +114,7 @@ public class Pin : Circumference {
 	}
 
 	public void Autodestroy() {
+		//trail.enabled = false;
 		drawSpear = false;
 		colisionador.enabled = false;
 		if (pointsValue > 0) {

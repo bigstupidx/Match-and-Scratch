@@ -66,7 +66,7 @@ public class Rotator : Circumference {
 			OnPinPinned ();
 		
 		newPin.colisionador.isTrigger = false;
-		newPin.isPinned = true;
+		newPin.SetPinned ();
 		newPin.colisionador.enabled = true;
 
 
@@ -298,7 +298,7 @@ public class Rotator : Circumference {
 		Vector3 dir = (collidedPinPos - newPinPos).normalized;
 		float angle = Vector3.Angle(axisDirection, dir);
 			
-		float badAngle = angle;
+		//float badAngle = angle;
 
 		//angle = angle.RoundToNearest(circleDivisions); // Deja esto calculado de antes si puedes
 

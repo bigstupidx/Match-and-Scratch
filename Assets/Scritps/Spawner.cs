@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 public class Spawner : MonoBehaviour {
 	[SerializeField]
 	public const float MINIMUM_SPAWN_TIME = 0f;
-	public int MAX_COLORS_IN_GAME = 7;
+	public int MAX_COLORS_IN_GAME = 8;
 	 
 	public GameObject PinPrefab;
 	public int nextColor;
@@ -42,9 +42,10 @@ public class Spawner : MonoBehaviour {
 
 		currentColor = nextColor;
 		lastSpawnedPin = Instantiate(PinPrefab, transform.position, transform.rotation);
-		lastSpawnedPin.GetComponent<Circumference>().colorType   = currentColor;
+		Pin pin = lastSpawnedPin.GetComponent<Pin> ();
+		pin.colorType   = currentColor;
+		pin.SetColor(GameManager.instance.posibleColors[currentColor]);
 		lastSpawnedPin.name = pinsCount + "-Type_" + currentColor.ToString();
-		lastSpawnedPin.GetComponent<SpriteRenderer>().color = GameManager.instance.posibleColors[currentColor];
 
 		pinsCount++;
 

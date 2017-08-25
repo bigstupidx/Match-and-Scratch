@@ -15,7 +15,7 @@ public class LevelUp : MonoBehaviour {
 
 	public Text texto; 
 
-	Animator animator;
+	public Animator animator;
 
 	void Awake() {
 		animator = GetComponent<Animator> ();

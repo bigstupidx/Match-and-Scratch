@@ -95,8 +95,4 @@ public class InputNameScreen : UIScreen {
 	}
 	
 
-	// Update is called once per frame
-	public override void Update () {
-		base.Update ();
-	}
 }

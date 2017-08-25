@@ -95,10 +95,10 @@ public class GameManager : MonoBehaviour {
 		90,		// 10
 		100,
 		110,	
-		125,
-		140,
-		150,	// 15
-
+		120,
+		130,
+		140,	// 15
+		150	
 	};
 	private Queue<DifficultType> difficultyStepsQueue;
 	private List<DifficultType> difficultySteps = new List<DifficultType>() {
@@ -110,13 +110,14 @@ public class GameManager : MonoBehaviour {
 		DifficultType.SWITCH_REVERSE,
 		DifficultType.MORE_COLORS,
 		DifficultType.SPEEDUP,
-		DifficultType.SPEEDUP,	
-		DifficultType.MORE_COLORS,			//10
+		DifficultType.MORE_COLORS,
+		DifficultType.SPEEDUP,				//10
+		DifficultType.MORE_COLORS,			
 		DifficultType.SWITCH_CRAZY_SPEED,
 		DifficultType.MORE_COLORS,
-		DifficultType.SPEEDUP,
-		DifficultType.SPEEDUP,
-		DifficultType.SPEEDUP,	// 15
+		DifficultType.MORE_COLORS,
+		DifficultType.MORE_COLORS,			// 15
+		DifficultType.SPEEDUP
 	};
 
 	private SoundDefinitions[] musics = { SoundDefinitions.LOOP_1, SoundDefinitions.LOOP_2, SoundDefinitions.LOOP_3 };
@@ -355,8 +356,11 @@ public class GameManager : MonoBehaviour {
 		spawner.enabled = true;
 		rotator.enabled = true;
 		currentMusic = 0;
-		levelUp.GetComponent<Animator> ().ResetTrigger ("start");
-		levelUp.GetComponent<Animator> ().Play ("Idle");
+		/*if (levelUp.animator != null) {
+			levelUp.animator.ResetTrigger ("start");
+			levelUp.animator.Play ("start");
+		}
+		*/
 		AudioMaster.instance.StopAll(false);
 		AudioMaster.instance.PlayLoop(musics[currentMusic]);
 		isGamePaused = false;
