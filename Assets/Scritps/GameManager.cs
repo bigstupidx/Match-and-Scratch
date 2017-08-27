@@ -97,8 +97,7 @@ public class GameManager : MonoBehaviour {
 		110,	
 		120,
 		130,
-		140,	// 15
-		150	
+		140		// 15
 	};
 	private Queue<DifficultType> difficultyStepsQueue;
 	private List<DifficultType> difficultySteps = new List<DifficultType>() {
@@ -112,12 +111,11 @@ public class GameManager : MonoBehaviour {
 		DifficultType.SPEEDUP,
 		DifficultType.MORE_COLORS,
 		DifficultType.SPEEDUP,				//10
-		DifficultType.MORE_COLORS,			
 		DifficultType.SWITCH_CRAZY_SPEED,
 		DifficultType.MORE_COLORS,
 		DifficultType.MORE_COLORS,
-		DifficultType.MORE_COLORS,			// 15
-		DifficultType.SPEEDUP
+		DifficultType.SPEEDUP,
+		DifficultType.SPEEDUP				//15
 	};
 
 	private SoundDefinitions[] musics = { SoundDefinitions.LOOP_1, SoundDefinitions.LOOP_2, SoundDefinitions.LOOP_3 };
@@ -427,7 +425,7 @@ public class GameManager : MonoBehaviour {
 				AudioMaster.instance.Play (SoundDefinitions.SFX_SPEED);
 			break;
 			case DifficultType.SPEEDUP:
-				rotator.RotationSpeed += 25;
+				rotator.RotationSpeed += rotator.RotationSpeed < 200 ? 20 : 10;
 				AudioMaster.instance.Play (SoundDefinitions.SCRATCH_7);
 			break;
 

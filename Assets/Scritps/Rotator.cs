@@ -6,6 +6,7 @@ using System;
 
 public class Rotator : Circumference {
 	public const float INITIAL_SPEED = 100f;
+	public const int MAX_PINS_MEMBERS_IN_GROUP = 3;
 	[SerializeField]
 	private float rotationSpeed;
 	public float RotationSpeed {
@@ -269,7 +270,7 @@ public class Rotator : Circumference {
 		}
 	}
 
-	float circleDivisions = 360f / 8f;
+	float circleDivisions = 360f / 12f;
 	Vector3 SnapNormalizedVector(Vector3 newPinPos, Vector3 collidedPinPos) {
 		//float angleBetween = Vector3.Angle (B, A); // Angulo de nuestra bola respecto de la que ha colisionado
 
@@ -288,36 +289,32 @@ public class Rotator : Circumference {
 		
 		Vector3 axisDirection;
 
+
+		// Si chocamos con el rotor, el vector de referencia para calcular el angulo es Vector3.down (0,-1,0)
 		if (me.GetPosition () == collidedPinPos)
 			axisDirection = Vector3.down;
+		// Sino el vector de referencia es el formado en ese momento por el rotor en direccion a la bola posicionada.
 		else
-			axisDirection = (collidedPinPos - Vector3.zero).normalized;
+			axisDirection = (collidedPinPos - me.GetPosition()).normalized;
+		
 
-		float deltaAngle = Vector3.Angle(Vector3.down, axisDirection);
-
+		//vector que apunta en direccion de la bola posicionada a la nueva bola
 		Vector3 dir = (collidedPinPos - newPinPos).normalized;
+
+		// Angulo entre el vector formado por las bolas y el vector dirección que forma la biola posicionada con el roton
 		float angle = Vector3.Angle(axisDirection, dir);
-			
-		//float badAngle = angle;
+		//backup del valor del angulo sin snappear
+		float originalAngle = angle;
 
-		//angle = angle.RoundToNearest(circleDivisions); // Deja esto calculado de antes si puedes
+		if (angle <= 110)
+			angle = 110;
+		
+		//ángulo snappeado
+		float snappedAngle = angle.RoundToNearest (circleDivisions);
 
-		//angulo entre rotor y bola puesta respecto de V3.down
-		//angulo entre bola lanzada y bola puesta respecto del angulo anterior
-		// Calculamos el angulo al que se debería pegar la bola lanzada a la bola puesta
-		// devolvemos la posición correcta de la bola lanzada
+		Debug.LogFormat ("Angulo Original entre bolas: {0} => valor Snappeado {1}", originalAngle.ToString(), snappedAngle.ToString ());
 
-		/*
-		float angle = Vector3.Angle(Vector3.down, dir);
-		float badAngle = angle;
-
-		angle = angle.RoundToNearest(circleDivisions); // Deja esto calculado de antes si puedes
-		*/
-		float finalAng = (angle + deltaAngle).RoundToNearest (circleDivisions);
-
-		//Debug.LogFormat ("Angulo {0} -> snappedTo {1}  ==> angulo final ({1} + {2}) = {3} -> snappedTo {4}", badAngle.ToString(), angle.ToString (),  deltaAngle.ToString(), (angle + deltaAngle).ToString(), finalAng.ToString());
-
-		return new Vector3(Mathf.Sin(finalAng * Mathf.Deg2Rad) * Mathf.Sign(dir.x), -Mathf.Cos(finalAng * Mathf.Deg2Rad)* Mathf.Sign(dir.y), 0);
+		return new Vector3( Mathf.Sin(snappedAngle * Mathf.Deg2Rad) * Mathf.Sign(dir.x), -Mathf.Cos(snappedAngle * Mathf.Deg2Rad) * Mathf.Sign(dir.y), 0);
 	}
 
 	public void ProcessPin(Circumference newCircumference) {
@@ -389,7 +386,7 @@ public class Rotator : Circumference {
 		// Si encontramos un grupo de mas de dos miembros del mismo color...
 		for(int i = 0; i < groupsDictionary.Count; i++) {
 			if (groupsDictionary[i].isActive) {
-				if (groupsDictionary[i].Count > 2) {
+				if (groupsDictionary[i].Count >= MAX_PINS_MEMBERS_IN_GROUP) {
 					totalPinsToDestroy += groupsDictionary[i].Count;
 					// ...eliminamos el grupo.
 					groupsDictionary[i].Erase();
@@ -510,7 +507,7 @@ public class Rotator : Circumference {
 			//Debug.Log ("newCrazySpeedInc: " + newCrazySpeedInc);
 			StartCoroutine(SmoothSpeedIncrement(variableSpeedInc, newCrazySpeedInc, 1f));
 
-			yield return new WaitForSeconds ( (float)UnityEngine.Random.Range (4,2));
+			yield return new WaitForSeconds ( (float)UnityEngine.Random.Range (3, 5));
 		}
 	}
 

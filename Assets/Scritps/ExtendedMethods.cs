@@ -55,11 +55,12 @@ public static class ExtendedMethods
 		return result;
 	}
 
-	public static float RoundToNearest(this float a, float nearest) {
-		if (nearest == 0) {
-			return a;
+	public static float RoundToNearest(this float angle, float snapAngle) {
+		if (snapAngle == 0) {
+			return angle;
 		}
-		return Mathf.RoundToInt(a / nearest) * nearest;
+		float times = Mathf.RoundToInt(angle / snapAngle);
+		return (times * snapAngle);
 	}
 }
 

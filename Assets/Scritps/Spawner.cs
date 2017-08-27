@@ -26,12 +26,12 @@ public class Spawner : MonoBehaviour {
 	}
 
 	public void AddColorsInGame(int inc) {
-		colorsInGame = Mathf.Min (colorsInGame + inc, MAX_COLORS_IN_GAME - 1);
+		colorsInGame = Mathf.Min (colorsInGame + inc, MAX_COLORS_IN_GAME);
 	}
 
 	public void Reset() {
 		pinsCount = 0;
-		colorsInGame = 0;
+		colorsInGame = 1;
 		nextColor = GetNextColor ();
 		nextPin.color = GameManager.instance.posibleColors[nextColor];
 	}
@@ -54,7 +54,7 @@ public class Spawner : MonoBehaviour {
 	}
 
 	int GetNextColor() {
-		return Random.Range (0, Mathf.Min(Mathf.Max(0, colorsInGame +1), GameManager.instance.posibleColors.Length));
+		return Random.Range (0, Mathf.Min(Mathf.Max(0, colorsInGame), GameManager.instance.posibleColors.Length));
 	}
 
 	public void ThrowCurrentPin() {
