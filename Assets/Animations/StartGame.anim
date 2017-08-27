@@ -48,12 +48,12 @@ AnimationClip:
         time: 0.033333335
         value: 300
         inSlope: -24743.352
-        outSlope: -465.7895
+        outSlope: -465.39474
         tangentMode: 69
       - serializedVersion: 2
         time: 0.6666667
-        value: 5
-        inSlope: -465.7895
+        value: 5.25
+        inSlope: -465.39474
         outSlope: 0
         tangentMode: 69
       m_PreInfinity: 2
@@ -207,12 +207,12 @@ AnimationClip:
         time: 0.033333335
         value: 300
         inSlope: -24743.352
-        outSlope: -465.7895
+        outSlope: -465.39474
         tangentMode: 69
       - serializedVersion: 2
         time: 0.6666667
-        value: 5
-        inSlope: -465.7895
+        value: 5.25
+        inSlope: -465.39474
         outSlope: 0
         tangentMode: 69
       m_PreInfinity: 2

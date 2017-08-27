@@ -312,7 +312,7 @@ public class Rotator : Circumference {
 		//ángulo snappeado
 		float snappedAngle = angle.RoundToNearest (circleDivisions);
 
-		Debug.LogFormat ("Angulo Original entre bolas: {0} => valor Snappeado {1}", originalAngle.ToString(), snappedAngle.ToString ());
+		//Debug.LogFormat ("Angulo Original entre bolas: {0} => valor Snappeado {1}", originalAngle.ToString(), snappedAngle.ToString ());
 
 		return new Vector3( Mathf.Sin(snappedAngle * Mathf.Deg2Rad) * Mathf.Sign(dir.x), -Mathf.Cos(snappedAngle * Mathf.Deg2Rad) * Mathf.Sign(dir.y), 0);
 	}

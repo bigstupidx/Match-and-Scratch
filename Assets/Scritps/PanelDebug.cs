@@ -12,7 +12,7 @@ public class PanelDebug : MonoBehaviour {
 	public Text levelLabel;
 	public Text rotatorSpeedLabel;
 	public Text currentRotatorSpeedLabel;
-
+	public Text colorsLabel;
 	// Use this for initialization
 	void Start () {
 	}
@@ -44,8 +44,9 @@ public class PanelDebug : MonoBehaviour {
 
 	void Update() {
 		levelLabel.text = "Level: " + GameManager.instance.CurrentLevel.ToString();
-		rotatorSpeedLabel.text = "rotator Speed: " + (GameManager.instance.rotator.RotationSpeed).ToString();
-		currentRotatorSpeedLabel.text = "current rotator Speed: " + (GameManager.instance.rotator.currentSpeed).ToString();
+		rotatorSpeedLabel.text = "Rotator Speed: " + GameManager.instance.rotator.RotationSpeed.ToString();
+		currentRotatorSpeedLabel.text = "Current Rotator Speed: " + GameManager.instance.rotator.currentSpeed.ToString();
+		colorsLabel.text = "Colors in use: " + GameManager.instance.spawner.colorsInGame.ToString() + " / " + Spawner.MAX_COLORS_IN_GAME.ToString ();
 	}
 
 	public void ShowSpecialMention() {

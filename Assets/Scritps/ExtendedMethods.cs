@@ -59,7 +59,7 @@ public static class ExtendedMethods
 		if (snapAngle == 0) {
 			return angle;
 		}
-		float times = Mathf.RoundToInt(angle / snapAngle);
+		float times = Mathf.CeilToInt(angle / snapAngle);
 		return (times * snapAngle);
 	}
 }
