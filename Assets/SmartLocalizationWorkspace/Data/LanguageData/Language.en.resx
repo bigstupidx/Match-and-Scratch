@@ -173,9 +173,6 @@
 	<data name="ui.label.highscores" xml:space="preserve">
 		<value>Highscores</value>
 	</data>
-	<data name="ui.label.level" xml:space="preserve">
-		<value>Level</value>
-	</data>
 	<data name="ui.label.levelup" xml:space="preserve">
 		<value>Level Up</value>
 	</data>
@@ -224,9 +221,6 @@ who is the best</value>
 ツ
 You deserve  
 this special mention</value>
-	</data>
-	<data name="ui.label.speed" xml:space="preserve">
-		<value>Speed</value>
 	</data>
 	<data name="ui.label.submitscore" xml:space="preserve">
 		<value>Submit your score</value>

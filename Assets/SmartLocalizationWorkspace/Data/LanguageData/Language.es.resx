@@ -173,9 +173,6 @@
 	<data name="ui.label.highscores" xml:space="preserve">
 		<value>Puntuaciones</value>
 	</data>
-	<data name="ui.label.level" xml:space="preserve">
-		<value>Nivel</value>
-	</data>
 	<data name="ui.label.levelup" xml:space="preserve">
 		<value>Nuevo nivel</value>
 	</data>
@@ -225,9 +222,6 @@ quien es el mejor</value>
 ツ
 Te mereces esta 
 mención especial</value>
-	</data>
-	<data name="ui.label.speed" xml:space="preserve">
-		<value>Velocidad</value>
 	</data>
 	<data name="ui.label.submitscore" xml:space="preserve">
 		<value>Envía tu puntuación</value>
