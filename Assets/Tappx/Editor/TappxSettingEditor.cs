@@ -18,7 +18,7 @@ namespace TappxSDK {
 
 		// minimum version of the Google Play Services library project
 		private long MinGmsCoreVersionCode = 4030530;
-		private string googlePlayServicesVersion = "11.0.4";
+		private string googlePlayServicesVersion = "10.0.1";
 
 		private string sError = "Error";
 	    private string sOk = "OK";
