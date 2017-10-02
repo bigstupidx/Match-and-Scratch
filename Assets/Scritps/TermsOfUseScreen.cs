@@ -3,40 +3,52 @@ using System.Collections.Generic;
 using UnityEngine;
 using ReveloLibrary;
 
-public class TermsOfUseScreen : UIScreen {
+public class TermsOfUseScreen : UIScreen
+{
 	
-	public static TermsOfUseScreen Instance { get; private set;}
+    public static TermsOfUseScreen Instance = null;
 
-	public string PrivacyPolicyUrl;
+    public string PrivacyPolicyUrl;
 
-	Callback continueCallback;
+    Callback continueCallback;
 
-	public override void Awake ()
-	{
-		if(Instance != null && Instance != this) {
-			Destroy(gameObject);
-		}
-		Instance = this;
-		IsOpen = false;
-		base.Awake ();
-	}
+    public override void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+        }
 
-	public void Show(Callback theCallBack = null) {
-		continueCallback = theCallBack;
-		OpenWindow ();
-	}
+        IsOpen = false;
+		
+        base.Awake();
+    }
 
-	public void OpenPrivacyPolicy() {
-		Application.OpenURL (PrivacyPolicyUrl);
-	}
+    public void Show(Callback theCallBack = null)
+    {
+        continueCallback = theCallBack;
+        OpenWindow();
+    }
 
-	public void ButtonAccept() {
-		GameManager.instance.DisableInput ();
-		PlayerPrefs.SetInt ("firstRun", 1);
-		CloseWindow (continueCallback);
-	}
+    public void OpenPrivacyPolicy()
+    {
+        Application.OpenURL(PrivacyPolicyUrl);
+    }
 
-	public void ButtonCancel() {
-		Application.Quit();
-	}
+    public void ButtonAccept()
+    {
+        GameManager.Instance.DisableInput();
+        PlayerPrefs.SetInt("firstRun", 1);
+
+        CloseWindow(continueCallback);
+    }
+
+    public void ButtonCancel()
+    {
+        Application.Quit();
+    }
 }

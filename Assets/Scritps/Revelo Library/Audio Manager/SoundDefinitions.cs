@@ -1,14 +1,11 @@
 namespace ReveloLibrary {
-	/// <summary>
-	/// Este enumerado hay que editaarlo con las definiciones que necesitemos.
-	/// Se usan estas definiciones para identificar los clips de audio
-	/// Sound definitions.
-	/// </summary>
-
+    /// <summary>
+    /// This enum contains the different screens that we'll need in our game
+    /// Screen will be identified with each value
+    /// </summary>
 	public enum SoundDefinitions
 	{
-		NONE,
-		
+		NONE,		
 		// Musics
 		THEME_MAINMENU,
 		START_FX,

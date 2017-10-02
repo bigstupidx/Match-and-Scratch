@@ -1,13 +1,11 @@
 ﻿namespace ReveloLibrary {
 	/// <summary>
-	/// Este enumerado hay que editaarlo con las definiciones que necesitemos.
-	/// Se usan estas definiciones para identificar las Pantallas del UI
+	/// This enum contains the different screens that we'll need in our game
+    /// Screen will be identified with each value
 	/// </summary>
-
 	public enum ScreenDefinitions
 	{
 		NONE,
-
 		// Screens
 		MAIN_MENU,
 		GAME,

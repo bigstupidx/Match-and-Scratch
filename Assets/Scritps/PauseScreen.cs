@@ -4,25 +4,34 @@ using UnityEngine;
 using ReveloLibrary;
 using UnityEngine.UI;
 
-public class PauseScreen : UIScreen {
+public class PauseScreen : UIScreen
+{
 
-	public static PauseScreen Instance { get; private set;}
+    public static PauseScreen Instance = null;
 
-	public override void Awake ()
-	{
-		if(Instance != null && Instance != this) {
-			Destroy(gameObject);
-		}
-		Instance = this;
-		IsOpen = false;
-		base.Awake ();
-	}
+    public override void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+        }
 
-	public void ResumeGame() {
-		GameManager.instance.PauseGame (false);
-	}
+        IsOpen = false;
+		
+        base.Awake();
+    }
 
-	public void ExitToMainManu() {
-		GameManager.instance.ExitToMainMenu ();
-	}
+    public void ResumeGame()
+    {
+        GameManager.Instance.PauseGame(false);
+    }
+
+    public void ExitToMainManu()
+    {
+        GameManager.Instance.ExitToMainMenu();
+    }
 }

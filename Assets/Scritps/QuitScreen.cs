@@ -4,26 +4,35 @@ using UnityEngine;
 using ReveloLibrary;
 using UnityEngine.UI;
 
-public class QuitScreen : UIScreen {
+public class QuitScreen : UIScreen
+{
 
-	public static QuitScreen Instance { get; private set;}
+    public static QuitScreen Instance = null;
 
-	public override void Awake ()
-	{
-		if(Instance != null && Instance != this) {
-			Destroy(gameObject);
-		}
-		Instance = this;
-		IsOpen = false;
-		base.Awake ();
-	}
+    public override void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+        }
 
-	public void ButtonNo() {
-		GameManager.instance.DisableInput ();
-		CloseWindow (GameManager.instance.EnableInput);
-	}
+        Instance = this;
+        IsOpen = false;
+        base.Awake();
+    }
 
-	public void ButtonYes() {
-		Application.Quit();
-	}
+    public void ButtonNo()
+    {
+        GameManager.Instance.DisableInput();
+        CloseWindow(GameManager.Instance.EnableInput);
+    }
+
+    public void ButtonYes()
+    {
+        Application.Quit();
+    }
 }

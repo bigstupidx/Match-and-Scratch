@@ -4,150 +4,165 @@ using System.Collections.Generic;
 using UnityEngine;
 using ReveloLibrary;
 
-public class Tutorial : MonoBehaviour {
+public class Tutorial : MonoBehaviour
+{
+    public enum TutorialStep
+    {
+        FIRST_THROW,
+        SECOND_THROW,
+        THIRD_THROW,
+        END
+    }
+
+    TutorialStep currentTutorialStep;
+    public GameObject tutorialWrapper;
+    public GameObject hand;
+
+    UIScreen screen;
+    bool tutorialShowed;
+    bool clickAvailable;
 
 
-	public enum TutorialStep
-	{
-		FIRST_THROW,
-		SECOND_THROW,
-		THIRD_THROW,
-		END
-	}
+    void Awake()
+    {
+        screen = transform.parent.GetComponent<UIScreen>();
+        tutorialWrapper.SetActive(false);
+    }
 
-	TutorialStep currentTutorialStep;
-	public GameObject tutorialWrapper;
-	public GameObject hand;
+    // Use this for initialization
+    public void OnEnable()
+    {
+        if (GameManager.Instance.OnBeginGame == null)
+            GameManager.Instance.OnBeginGame += HandleOnBeginGame;
+    }
 
-	UIScreen screen;
-	bool tutorialShowed;
-	bool clickAvailable;
+    void OnDisable()
+    {
+        GameManager.Instance.OnBeginGame -= HandleOnBeginGame;
+    }
 
+    bool completedRotation;
 
-	void Awake() {
-		screen = transform.parent.GetComponent<UIScreen> ();
-		tutorialWrapper.SetActive(false);
-	}
+    IEnumerator ShowTutorial()
+    {
+        if (!tutorialShowed)
+        {
+            GameManager.Instance.currentGamePlayState = GamePlayState.TUTORIAL;
 
-	// Use this for initialization
-	public void OnEnable () {
-		if (GameManager.instance.OnBeginGame == null)			
-			GameManager.instance.OnBeginGame += HandleOnBeginGame;
-	}
-	void OnDisable() {
-		GameManager.instance.OnBeginGame -= HandleOnBeginGame;
-	}
+            GameManager.Instance.rotator.OnPinPinned += HandleOnPinPinned;
+            GameManager.Instance.rotator.OnCompleteRotation += HandleCompleteRotation;
 
-	bool completedRotation;
+            while (!screen.InOpenState)
+            {
+                yield return null;
+            }
 
-	IEnumerator ShowTutorial() {
-		if (!tutorialShowed) {
-			GameManager.instance.currentGamePlayState = GamePlayState.Tutorial;
+            tutorialWrapper.SetActive(true);
 
-			GameManager.instance.rotator.OnPinPinned += HandleOnPinPinned;
-			GameManager.instance.rotator.OnCompleteRotation += HandleCompleteRotation;
+            EnableClick(true);
+            // · First Throw
+            GameManager.Instance.rotator.transform.rotation = new Quaternion(0, 0, 0, 0);
+            GameManager.Instance.rotator.RotationSpeed = 0;
+			
+            clickAvailable = true;
+			
+            while (currentTutorialStep == TutorialStep.FIRST_THROW)
+            {
+                if (Input.GetButtonDown("Fire1"))
+                    ContinueTurorial();
+                yield return null;
+            }
+            // · Second Throw
+            GameManager.Instance.rotator.RotationSpeed = Rotator.INITIAL_SPEED;
+            // · --> wait for 360º rotation.
+            while (!completedRotation)
+            {
+                yield return null;
+            }
+            // . --> when 360º rotation is complete, wait for the player click
+            completedRotation = false;
+            GameManager.Instance.rotator.transform.rotation = new Quaternion(0, 0, 0, 0);
+            GameManager.Instance.rotator.RotationSpeed = 0;
+			
+            EnableClick(true);
+			
+            while (currentTutorialStep == TutorialStep.SECOND_THROW)
+            {
+                if (Input.GetButtonDown("Fire1"))
+                    ContinueTurorial();
+                yield return null;
+            }
 
-			while (!screen.InOpenState) {
-				yield return null;
-			}
+            // · Third Throw: Iniciamos la rotación del rotor
+            GameManager.Instance.rotator.RotationSpeed = Rotator.INITIAL_SPEED;
+            EnableClick(false);
+            // · --> wait for 360º rotation.
+            while (!completedRotation)
+            {
+                yield return null;
+            }
+            // . --> when 360º rotation is complete, wait for the player click
+            completedRotation = false;
+            GameManager.Instance.rotator.transform.rotation = new Quaternion(0, 0, 0, 0);
+            GameManager.Instance.rotator.RotationSpeed = 0;
+			
+            EnableClick(true);
+			
+            while (currentTutorialStep == TutorialStep.THIRD_THROW)
+            {
+                if (Input.GetButtonDown("Fire1"))
+                    ContinueTurorial();
+                yield return null;
+            }
 
-			tutorialWrapper.SetActive(true);
-			//Debug.Log ("Tutoral Start");
+            EndTutorial();
+        }
+    }
 
+    void EnableClick(bool value)
+    {
+        hand.SetActive(value);
+        clickAvailable = value;
+    }
 
-			EnableClick (true);
-			// · First Throw: paramos el rotor para que el jugador dispare la bola
-			GameManager.instance.rotator.transform.rotation = new Quaternion(0, 0, 0, 0);
-			GameManager.instance.rotator.RotationSpeed = 0;
-			clickAvailable = true;
-			while (currentTutorialStep == TutorialStep.FIRST_THROW) {
-				if ( Input.GetButtonDown("Fire1") )
-					ContinueTurorial();
-				yield return null;
-			}
-			//Debug.Log ("Tutoral First Throw");
+    public void ContinueTurorial()
+    {
+        if (clickAvailable)
+        {
+            GameManager.Instance.spawner.lastSpawnedPin.GetComponent<Pin>().isShooted = true;
+        }
+        EnableClick(false);
+    }
 
-			// · Second Throw: Iniciamos la rotación del rotor
-			GameManager.instance.rotator.RotationSpeed = Rotator.INITIAL_SPEED;
-			//EnableClick (false);
-			// · --> Esperamos a que de un giro completo.
-			while (!completedRotation) {
-				yield return null;
-			}
-			// . --> Cuando ha dado el giro completo, esperamos al click del usuario
-			completedRotation = false;
-			GameManager.instance.rotator.transform.rotation = new Quaternion(0, 0, 0, 0);
-			GameManager.instance.rotator.RotationSpeed = 0;
-			EnableClick (true);
-			while (currentTutorialStep == TutorialStep.SECOND_THROW) {
-				if ( Input.GetButtonDown("Fire1") )
-					ContinueTurorial();
-				yield return null;
-			}
-			//Debug.Log ("Tutoral Second Throw");
+    void HandleOnBeginGame()
+    {
+        tutorialShowed = PlayerPrefs.GetInt("tutorialVisto", 0) == 1;
+        if (!tutorialShowed)
+        {
+            StartCoroutine(ShowTutorial());
+        }
+    }
 
-			// · Third Throw: Iniciamos la rotación del rotor
-			GameManager.instance.rotator.RotationSpeed = Rotator.INITIAL_SPEED;
-			EnableClick (false);
-			// · --> Esperamos a que de un giro completo.
-			while (!completedRotation) {
-				yield return null;
-			}
-			// . --> Cuando ha dado el giro completo, esperamos al click del usuario
-			completedRotation = false;
-			GameManager.instance.rotator.transform.rotation = new Quaternion(0, 0, 0, 0);
-			GameManager.instance.rotator.RotationSpeed = 0;
-			EnableClick (true);
-			while (currentTutorialStep == TutorialStep.THIRD_THROW) {
-				if ( Input.GetButtonDown("Fire1"))
-					ContinueTurorial();
-				yield return null;
-			}
-			//Debug.Log ("Tutoral Third Throw");
-			// Terminamos el tutorial
-			EndTutorial();
-		}
-		//yield return null;
-	}
+    void HandleOnPinPinned()
+    {
+        currentTutorialStep++;
+    }
 
-	void EnableClick(bool value) {
-		hand.SetActive (value);
-		clickAvailable = value;
-	}
+    void HandleCompleteRotation()
+    {
+        completedRotation = true;
+    }
 
-	public void ContinueTurorial() {
-		//Debug.Log ("<color=yellow>Click enabled: " + clickAvailable + "</color>");
-		if (clickAvailable) {
-			GameManager.instance.spawner.lastSpawnedPin.GetComponent<Pin> ().isShooted = true;
-		}
-		EnableClick (false);
-	}
+    public void EndTutorial()
+    {
+        currentTutorialStep = TutorialStep.END;
+        PlayerPrefs.SetInt("tutorialVisto", 1);
+        GameManager.Instance.currentGamePlayState = GamePlayState.NORMAL;
+        GameManager.Instance.rotator.OnPinPinned -= HandleOnPinPinned;
+        GameManager.Instance.rotator.OnCompleteRotation -= HandleCompleteRotation;
+        GameManager.Instance.rotator.RotationSpeed = Rotator.INITIAL_SPEED;
 
-	void HandleOnBeginGame() {
-		tutorialShowed = PlayerPrefs.GetInt ("tutorialVisto", 0) == 1;
-		if (!tutorialShowed) {
-			StartCoroutine (ShowTutorial());
-		}
-	}
-
-	void HandleOnPinPinned() {
-		currentTutorialStep++;
-	}
-
-	void HandleCompleteRotation() {
-		completedRotation = true;
-	}
-
-	public void EndTutorial() {
-		currentTutorialStep = TutorialStep.END;
-		PlayerPrefs.SetInt ("tutorialVisto", 1);
-		GameManager.instance.currentGamePlayState = GamePlayState.Normal;
-		GameManager.instance.rotator.OnPinPinned -= HandleOnPinPinned;
-		GameManager.instance.rotator.OnCompleteRotation -= HandleCompleteRotation;
-		GameManager.instance.rotator.RotationSpeed = Rotator.INITIAL_SPEED;
-
-		tutorialWrapper.SetActive(false);
-		AnalyticsSender.SendCustomAnalitycs("tutorialEnd", new Dictionary<string, object>());
-		//Debug.Log ("Tutoral End");
-	}
+        tutorialWrapper.SetActive(false);
+        AnalyticsSender.SendCustomAnalitycs("tutorialEnd", new Dictionary<string, object>());
+    }
 }
