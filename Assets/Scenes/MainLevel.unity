@@ -6293,7 +6293,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   masterVolume: 0.7
-  GameSounds:
+  gameSoundList:
   - SoundDef: 1
     Volume: 1
     Audios:
@@ -6301,10 +6301,10 @@ MonoBehaviour:
   - SoundDef: 2
     Volume: 1
     Audios:
-    - {fileID: 8300000, guid: e0f623eb6ef3146699d6067150b28482, type: 3}
     - {fileID: 8300000, guid: 5cfe23812bfdf4f57b65c6b8d9299236, type: 3}
     - {fileID: 8300000, guid: 17aefe3e4a3f54ecdbe9fee23f37ec76, type: 3}
     - {fileID: 8300000, guid: 580b1ba0f737a4d4c85795e871ea9466, type: 3}
+    - {fileID: 8300000, guid: e0f623eb6ef3146699d6067150b28482, type: 3}
   - SoundDef: 3
     Volume: 1
     Audios:
@@ -6321,6 +6321,14 @@ MonoBehaviour:
     Volume: 1
     Audios:
     - {fileID: 8300000, guid: 731ae98fd76ef428a9b6b413d5b78996, type: 3}
+  - SoundDef: 6
+    Volume: 1
+    Audios:
+    - {fileID: 8300000, guid: 63dd4489c40aa4f548f965652493a482, type: 3}
+  - SoundDef: 7
+    Volume: 1
+    Audios:
+    - {fileID: 8300000, guid: 7a84159cbd4ef4e1b8aba162e8733d8b, type: 3}
   - SoundDef: 8
     Volume: 1
     Audios:
@@ -6369,14 +6377,6 @@ MonoBehaviour:
     Volume: 1
     Audios:
     - {fileID: 8300000, guid: aeb6cf7b72cba428d9cc44c67640d9f3, type: 3}
-  - SoundDef: 6
-    Volume: 1
-    Audios:
-    - {fileID: 8300000, guid: 63dd4489c40aa4f548f965652493a482, type: 3}
-  - SoundDef: 7
-    Volume: 1
-    Audios:
-    - {fileID: 8300000, guid: 7a84159cbd4ef4e1b8aba162e8733d8b, type: 3}
 --- !u!114 &391
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -91,7 +91,6 @@ namespace ReveloLibrary
             UpdateVoiceOverSounds();
             UpdateActiveAudio();
             CheckFaddingSoundsToStopIt();
-            EmptySoundTrash();
         }
 
         #region "Unused methods"
@@ -153,6 +152,7 @@ namespace ReveloLibrary
                         //Play it
                         source.Play();
                         //Destroy it when stop
+
                         Destroy(soundObj, gs.TheSound.length);
                     }
                     //Set the source as active
@@ -288,6 +288,10 @@ namespace ReveloLibrary
                     }
                     else
                     {
+                        if (ci.Source)
+                        {
+                            Destroy(ci.Source.gameObject);
+                        }
                         trash.Add(ci);
                     }
                 }
@@ -306,8 +310,10 @@ namespace ReveloLibrary
                 {
                     if (ci.Source != null)
                     {
-                        trash.Add(ci);
+                        Destroy(ci.Source.gameObject);
+
                     }
+                    trash.Add(ci);
                 }
             }
             else
@@ -333,6 +339,10 @@ namespace ReveloLibrary
                 {
                     if (!ci.Source.loop)
                     {
+                        if (ci.Source)
+                        {
+                            Destroy(ci.Source.gameObject);
+                        }
                         trash.Add(ci);
                     }
                 }
@@ -431,32 +441,24 @@ namespace ReveloLibrary
                 return;
             }
             
-            foreach (var audioClip in activeAudioList)
+            foreach (ClipInfo ci in activeAudioList)
             {
-                if (audioClip.StopFading)
+                if (ci.StopFading)
                 {
-                    if (audioClip.currentVolume > 0.001f) //Si aún tienen volumen, se lo bajamos
+                    if (ci.currentVolume > 0.001f) //Si aún tienen volumen, se lo bajamos
                     {
-                        audioClip.currentVolume -= audioClip.currentVolume * Time.deltaTime;
+                        ci.currentVolume -= ci.currentVolume * Time.deltaTime;
                     }
                     else
                     {
-                        trash.Add(audioClip);
+                        if (ci.Source)
+                        {
+                            Destroy(ci.Source.gameObject);
+                        }
+                        trash.Add(ci);
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Empties the sound trash.
-        /// </summary>
-        void EmptySoundTrash()
-        {
-            foreach (var audioClip in trash)
-            {
-                Destroy(audioClip.Source.gameObject);
-            }
-            trash.Clear();
         }
 
         /// <summary>
@@ -469,7 +471,8 @@ namespace ReveloLibrary
             // Seleccionamos el clip definido como el parametro soundDef 
             GameSound gs = (from g in gameSoundList
                                      where g.SoundDef == soundDef
-                                     select g).FirstOrDefault();
+                                     select g
+                           ).FirstOrDefault();
 
             if (gs != null)
             {
