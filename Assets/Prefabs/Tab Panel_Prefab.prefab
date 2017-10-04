@@ -58,7 +58,7 @@ GameObject:
   - component: {fileID: 222787541499631316}
   - component: {fileID: 114658000252636174}
   m_Layer: 5
-  m_Name: Tab Panel
+  m_Name: Tab Panel_Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

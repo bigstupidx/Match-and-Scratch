@@ -62,6 +62,7 @@ public class GameManager : MonoBehaviour
     public int initialLevel;
 
     public Action OnBeginGame;
+    public Action<int, Transform, Color> OnAddScore;
 
     [SerializeField]
     private int score;
@@ -236,8 +237,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void AddScore(int pts)
+    public void AddScore(int pts, Transform target = null, Color color = new Color())
     {
+        if (target != null)
+        {
+            if (OnAddScore != null)
+            {
+                OnAddScore(pts, target, color);
+            }
+        }
+        
         Score += pts;
         CheckDifficulty();
         //scoreLabel.text = score.ToString();

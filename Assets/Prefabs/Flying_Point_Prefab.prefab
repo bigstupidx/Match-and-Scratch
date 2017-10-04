@@ -40,7 +40,7 @@ GameObject:
   - component: {fileID: 225447670600255178}
   - component: {fileID: 114487020440845134}
   m_Layer: 0
-  m_Name: Score Sums Up Wrapper
+  m_Name: Flying_Point_Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -107,6 +107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a07ea3b03c714fe9b0c03f494a9e031, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textElement: {fileID: 114238192418496396}
 --- !u!222 &222436721528916614
 CanvasRenderer:
   m_ObjectHideFlags: 1

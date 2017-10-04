@@ -21,7 +21,7 @@ public class Pin : Circumference
     private LineRenderer lr;
     private SpriteRenderer sr;
     private Rotator rot;
-    private Transform GameScreenParent;
+    //private Transform GameScreenParent;
     private Vector3 vel;
     private Vector3 originalScale;
 
@@ -52,7 +52,7 @@ public class Pin : Circumference
 
         rot = GameManager.Instance.rotator;
 
-        GameScreenParent = GameObject.Find("Game Screen").transform;
+        //GameScreenParent = GameObject.Find("Game Screen").transform;
         originalScale = transform.localScale;
     }
 
@@ -131,14 +131,7 @@ public class Pin : Circumference
         colisionador.enabled = false;
         if (pointsValue > 0)
         {
-            // TODO: Pooling of floating points
-            GameObject point = Instantiate(pointsGameObject, GameScreenParent) as GameObject;
-            point.GetComponent<PointsSumsUp>().SetPositionOverTarget(transform);
-            UnityEngine.UI.Text txtPoint = point.GetComponentInChildren<UnityEngine.UI.Text>();
-            txtPoint.text = pointsValue.ToString();
-            txtPoint.color = sr.color;
-
-            GameManager.Instance.AddScore(pointsValue);
+            GameManager.Instance.AddScore(pointsValue, transform, sr.color);
         }
         StartCoroutine(AnimToDead());
     }
@@ -155,8 +148,6 @@ public class Pin : Circumference
         }
         SetAvailable();
     }
-
-
 
     void Update()
     {

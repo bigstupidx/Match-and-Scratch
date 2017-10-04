@@ -1,19 +1,46 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class PointsSumsUp : MonoBehaviour
+public class FlyingPoint : MonoBehaviour
 {	
-    Transform TargetObject;
+    public Text textElement;
+    private Transform TargetObject;
 
-    RectTransform UI_Element;
+    private RectTransform UI_Element;
 
-    RectTransform CanvasRect;
+    private RectTransform CanvasRect;
+
+    private bool available;
+
+    public bool IsAvailable
+    {
+        get 
+        {
+            return available;
+        } 
+        set
+        { 
+            available = value;
+            gameObject.SetActive(!value);
+        }
+    }
 
     void Awake()
     {
-        CanvasRect = GameObject.FindGameObjectWithTag("UICanvas").GetComponent<RectTransform>();
         UI_Element = GetComponent<RectTransform>();
+    }
+
+    public void Setup(int points, Transform target, Color color)
+    {
+        textElement.text = "+" + points.ToString();
+        textElement.color = color;
+        SetPositionOverTarget(target);
+    }
+
+    public void SetCanvasRect(RectTransform canvasParent) {
+        CanvasRect = canvasParent;
     }
 
     public void SetPositionOverTarget(Transform target)
@@ -29,6 +56,6 @@ public class PointsSumsUp : MonoBehaviour
 
     public void Autodrestroy()
     {
-        Destroy(gameObject);
+        IsAvailable = true;       
     }
 }

@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 114669667341288560}
   - component: {fileID: 114878523393892084}
   m_Layer: 5
-  m_Name: Score_Element
+  m_Name: Score_Element_Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

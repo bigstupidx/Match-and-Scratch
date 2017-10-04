@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 58460238612081788}
   - component: {fileID: 120516631599606038}
   m_Layer: 0
-  m_Name: PinPrefab
+  m_Name: Pin_Prefab
   m_TagString: Pin
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

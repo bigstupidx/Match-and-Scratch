@@ -1784,6 +1784,7 @@ GameObject:
   - component: {fileID: 227}
   - component: {fileID: 517}
   - component: {fileID: 133}
+  - component: {fileID: 114}
   m_Layer: 5
   m_Name: Game Screen
   m_TagString: GameScreen
@@ -2061,6 +2062,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 98}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bca0c209ea1e4ccaaa826ad159aa011, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flyingPointPrefab: {fileID: 0}
+  flyingPointsPool: []
 --- !u!4 &115
 Transform:
   m_ObjectHideFlags: 0
