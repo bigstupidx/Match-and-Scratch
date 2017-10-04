@@ -28,6 +28,15 @@ public class Spawner : MonoBehaviour
     void Start() {
     }
 
+    void Update() {
+        #if UNITY_EDITOR
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                GameManager.Instance.spawner.ThrowCurrentPin();
+            }
+        #endif
+    }
+
     public void SpawnPin(float secondsDelay = 0)
     {
         StartCoroutine(Spawn(secondsDelay));
@@ -42,6 +51,11 @@ public class Spawner : MonoBehaviour
     {
         preInstantiatedPins = 15;
         colorsInGame = 1;
+        // If the Pins are already generated then hide and set them as availables
+        if (pinsPool != null)
+        {
+            HidePins();
+        }
         GeneratePinsPool();
         SetNextColor();
         SpawnPin();
@@ -61,13 +75,15 @@ public class Spawner : MonoBehaviour
         {
             pinsPool = new List<Pin>();
         }
-        else
+       /* else
         {
             pinsPool.ForEach(p => Destroy(p.gameObject));
             pinsPool.Clear();
         }
+        */
 
-        for (int i = 0; i < preInstantiatedPins; i++)
+
+        for (int i = pinsPool.Count; i < preInstantiatedPins; i++)
         {
             pinsPool.Add(CreateNewPin());
         }
@@ -81,6 +97,11 @@ public class Spawner : MonoBehaviour
         pinsPool.Add(pin);
 
         return pin;
+    }
+
+    void HidePins()
+    {
+        pinsPool.ForEach(p => p.SetAvailable());
     }
 
     void SetNextColor()

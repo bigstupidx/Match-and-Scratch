@@ -32,11 +32,10 @@ public class FlyingPoint : MonoBehaviour
         UI_Element = GetComponent<RectTransform>();
     }
 
-    public void Setup(int points, Transform target, Color color)
+    public void Setup(int points, Color color)
     {
         textElement.text = "+" + points.ToString();
         textElement.color = color;
-        SetPositionOverTarget(target);
     }
 
     public void SetCanvasRect(RectTransform canvasParent) {

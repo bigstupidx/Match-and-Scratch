@@ -301,8 +301,6 @@ public class GameManager : MonoBehaviour
                     AudioMaster.instance.StopAll(false);
                     AudioMaster.instance.PlayMusic(SoundDefinitions.THEME_MAINMENU);
 
-                    spawner.Finish();
-
                     if (currentState != GameState.HIGH_SCORES && currentState != GameState.NONE)
                     {
                         animator.SetTrigger("menu");
@@ -313,7 +311,7 @@ public class GameManager : MonoBehaviour
                     {
                         ShowTappxBanner(false);
                     }
-
+                    GenerateCacheElements();
                     animator.SetTrigger("start");
                     nextGameState = GameState.PLAYING;
                     break;
@@ -403,6 +401,11 @@ public class GameManager : MonoBehaviour
         isInputEnabled = false;
     }
 
+    void GenerateCacheElements()
+    {
+        spawner.Restart();
+    }
+
     public void StartGame()
     {		
         SetGameState(GameState.GOTO_PLAY);
@@ -433,6 +436,7 @@ public class GameManager : MonoBehaviour
         {
             spawner.Finish();
         }
+        spawner.Finish();
         SetGameState(GameState.MAIN_MENU);
     }
 
@@ -450,7 +454,7 @@ public class GameManager : MonoBehaviour
         difficultyStepsQueue = new Queue<DifficultType>(difficultySteps);
 				
         spawner.enabled = true;
-        spawner.Restart();
+        //spawner.Restart();
         rotator.enabled = true;
         rotator.Reset();
 

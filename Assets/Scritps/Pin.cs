@@ -51,8 +51,6 @@ public class Pin : Circumference
         lr.enabled = false;
 
         rot = GameManager.Instance.rotator;
-
-        //GameScreenParent = GameObject.Find("Game Screen").transform;
         originalScale = transform.localScale;
     }
 
@@ -79,9 +77,12 @@ public class Pin : Circumference
         speed = 20f;
         isShooted = false;
         isPinned = false;
-        drawSpear = false;
-        colisionador.enabled = false;
         IsAlive = false;
+
+        colisionador.enabled = false;
+        drawSpear = false;
+        lr.positionCount = 0;
+        lr.enabled = false;
     }
 
     void SetupLine()
@@ -100,10 +101,6 @@ public class Pin : Circumference
             lr.positionCount = 2;
             lr.SetPosition(0, transform.position);
             lr.SetPosition(1, rot.transform.position);
-        }
-        else if (lr)
-        {
-            lr.positionCount = 0;
         }
     }
 
@@ -128,11 +125,15 @@ public class Pin : Circumference
     public void Autodestroy()
     {
         drawSpear = false;
+        lr.positionCount = 0;
+        lr.enabled = false;
         colisionador.enabled = false;
+
         if (pointsValue > 0)
         {
             GameManager.Instance.AddScore(pointsValue, transform, sr.color);
         }
+
         StartCoroutine(AnimToDead());
     }
 
@@ -151,14 +152,7 @@ public class Pin : Circumference
 
     void Update()
     {
-        #if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            GameManager.Instance.spawner.ThrowCurrentPin();
-        }
-        #endif
-
-        if (!isPinned && isShooted)
+        if (isShooted && !isPinned)
         {
             float smoothSpeed = speed * Time.deltaTime;
             float moveInc = Mathf.Min(smoothSpeed, 2 * GetRadius());
@@ -185,7 +179,10 @@ public class Pin : Circumference
 
     void LateUpdate()
     {
-        DrawTheSpear();
+        if (drawSpear)
+        {
+            DrawTheSpear();
+        }
     }
 
     #if VISUAL_DEBUG

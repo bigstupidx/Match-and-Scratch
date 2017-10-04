@@ -10,12 +10,15 @@ public class FlyingPointsManager : MonoBehaviour
 
     private int flyingPointsCount = 5;
 
-    private RectTransform canvasParent;
+    public RectTransform canvasParent;
 
-
+    void Start() {
+        GenerateFlyingPointsPool();
+    }
+        
     void OnEnable()
     {
-        GenerateFlyingPointsPool();
+        
         if (GameManager.Instance != null)
         {
             GameManager.Instance.OnAddScore += OnAddScore_Handle;
@@ -23,26 +26,17 @@ public class FlyingPointsManager : MonoBehaviour
     }
 
     void OnDisable()
-    {
+    {/*
         if (flyingPointsPool != null)
         {
             flyingPointsPool.ForEach(fp => Destroy(fp.gameObject));
             flyingPointsPool.Clear();
         }
-
+*/
         if (GameManager.Instance != null)
         {
             GameManager.Instance.OnAddScore -= OnAddScore_Handle;
         }
-    }
-
-    void Awake()
-    {
-        canvasParent = GetComponent<RectTransform>();
-    }
-
-    void Start()
-    {
     }
 
     void Update()
@@ -88,10 +82,11 @@ public class FlyingPointsManager : MonoBehaviour
         return available;
     }
 
-    void OnAddScore_Handle(int points, Transform position, Color color)
+    void OnAddScore_Handle(int points, Transform target, Color color)
     {
         FlyingPoint fp = GetAvailablePoint();
-        fp.Setup(points, position, color);
+        fp.SetPositionOverTarget(target);
+        fp.Setup(points, color);
         fp.IsAvailable = false;
     }
 }
