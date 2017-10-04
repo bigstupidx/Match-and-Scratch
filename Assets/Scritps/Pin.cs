@@ -6,75 +6,157 @@ public class Pin : Circumference
 {
     public const float TIME_TO_DESTROY = 0.2f;
 
-    public float speed = 20f;
-
-    public bool isShooted = false;
-    public bool isPinned = false;
-    public bool drawSpear = false;
-
     public GameObject pointsGameObject;
 
-    private LineRenderer line;
+    [SerializeField]
+    private float speed = 20f;
+    [SerializeField]
+    private bool isShooted;
+    [SerializeField]
+    private bool isPinned;
+    [SerializeField]
+    private bool drawSpear;
+
+    private bool isAlive;
+    private LineRenderer lr;
     private SpriteRenderer sr;
     private Rotator rot;
     private Transform GameScreenParent;
     private Vector3 vel;
+    private Vector3 originalScale;
+
+    public bool IsAlive
+    {
+        get
+        {
+            return isAlive;
+        }
+        set {
+            isAlive = value;
+            gameObject.SetActive(value);
+        }
+    }
 
     public int pointsValue
     { 
         get; 
-        set; 
+        set;
     }
 
     public override void Initialize()
     {
         sr = GetComponent<SpriteRenderer>();
+
+        lr = GetComponent<LineRenderer>();
+        lr.enabled = false;
+
         rot = GameManager.Instance.rotator;
-        colisionador.enabled = false;
+
         GameScreenParent = GameObject.Find("Game Screen").transform;
-        pointsValue = 0;
-        line = GetComponent<LineRenderer>();
-        line.enabled = false;
+        originalScale = transform.localScale;
     }
 
-    public void SetColor(Color32 color)
+    public void Setup(Vector3 position, int color, string theName)
     {
-        sr.color = color;
+        transform.localScale = originalScale;
+        transform.position = position;
+        SetColor(color);
+        name = theName;
+
+        pointsValue = 0;
+        IsAlive = true;
+    }
+
+    public void SetColor(int color)
+    {
+        colorType = color;
+        sr.color = GameManager.Instance.posibleColors[colorType];
+    }
+
+    public void SetAvailable() {
+        name = "Available Pin";
+        transform.SetParent(null);
+        speed = 20f;
+        isShooted = false;
+        isPinned = false;
+        drawSpear = false;
+        colisionador.enabled = false;
+        IsAlive = false;
     }
 
     void SetupLine()
     {        
-        line.startColor = sr.color;
-        line.endColor = sr.color;
-        line.startWidth = 0.03f;
-        line.endWidth = 0.03f;
-        line.enabled = true;
+        lr.startColor = sr.color;
+        lr.endColor = sr.color;
+        lr.startWidth = 0.03f;
+        lr.endWidth = 0.03f;
+        lr.enabled = true;
     }
 
     void DrawTheSpear()
     {
         if (drawSpear)
         {
-            line.positionCount = 2;
-            line.SetPosition(0, transform.position);
-            line.SetPosition(1, rot.transform.position);
+            lr.positionCount = 2;
+            lr.SetPosition(0, transform.position);
+            lr.SetPosition(1, rot.transform.position);
         }
-        else if (line)
+        else if (lr)
         {
-            line.positionCount = 0;
+            lr.positionCount = 0;
         }
     }
 
-    public void DrawSpear()
+    public void Shoot()
+    {
+        isShooted = true;
+    }
+
+    public void PinIt()
+    {
+        colisionador.enabled = true;
+        isPinned = true;
+    }
+
+    public void EnableSpear()
     {
         SetupLine();
         drawSpear = true;
     }
 
-    public void SetPinned()
+    //TODO: Cambiar esto a dejar el pin disponible (Alive = false;)
+    public void Autodestroy()
     {
-        isPinned = true;
+        drawSpear = false;
+        colisionador.enabled = false;
+        if (pointsValue > 0)
+        {
+            // TODO: Pooling of floating points
+            GameObject point = Instantiate(pointsGameObject, GameScreenParent) as GameObject;
+            point.GetComponent<PointsSumsUp>().SetPositionOverTarget(transform);
+            UnityEngine.UI.Text txtPoint = point.GetComponentInChildren<UnityEngine.UI.Text>();
+            txtPoint.text = pointsValue.ToString();
+            txtPoint.color = sr.color;
+
+            GameManager.Instance.AddScore(pointsValue);
+        }
+        StartCoroutine(AnimToDead());
     }
+
+    public IEnumerator AnimToDead()
+    {		
+        float t = TIME_TO_DESTROY;
+        while (t > 0f)
+        {
+            t -= Time.deltaTime;
+            transform.localScale *= 1.13f;
+            sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, t);
+            yield return null;
+        }
+        SetAvailable();
+    }
+
+
 
     void Update()
     {
@@ -102,8 +184,8 @@ public class Pin : Circumference
                     rot.AddPin(this, hit.collider.gameObject);
 
                     #if VISUAL_DEBUG
-                        DrawTheGizmo(new GizmoToDraw(GizmoType.sphere, transform.position, GetRadius(), RandomColor()));
-                        DrawX(hit.point, RandomColor(), GetRadius(), 3, 1);
+                    DrawTheGizmo(new GizmoToDraw(GizmoType.sphere, transform.position, GetRadius(), RandomColor()));
+                    DrawX(hit.point, RandomColor(), GetRadius(), 3, 1);
                     #endif
                 }
             }
@@ -115,39 +197,6 @@ public class Pin : Circumference
         DrawTheSpear();
     }
 
-    public void Autodestroy()
-    {
-        drawSpear = false;
-        colisionador.enabled = false;
-        if (pointsValue > 0)
-        {
-            // TODO: Pooling of floating points
-            GameObject point = Instantiate(pointsGameObject, GameScreenParent) as GameObject;
-            point.GetComponent<PointsSumsUp>().SetPositionOverTarget(transform);
-            UnityEngine.UI.Text txtPoint = point.GetComponentInChildren<UnityEngine.UI.Text>();
-            txtPoint.text = pointsValue.ToString();
-            txtPoint.color = sr.color;
-            GameManager.Instance.AddScore(pointsValue);
-        }
-        StartCoroutine(AnimToDead());
-    }
-
-    public IEnumerator AnimToDead()
-    {
-		
-        float t = TIME_TO_DESTROY;
-
-        while (t > 0f)
-        {
-            t -= Time.deltaTime;
-            transform.localScale *= 1.13f;
-            sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, t);
-            yield return null;
-        }	
-
-        Destroy(gameObject);
-    }
-        
     #if VISUAL_DEBUG
         void DrawX(Vector2 position, Color color, float size, float duration, float shape)
         {

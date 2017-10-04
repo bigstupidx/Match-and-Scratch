@@ -68,9 +68,7 @@ public class Rotator : Circumference
         if (OnPinPinned != null)
             OnPinPinned();
 		
-        newPin.colisionador.isTrigger = false;
-        newPin.SetPinned();
-        newPin.colisionador.enabled = true;
+        newPin.PinIt();
 
         // Change pin parent
         AddToParent(newPin);
@@ -185,7 +183,7 @@ public class Rotator : Circumference
 
                 // If collides oly with rotator then draw the spear
                 if (circumferencesCollided[0].tag == "Rotator")
-                    newPin.GetComponent<Pin>().DrawSpear();
+                    newPin.GetComponent<Pin>().EnableSpear();
                 break;
             case 2:
                 Circumference A = circumferencesCollided[0];
@@ -455,11 +453,6 @@ public class Rotator : Circumference
     public void Reset()
     {
         circumferencesCollided.Clear();
-        GameObject[] pins = GameObject.FindGameObjectsWithTag("Pin");
-        for (int i = 0; i < pins.Length; i++)
-        {
-            Destroy(pins[i]);
-        }
         groupsDictionary.Clear();
         StopInverseDirection();
         StopCrazySpeed();

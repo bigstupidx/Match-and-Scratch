@@ -75,7 +75,6 @@ public class Circumference : MonoBehaviour
         radius = colisionador.radius;		
         Initialize();
     }
-
     public virtual void Initialize()
     {
     }

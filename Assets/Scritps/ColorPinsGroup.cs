@@ -77,12 +77,6 @@ public class ColorPinsGroup
     public void Erase()
     {
         SetState(GroupState.REMOVE);
-
-        foreach (Circumference c in members)
-        {
-            c.colisionador.enabled = false;
-        }
-
         GameManager.Instance.StartCoroutine(DestroyMembers());
     }
 

@@ -1854,7 +1854,6 @@ GameObject:
   - component: {fileID: 117}
   - component: {fileID: 141}
   - component: {fileID: 522}
-  - component: {fileID: 134}
   - component: {fileID: 119}
   m_Layer: 0
   m_Name: Rotator
@@ -2363,23 +2362,6 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 6790f3d6b693442c7a4120389895f452, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
---- !u!95 &134
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 102}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 5ec7c15d81be248698cb6b0b6d464e2b, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -9697,7 +9679,7 @@ MonoBehaviour:
   smoothCurrentSpeed: 0
   canInverseDir: 0
   canUseCrazySpeed: 0
-  rotationSpeed: 0
+  rotationSpeed: 100
   variableSpeedInc: 0
 --- !u!114 &523
 MonoBehaviour:

@@ -129,7 +129,7 @@ public class Tutorial : MonoBehaviour
     {
         if (clickAvailable)
         {
-            GameManager.Instance.spawner.lastSpawnedPin.GetComponent<Pin>().isShooted = true;
+            GameManager.Instance.spawner.lastSpawnedPin.GetComponent<Pin>().Shoot();
         }
         EnableClick(false);
     }

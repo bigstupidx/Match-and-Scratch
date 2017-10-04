@@ -138,7 +138,7 @@ public class GameManager : MonoBehaviour
         private set
         {
             score = value;
-            scoreLabel.text = score.ToString();
+            scoreLabel.text = value.ToString();
         }
     }
 
@@ -181,12 +181,12 @@ public class GameManager : MonoBehaviour
 
         int firstRun = PlayerPrefs.GetInt("firstRun", 0);
         if (firstRun == 0)
-            TermsOfUseScreen.Instance.Show(StartTheGame);
+            TermsOfUseScreen.Instance.Show(ContinueStarting);
         else
-            StartTheGame();
+            ContinueStarting();
     }
 
-    public void StartTheGame()
+    public void ContinueStarting()
     {
         ShowScreen(ScreenDefinitions.MAIN_MENU);
         SetGameState(GameState.MAIN_MENU);
@@ -240,7 +240,7 @@ public class GameManager : MonoBehaviour
     {
         Score += pts;
         CheckDifficulty();
-        scoreLabel.text = score.ToString();
+        //scoreLabel.text = score.ToString();
         if (!scoreLabel_Animator.IsInTransition(0))
         {
             scoreLabel_Animator.SetTrigger("Action");
@@ -292,7 +292,7 @@ public class GameManager : MonoBehaviour
                     AudioMaster.instance.StopAll(false);
                     AudioMaster.instance.PlayMusic(SoundDefinitions.THEME_MAINMENU);
 
-                    rotator.EraseAllPins();
+                    spawner.Finish();
 
                     if (currentState != GameState.HIGH_SCORES && currentState != GameState.NONE)
                     {
@@ -345,14 +345,14 @@ public class GameManager : MonoBehaviour
         {
             yield return null;
         }
-        ResetGame();
         ShowScreen(ScreenDefinitions.GAME, BeginGame);
     }
 
     void BeginGame()
     {
         AnalyticsSender.SendCustomAnalitycs("gameStart", new Dictionary<string, object>());
-        spawner.SpawnPin();
+        ResetGame();
+
         if (OnBeginGame != null)
             OnBeginGame();
 		
@@ -412,7 +412,7 @@ public class GameManager : MonoBehaviour
         AnalyticsSender.SendCustomAnalitycs("gameOver", new Dictionary<string, object>
             {
                 { "score", Score },
-                { "pinsCount", spawner.PinsCount }
+                { "pinsCount", spawner.pinsCount }
 
             }
         );
@@ -420,6 +420,10 @@ public class GameManager : MonoBehaviour
 
     public void BackToMainMenu()
     {
+        if (currentState == GameState.GAME_OVER)
+        {
+            spawner.Finish();
+        }
         SetGameState(GameState.MAIN_MENU);
     }
 
@@ -437,7 +441,7 @@ public class GameManager : MonoBehaviour
         difficultyStepsQueue = new Queue<DifficultType>(difficultySteps);
 				
         spawner.enabled = true;
-        spawner.Reset();
+        spawner.Restart();
         rotator.enabled = true;
         rotator.Reset();
 
@@ -506,15 +510,15 @@ public class GameManager : MonoBehaviour
 
         if (difficultyStepsQueue.Count == 0)
         {
-            if (score % 15 == 0)
+            if (Score % 15 == 0)
             {
                 difficult = !rotator.canUseCrazySpeed ? DifficultType.SWITCH_CRAZY_SPEED : DifficultType.SWITCH_CRAZY_SPEED_CANCEL;
             }
-            else if (score % 10 == 0)
+            else if (Score % 10 == 0)
             {
                 difficult = DifficultType.SPEEDUP;
             }
-            else if (score % 5 == 0)
+            else if (Score % 5 == 0)
             {
                 difficult = !rotator.canInverseDir ? DifficultType.SWITCH_REVERSE : DifficultType.SWITCH_REVERSE_CANCEL;
             }
@@ -571,8 +575,9 @@ public class GameManager : MonoBehaviour
 
     public void ExitToMainMenu()
     {
-        animator.SetTrigger("exit");
-        BackToMainMenu();
+        //animator.SetTrigger("exit");
+        SetGameState(GameState.GAME_OVER);
         PauseScreen.Instance.CloseWindow();
+        BackToMainMenu();
     }
 }

@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
-
 
 public class Spawner : MonoBehaviour
 {
-    
     public const float MINIMUM_SPAWN_TIME = 0f;
     public const int MAX_COLORS_IN_GAME = 8;
 	 
@@ -17,16 +14,18 @@ public class Spawner : MonoBehaviour
     public int currentColor;
     public int colorsInGame;
 
-    private int pinsCount;
+    private int preInstantiatedPins;
 
-    public GameObject lastSpawnedPin;
+    public Pin lastSpawnedPin;
+    private List<Pin> pinsPool;
 
-    public int PinsCount
+    public int pinsCount
     {
-        get
-        {
-            return pinsCount;
-        }
+        get;
+        set;
+    }
+
+    void Start() {
     }
 
     public void SpawnPin(float secondsDelay = 0)
@@ -38,43 +37,86 @@ public class Spawner : MonoBehaviour
     {
         colorsInGame = Mathf.Min(colorsInGame + inc, MAX_COLORS_IN_GAME);
     }
-
-    public void Reset()
+    
+    public void Restart()
     {
-        pinsCount = 0;
+        preInstantiatedPins = 15;
         colorsInGame = 1;
-        nextColor = GetNextColor();
+        GeneratePinsPool();
+        SetNextColor();
+        SpawnPin();
+    }
+
+    public void Finish() {
+        if (pinsPool != null)
+        {
+            pinsPool.ForEach(p => Destroy(p.gameObject));
+            pinsPool.Clear();
+        }
+    }
+
+    void GeneratePinsPool()
+    {
+        if (pinsPool == null)
+        {
+            pinsPool = new List<Pin>();
+        }
+        else
+        {
+            pinsPool.ForEach(p => Destroy(p.gameObject));
+            pinsPool.Clear();
+        }
+
+        for (int i = 0; i < preInstantiatedPins; i++)
+        {
+            pinsPool.Add(CreateNewPin());
+        }
+    }
+
+    Pin CreateNewPin() {
+        GameObject ball = Instantiate(PinPrefab);
+
+        Pin pin = ball.GetComponent<Pin>();
+        pin.SetAvailable();
+        pinsPool.Add(pin);
+
+        return pin;
+    }
+
+    void SetNextColor()
+    {
+        nextColor = Random.Range(0, Mathf.Min(Mathf.Max(0, colorsInGame), GameManager.Instance.posibleColors.Length));
         nextPin.color = GameManager.Instance.posibleColors[nextColor];
     }
 
     private IEnumerator Spawn(float secondsDelay = 0f)
     {
-
         yield return new WaitForSeconds(secondsDelay);
+        lastSpawnedPin = GetAvailablePin();
+        SetNextColor();
 
-        currentColor = nextColor;
-        lastSpawnedPin = Instantiate(PinPrefab, transform.position, transform.rotation);
-        Pin pin = lastSpawnedPin.GetComponent<Pin>();
-        pin.colorType = currentColor;
-        pin.SetColor(GameManager.Instance.posibleColors[currentColor]);
-        lastSpawnedPin.name = pinsCount + "-Type_" + currentColor.ToString();
-
-        pinsCount++;
-
-        nextColor = GetNextColor();
-        nextPin.color = GameManager.Instance.posibleColors[nextColor];
     }
 
-    int GetNextColor()
+    Pin GetAvailablePin()
     {
-        return Random.Range(0, Mathf.Min(Mathf.Max(0, colorsInGame), GameManager.Instance.posibleColors.Length));
+        Pin available = pinsPool.Find(p => !p.IsAlive);
+        if (available == null)
+        {
+            available = CreateNewPin();
+            //preInstantiatedPins = pinsPool.Count;
+        }
+        currentColor = nextColor;
+        string name = pinsCount + "-Type_" + currentColor.ToString();
+        available.Setup(transform.position, nextColor, name);
+
+        return available;
     }
 
     public void ThrowCurrentPin()
     {
         if (GameManager.Instance.currentGamePlayState == GamePlayState.NORMAL && lastSpawnedPin != null)
         {
-            lastSpawnedPin.GetComponent<Pin>().isShooted = true;
+            lastSpawnedPin.Shoot();
         }
     }
 }
