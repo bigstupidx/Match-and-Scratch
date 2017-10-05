@@ -152,6 +152,9 @@
 	<data name="ui.button.no" xml:space="preserve">
 		<value>No</value>
 	</data>
+	<data name="ui.button.rate" xml:space="preserve">
+		<value>Rate Game</value>
+	</data>
 	<data name="ui.button.reject" xml:space="preserve">
 		<value>Reject</value>
 	</data>
@@ -160,6 +163,9 @@
 	</data>
 	<data name="ui.button.send" xml:space="preserve">
 		<value>Send</value>
+	</data>
+	<data name="ui.button.share" xml:space="preserve">
+		<value>Share Game	</value>
 	</data>
 	<data name="ui.button.start" xml:space="preserve">
 		<value>Play</value>

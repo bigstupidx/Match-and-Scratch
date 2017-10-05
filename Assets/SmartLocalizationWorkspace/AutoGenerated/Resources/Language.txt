@@ -240,4 +240,10 @@ this special mention</value>
 	<data name="ui.tabitem.weekly" xml:space="preserve">
 		<value>Weekly</value>
 	</data>
+	<data name="ui.button.share" xml:space="preserve">
+		<value>Share Game	</value>
+	</data>
+	<data name="ui.button.rate" xml:space="preserve">
+		<value>Rate Game</value>
+	</data>
 </root>

@@ -49,6 +49,7 @@ public class Spawner : MonoBehaviour
     
     public void Restart()
     {
+        pinsCount = 0;
         preInstantiatedPins = 15;
         colorsInGame = 1;
         // If the Pins are already generated then hide and set them as availables
@@ -75,13 +76,6 @@ public class Spawner : MonoBehaviour
         {
             pinsPool = new List<Pin>();
         }
-       /* else
-        {
-            pinsPool.ForEach(p => Destroy(p.gameObject));
-            pinsPool.Clear();
-        }
-        */
-
 
         for (int i = pinsPool.Count; i < preInstantiatedPins; i++)
         {
@@ -115,7 +109,7 @@ public class Spawner : MonoBehaviour
         yield return new WaitForSeconds(secondsDelay);
         lastSpawnedPin = GetAvailablePin();
         SetNextColor();
-
+        pinsCount++;
     }
 
     Pin GetAvailablePin()
@@ -124,7 +118,6 @@ public class Spawner : MonoBehaviour
         if (available == null)
         {
             available = CreateNewPin();
-            //preInstantiatedPins = pinsPool.Count;
         }
         currentColor = nextColor;
         string name = pinsCount + "-Type_" + currentColor.ToString();
