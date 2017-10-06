@@ -49,6 +49,7 @@ public class GameManager : MonoBehaviour
 
     public bool EnableDebugAtStart;
     public GameObject debugMenu;
+    public Transform UICanvas;
 
     public Color[] posibleColors;
     public Rotator rotator;
@@ -178,7 +179,7 @@ public class GameManager : MonoBehaviour
     public void Start()
     {
         if (EnableDebugAtStart)
-            Instantiate(debugMenu, GameObject.FindGameObjectWithTag("UICanvas").transform);
+            Instantiate(debugMenu, UICanvas);
 
         int firstRun = PlayerPrefs.GetInt("firstRun", 0);
         if (firstRun == 0)
@@ -197,7 +198,9 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) && isInputEnabled)
         {
+            #if UNITY_EDITOR
             Debug.Log("Escape key down when in gamestate: " + currentState.ToString());
+            #endif
             switch (currentState)
             {
                 case GameState.MAIN_MENU:

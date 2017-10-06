@@ -29,7 +29,7 @@ namespace ReveloLibrary
 			
             RectTransform rect = GetComponent<RectTransform>();
             rect.offsetMax = rect.offsetMin = new Vector2(0, 0);
-            ScreenWrapper = transform.Find("Wrapper").gameObject;
+            ScreenWrapper = transform.GetChild(0).gameObject;
 
             if (!AlwaysActive)
             {

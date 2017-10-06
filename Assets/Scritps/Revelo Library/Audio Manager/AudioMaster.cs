@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -469,10 +468,7 @@ namespace ReveloLibrary
         GameSound GetTheSoundClip(SoundDefinitions soundDef)
         {
             // Seleccionamos el clip definido como el parametro soundDef 
-            GameSound gs = (from g in gameSoundList
-                                     where g.SoundDef == soundDef
-                                     select g
-                           ).FirstOrDefault();
+            GameSound gs = gameSoundList.Find(g => g.SoundDef == soundDef);
 
             if (gs != null)
             {

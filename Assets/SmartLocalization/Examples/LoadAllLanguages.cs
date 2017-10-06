@@ -33,11 +33,12 @@ public class LoadAllLanguages : MonoBehaviour
 			currentLanguageValues = languageManager.RawTextDatabase;
 			availableLanguages = languageManager.GetSupportedLanguages();
 		}
+        #if UNITY_EDITOR
 		else
 		{
 			Debug.LogError("No languages are created!, Open the Smart Localization plugin at Window->Smart Localization and create your language!");
 		}
-
+        #endif
 		LanguageManager.Instance.OnChangeLanguage += OnLanguageChanged;
 	}
 

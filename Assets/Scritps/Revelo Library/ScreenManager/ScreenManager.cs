@@ -34,11 +34,12 @@ namespace ReveloLibrary
             Instance = this;
 
             DontDestroyOnLoad(gameObject);
-
+            /* we do not need to search for every UIScreens in the scene. The are manually added in editor
             screens = new List<UIScreen>();
             FindScreens();
+            */
         }
-
+        /*
         void FindScreens()
         {
             GameObject[] screensFound = GameObject.FindGameObjectsWithTag("GameScreen");
@@ -47,7 +48,7 @@ namespace ReveloLibrary
                 screens.Add(s.GetComponent<UIScreen>());
             }
         }
-
+        */
         public void ShowLastScreen()
         {
             ShowScreen(lastGUIScreen.screenDefinition);

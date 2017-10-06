@@ -5,13 +5,11 @@ using UnityEngine.UI;
 
 public class ScoreElement : MonoBehaviour
 {
-    Text username;
-    Text score;
+    public Text username;
+    public Text score;
 
-    void Awake()
+    void Start()
     {
-        username = transform.Find("Name").GetComponent<Text>();
-        score = transform.Find("Score").GetComponent<Text>();
     }
 
     public void SetScore(string theName, string theScore)

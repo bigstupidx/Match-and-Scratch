@@ -153,7 +153,7 @@
 		<value>No</value>
 	</data>
 	<data name="ui.button.rate" xml:space="preserve">
-		<value>Apóyame</value>
+		<value>Puntúame</value>
 	</data>
 	<data name="ui.button.reject" xml:space="preserve">
 		<value>Rechazar</value>
@@ -171,7 +171,7 @@
 		<value>Jugar</value>
 	</data>
 	<data name="ui.button.support" xml:space="preserve">
-		<value>Colaborar</value>
+		<value>Apóyame</value>
 	</data>
 	<data name="ui.button.yes" xml:space="preserve">
 		<value>Si</value>
