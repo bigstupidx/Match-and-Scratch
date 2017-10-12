@@ -7,6 +7,7 @@ public class Pin : Circumference
     public const float TIME_TO_DESTROY = 0.2f;
 
     public GameObject pointsGameObject;
+    public bool hasSpear;
 
     [SerializeField]
     private float speed = 20f;
@@ -14,8 +15,6 @@ public class Pin : Circumference
     private bool isShooted;
     [SerializeField]
     private bool isPinned;
-    [SerializeField]
-    private bool drawSpear;
 
     private bool isAlive;
     private LineRenderer lr;
@@ -80,7 +79,7 @@ public class Pin : Circumference
         IsAlive = false;
 
         colisionador.enabled = false;
-        drawSpear = false;
+        hasSpear = false;
         lr.positionCount = 0;
         lr.enabled = false;
     }
@@ -94,9 +93,9 @@ public class Pin : Circumference
         lr.enabled = true;
     }
 
-    void DrawTheSpear()
+    public void DrawTheSpear()
     {
-        if (drawSpear)
+        if (hasSpear)
         {
             lr.positionCount = 2;
             lr.SetPosition(0, transform.position);
@@ -108,23 +107,24 @@ public class Pin : Circumference
     {
         isShooted = true;
     }
-
+    
     public void PinIt()
     {
         colisionador.enabled = true;
         isPinned = true;
     }
-
+    
     public void EnableSpear()
     {
         SetupLine();
-        drawSpear = true;
+        hasSpear = true;
     }
+
 
     //TODO: Cambiar esto a dejar el pin disponible (Alive = false;)
     public void Autodestroy()
     {
-        drawSpear = false;
+        hasSpear = false;
         lr.positionCount = 0;
         lr.enabled = false;
         colisionador.enabled = false;
@@ -150,7 +150,7 @@ public class Pin : Circumference
         SetAvailable();
     }
 
-    void Update()
+    public void UpdatePin()
     {
         if (isShooted && !isPinned)
         {
@@ -176,15 +176,12 @@ public class Pin : Circumference
             }
         }
     }
-
+/*
     void LateUpdate()
     {
-        if (drawSpear)
-        {
-            DrawTheSpear();
-        }
-    }
 
+    }
+*/
     #if VISUAL_DEBUG
         void DrawX(Vector2 position, Color color, float size, float duration, float shape)
         {

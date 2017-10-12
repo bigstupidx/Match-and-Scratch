@@ -514,7 +514,6 @@ namespace ReveloLibrary
             return isPlaying;
         }
 		
-        // Actualiza los sonidos que suenan por encima del resto, haciendo un Fade
         void UpdateVoiceOverSounds()
         {
             if (isVoiceOverActive && defaultVolume >= secondPlaneVolume)
@@ -527,7 +526,6 @@ namespace ReveloLibrary
             }
         }
 			
-        // Actualiza los AudioSources activos, y los que ya no se reproduzcan los elimina de la lista
         private void UpdateActiveAudio()
         {
             if (trash == null)

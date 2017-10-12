@@ -169,9 +169,13 @@ public class GameManager : MonoBehaviour
 
         // Selection os system languaje "es" for Spanish, "en" the any other
         if (Application.systemLanguage == SystemLanguage.Spanish)
+        {
             LanguageManager.Instance.ChangeLanguage("es");
+        }
         else
+        {
             LanguageManager.Instance.ChangeLanguage("en");
+        }
 
         scoreLabel_Animator = scoreLabel.GetComponent<Animator>();
     }
@@ -179,7 +183,12 @@ public class GameManager : MonoBehaviour
     public void Start()
     {
         if (EnableDebugAtStart)
+        {
             Instantiate(debugMenu, UICanvas);
+        }
+        
+        spawner.gameObject.SetActive(false);
+        rotator.gameObject.SetActive(false);
 
         int firstRun = PlayerPrefs.GetInt("firstRun", 0);
         if (firstRun == 0)
@@ -196,11 +205,12 @@ public class GameManager : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && isInputEnabled)
+        if (isInputEnabled && Input.GetKeyDown(KeyCode.Escape))
         {
             #if UNITY_EDITOR
             Debug.Log("Escape key down when in gamestate: " + currentState.ToString());
             #endif
+
             switch (currentState)
             {
                 case GameState.MAIN_MENU:
@@ -406,6 +416,8 @@ public class GameManager : MonoBehaviour
 
     void GenerateCacheElements()
     {
+        spawner.gameObject.SetActive(true);
+        rotator.gameObject.SetActive(true);
         spawner.Restart();
     }
 
@@ -421,6 +433,7 @@ public class GameManager : MonoBehaviour
 		
         rotator.enabled = false;
         spawner.enabled = false;
+
         isGameOver = true;
 		
         SetGameState(GameState.GAME_OVER);
@@ -440,6 +453,8 @@ public class GameManager : MonoBehaviour
             spawner.Finish();
         }
         spawner.Finish();
+        spawner.gameObject.SetActive(false);
+        rotator.gameObject.SetActive(false);
         SetGameState(GameState.MAIN_MENU);
     }
 
@@ -457,7 +472,6 @@ public class GameManager : MonoBehaviour
         difficultyStepsQueue = new Queue<DifficultType>(difficultySteps);
 				
         spawner.enabled = true;
-        //spawner.Restart();
         rotator.enabled = true;
         rotator.Reset();
 

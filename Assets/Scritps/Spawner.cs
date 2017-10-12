@@ -25,16 +25,29 @@ public class Spawner : MonoBehaviour
         set;
     }
 
-    void Start() {
+    void Start()
+    {
     }
 
-    void Update() {
+    void Update()
+    {
         #if UNITY_EDITOR
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                GameManager.Instance.spawner.ThrowCurrentPin();
-            }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            GameManager.Instance.spawner.ThrowCurrentPin();
+        }
         #endif
+        if (lastSpawnedPin)
+        {
+            lastSpawnedPin.UpdatePin();
+        }
+        pinsPool.ForEach(p =>
+            {
+                if (p.IsAlive)
+                {
+                    p.DrawTheSpear(); 
+                }
+            });
     }
 
     public void SpawnPin(float secondsDelay = 0)
@@ -46,7 +59,7 @@ public class Spawner : MonoBehaviour
     {
         colorsInGame = Mathf.Min(colorsInGame + inc, MAX_COLORS_IN_GAME);
     }
-    
+
     public void Restart()
     {
         pinsCount = 0;
@@ -62,7 +75,8 @@ public class Spawner : MonoBehaviour
         SpawnPin();
     }
 
-    public void Finish() {
+    public void Finish()
+    {
         if (pinsPool != null)
         {
             pinsPool.ForEach(p => Destroy(p.gameObject));
@@ -83,7 +97,8 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    Pin CreateNewPin() {
+    Pin CreateNewPin()
+    {
         GameObject ball = Instantiate(PinPrefab);
 
         Pin pin = ball.GetComponent<Pin>();
