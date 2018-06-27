@@ -289,8 +289,6 @@ public class Reporter : MonoBehaviour
 	{
 		if (!Initialized)
 			Initialize();
-
-		SceneManager.sceneLoaded += SceneLoaded;
 	}
 
 	void OnEnable()
@@ -1931,7 +1929,7 @@ public class Reporter : MonoBehaviour
 			}
 		}
 
-		 if (newLogAdded) {
+		if (newLogAdded) {
 			calculateStartIndex();
 			int totalCount = currentLog.Count;
 			int totalVisibleCount = (int)(Screen.height * 0.75f / size.y);
@@ -1957,7 +1955,7 @@ public class Reporter : MonoBehaviour
 	}
 
 	//new scene is loaded
-	void SceneLoaded(Scene scene, LoadSceneMode mode)
+	void OnLevelWasLoaded()
 	{
 		if (clearOnNewSceneLoaded)
 			clear();
@@ -2012,7 +2010,7 @@ public class Reporter : MonoBehaviour
 			url = System.IO.Path.Combine(streamingAssetsPath, prefFile);
 		}
 
-		if (Application.platform != RuntimePlatform.OSXWebPlayer && Application.platform != RuntimePlatform.WindowsWebPlayer)
+		if (Application.platform != RuntimePlatform.OSXPlayer && Application.platform != RuntimePlatform.WindowsPlayer)
 			if (!url.Contains("://"))
 				url = "file://" + url;
 
